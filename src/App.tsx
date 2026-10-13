@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from './lib/supabase';
 import { uploadPublicImage } from './lib/mediaUpload';
@@ -26,6 +26,7 @@ type Project = {
 };
 
 type TeacherProfile = { id: string; full_name: string; school_name: string | null; role: 'teacher' | 'admin'; edu_points: number; avatar_url?: string | null; profile_completed_at?: string | null };
+type NotificationItem = { id: string; activity_type: string; created_at: string; actor?: { full_name?: string } | null; resource?: { id?: string; title?: string } | null };
 type SubmitDraft = { title: string; description: string; type: string; subject: string; grade: string; url: string; videoUrl: string; file: File | null; cover: File | null; guide: string };
 type View = 'feed' | 'projects' | 'talks' | 'talk-detail' | 'ranking' | 'saved' | 'following' | 'collections' | 'admin' | 'profile' | 'project';
 const savedStorageKey = 'eduhub-saved-projects-v1';
@@ -96,6 +97,9 @@ export default function App() {
   const [activeTeachers, setActiveTeachers] = useState<Array<{ id: string; name: string; subject: string; points: string; initials: string; color: string }>>([]);
   const [communityProof, setCommunityProof] = useState<{ members: number; projects: number; teachers: Array<{ id: string; name: string; avatar: string | null }> } | null>(null);
   const [showTeacherOnboarding, setShowTeacherOnboarding] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationsReadAt, setNotificationsReadAt] = useState(() => new Date().toISOString());
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -124,6 +128,29 @@ export default function App() {
   }, []);
 
   useEffect(() => { if (teacherProfile?.profile_completed_at) setShowTeacherOnboarding(false); }, [teacherProfile?.profile_completed_at]);
+
+  const loadNotifications = useCallback(async () => {
+    if (!supabase || !currentUser) { setNotifications([]); return; }
+    const { data, error } = await supabase.from('teacher_activities')
+      .select('id,activity_type,created_at,actor:profiles!teacher_activities_actor_id_fkey(full_name),resource:resources!teacher_activities_resource_id_fkey(id,title)')
+      .eq('profile_id', currentUser.id).order('created_at', { ascending: false }).limit(20);
+    if (!error && data) setNotifications(data as unknown as NotificationItem[]);
+    const key = `eduhub-notifications-read:${currentUser.id}`;
+    try {
+      const savedReadAt = localStorage.getItem(key);
+      if (!savedReadAt) { const now = new Date().toISOString(); localStorage.setItem(key, now); setNotificationsReadAt(now); }
+      else setNotificationsReadAt(savedReadAt);
+    } catch { /* Keep notification state in memory. */ }
+  }, [currentUser?.id]);
+
+  useEffect(() => {
+    if (!supabase || !currentUser) { setNotifications([]); setNotificationsOpen(false); return; }
+    void loadNotifications();
+    const channel = supabase.channel(`teacher-notifications-${currentUser.id}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'teacher_activities', filter: `profile_id=eq.${currentUser.id}` }, () => void loadNotifications())
+      .subscribe();
+    return () => { void supabase?.removeChannel(channel); };
+  }, [currentUser?.id, loadNotifications]);
 
   useEffect(() => {
     if (!supabase) return;
@@ -301,6 +328,31 @@ export default function App() {
   const closeTalkDetail = () => { setTalkDetailId(null); setView('talks'); window.history.pushState({}, '', '/talks'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const openProfile = (id: string) => { setProfileId(id); setSelectedProject(null); setView('profile'); setMobileNavOpen(false); window.history.pushState({}, '', `/teachers/${encodeURIComponent(id)}`); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const openProject = (project: Project) => { setSelectedProject(project); const routeId = project.sourceId || project.id; setProjectRouteId(routeId); setView('project'); setMobileNavOpen(false); window.history.pushState({}, '', `/projects/${encodeURIComponent(routeId)}`); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const unreadNotifications = notifications.filter((item) => new Date(item.created_at).getTime() > new Date(notificationsReadAt).getTime()).length;
+  const notificationText = (item: NotificationItem) => {
+    const actor = item.actor?.full_name || 'Một giáo viên';
+    if (item.activity_type === 'project_approved') return 'Dự án của thầy cô đã được duyệt';
+    if (item.activity_type === 'project_liked') return `${actor} đánh dấu dự án của thầy cô hữu ích`;
+    if (item.activity_type === 'project_commented') return `${actor} đã bình luận về dự án`;
+    if (item.activity_type === 'project_rated') return `${actor} đã đánh giá dự án`;
+    return `${actor} vừa có hoạt động với dự án của thầy cô`;
+  };
+  const toggleNotifications = () => {
+    if (notificationsOpen) { setNotificationsOpen(false); return; }
+    setNotificationsOpen(true);
+    const now = new Date().toISOString();
+    setNotificationsReadAt(now);
+    if (currentUser) try { localStorage.setItem(`eduhub-notifications-read:${currentUser.id}`, now); } catch { /* Keep the read state in memory. */ }
+    void loadNotifications();
+  };
+  const openNotification = (item: NotificationItem) => {
+    setNotificationsOpen(false);
+    const resourceId = item.resource?.id;
+    if (!resourceId) return;
+    const project = projects.find((candidate) => candidate.sourceId === resourceId || candidate.id === resourceId);
+    if (project) openProject(project);
+    else { setSelectedProject(null); setProjectRouteId(resourceId); setView('project'); window.history.pushState({}, '', `/projects/${encodeURIComponent(resourceId)}`); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  };
   const closeProject = () => { setSelectedProject(null); setView('projects'); window.history.pushState({}, '', '/'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const cycleProjectSort = () => setSort((current) => current === 'Dành cho bạn' ? 'Được yêu thích' : current === 'Được yêu thích' ? 'Đánh giá cao' : 'Dành cho bạn');
   const openSubmit = () => currentUser ? setShowSubmit(true) : setShowLogin(true);
@@ -374,13 +426,16 @@ export default function App() {
           <div className="top-actions">
             <label className="searchbox"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm học liệu, dự án..." /><kbd>⌘ K</kbd></label>
             <button className="button button-primary top-share" onClick={openSubmit}><Plus size={16} /> Chia sẻ dự án</button>
-            <button className="icon-button notification-button" aria-label="Thông báo" onClick={() => toast('Bạn đã xem hết thông báo mới')}><Bell size={18} /><i /></button>
+            <div className="notification-wrap">
+              <button className="icon-button notification-button" aria-label={unreadNotifications ? `Thông báo, ${unreadNotifications} chưa đọc` : 'Thông báo'} aria-expanded={notificationsOpen} onClick={toggleNotifications}><Bell size={18} />{unreadNotifications > 0 && <span className="notification-count">{unreadNotifications > 9 ? '9+' : unreadNotifications}</span>}</button>
+              {notificationsOpen && <section className="notification-panel" aria-label="Thông báo gần đây"><header><div><b>Thông báo</b><small>Hoạt động mới liên quan đến dự án của thầy cô</small></div><button className="icon-button" aria-label="Đóng thông báo" onClick={() => setNotificationsOpen(false)}><X size={16} /></button></header>{!currentUser ? <div className="notification-empty"><p>Đăng nhập để theo dõi hoạt động trên dự án của thầy cô.</p><button className="button button-primary" onClick={() => { setNotificationsOpen(false); setShowLogin(true); }}>Đăng nhập</button></div> : notifications.length ? <div className="notification-list">{notifications.map((item) => <button className="notification-item" key={item.id} onClick={() => openNotification(item)}><span className={`notification-icon notification-${item.activity_type}`}><Bell size={14} /></span><span><b>{notificationText(item)}</b>{item.resource?.title && <strong>{item.resource.title}</strong>}<small>{new Date(item.created_at).toLocaleString('vi-VN', { dateStyle: 'medium', timeStyle: 'short' })}</small></span>{new Date(item.created_at).getTime() > new Date(notificationsReadAt).getTime() && <i aria-label="Chưa đọc" />}</button>)}</div> : <div className="notification-empty"><span><Bell size={20} /></span><b>Chưa có hoạt động mới</b><p>Khi có giáo viên tương tác với dự án, thông báo sẽ xuất hiện ở đây.</p></div>}</section>}
+            </div>
             <button className="icon-button theme-toggle" type="button" aria-label={theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'} title={theme === 'dark' ? 'Giao diện sáng' : 'Giao diện tối'} onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}>{theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}</button>
             <button className="button button-quiet login-button" onClick={() => currentUser ? openProfile(currentUser.id) : setShowLogin(true)}><span className="login-avatar">{currentUser ? teacherProfile?.avatar_url ? <img src={teacherProfile.avatar_url} alt="" /> : (teacherProfile?.full_name || currentUser.email || 'GV').slice(0, 1).toUpperCase() : '?'}</span> {currentUser ? teacherProfile?.full_name || 'Hồ sơ' : 'Đăng nhập'}</button>
             <button className="mobile-menu icon-button" aria-label="Mở menu" aria-expanded={mobileNavOpen} onClick={() => setMobileNavOpen((open) => !open)}><Menu size={20} /></button>
           </div>
         </div>
-        {mobileNavOpen && <nav className="mobile-nav" aria-label="Điều hướng di động">{([['feed', 'Bảng tin'], ['projects', 'Khám phá dự án'], ['talks', 'Diễn đàn bộ môn'], ['ranking', 'Bảng xếp hạng'], ['collections', 'Bộ sưu tập'], ['following', 'Đang theo dõi'], ['saved', 'Dự án đã lưu']] as const).map(([key, label]) => <button className={view === key ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}{currentUser && <button className={view === 'profile' ? 'active' : ''} onClick={() => openProfile(currentUser.id)}>Hồ sơ giáo viên<ChevronRight size={15} /></button>}{teacherProfile?.role === 'admin' && <button className={view === 'admin' ? 'active' : ''} onClick={() => nav('admin')}>Duyệt dự án<ChevronRight size={15} /></button>}</nav>}
+        {mobileNavOpen && <nav className="mobile-nav" aria-label="Điều hướng di động"><button onClick={() => { toggleNotifications(); setMobileNavOpen(false); }}>Thông báo{unreadNotifications > 0 && <span className="mobile-notification-badge">{unreadNotifications} mới</span>}<ChevronRight size={15} /></button>{([['feed', 'Bảng tin'], ['projects', 'Khám phá dự án'], ['talks', 'Diễn đàn bộ môn'], ['ranking', 'Bảng xếp hạng'], ['collections', 'Bộ sưu tập'], ['following', 'Đang theo dõi'], ['saved', 'Dự án đã lưu']] as const).map(([key, label]) => <button className={view === key ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}{currentUser && <button className={view === 'profile' ? 'active' : ''} onClick={() => openProfile(currentUser.id)}>Hồ sơ giáo viên<ChevronRight size={15} /></button>}{teacherProfile?.role === 'admin' && <button className={view === 'admin' ? 'active' : ''} onClick={() => nav('admin')}>Duyệt dự án<ChevronRight size={15} /></button>}</nav>}
       </header>
 
       <main className="page-shell">
@@ -395,7 +450,7 @@ export default function App() {
             </div>
             <div className="community-proof">
               <div className="avatar-stack" aria-hidden="true">{communityProof?.teachers.map((teacher, index) => <span className={`avatar community-avatar avatar-${['mint', 'peach', 'lavender', 'blue', 'yellow'][index]}`} key={teacher.id}>{teacher.avatar ? <img src={teacher.avatar} alt="" /> : teacher.name.split(/\s+/).slice(-2).map((part) => part[0]).join('').toUpperCase()}</span>)}</div>
-              <span className="community-proof-copy">{communityProof ? <><b>{communityProof.members.toLocaleString('vi-VN')}+ thành viên</b><small>{communityProof.projects.toLocaleString('vi-VN')} dự án và học liệu đã chia sẻ</small></> : <><b>Tiểu học · THCS · THPT</b><small>Tài liệu · công cụ · trao đổi chuyên môn</small></>}</span>
+              <span className="community-proof-copy">{communityProof ? <><b>{communityProof.members === 1 ? '1 giáo viên đang cùng xây cộng đồng' : `${communityProof.members.toLocaleString('vi-VN')} giáo viên trong cộng đồng`}</b><small>{communityProof.projects === 0 ? 'Cùng chia sẻ học liệu đầu tiên' : `${communityProof.projects.toLocaleString('vi-VN')} dự án và học liệu đã duyệt`}</small></> : <><b>Tiểu học · THCS · THPT</b><small>Tài liệu · công cụ · trao đổi chuyên môn</small></>}</span>
             </div>
           </div>
           <div className="welcome-art" aria-hidden="true">

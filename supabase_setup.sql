@@ -516,6 +516,7 @@ create policy ratings_delete_self_or_admin on public.resource_ratings for delete
 
 drop policy if exists teacher_activities_read on public.teacher_activities;
 create policy teacher_activities_read on public.teacher_activities for select using (true);
+grant select on public.teacher_activities to anon, authenticated;
 
 drop policy if exists talks_read on public.talks;
 create policy talks_read on public.talks for select using (true);
@@ -855,6 +856,9 @@ begin
     end if;
     if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'talk_reply_likes') then
       alter publication supabase_realtime add table public.talk_reply_likes;
+    end if;
+    if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'teacher_activities') then
+      alter publication supabase_realtime add table public.teacher_activities;
     end if;
   end if;
 end $$;

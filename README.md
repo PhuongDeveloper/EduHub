@@ -21,6 +21,7 @@ Cộng đồng giáo viên Việt Nam để khám phá học liệu, chia sẻ d
 - Ảnh hồ sơ và ảnh bìa ưu tiên ImgBB nếu có cấu hình API key; tài liệu tải lên tiếp tục dùng Supabase Storage.
 - Đăng nhập Google qua Supabase OAuth; cần khai báo Google provider và URL chuyển hướng trong Supabase Dashboard.
 - Diễn đàn có trang chi tiết theo URL, trả lời theo nhánh, thích bình luận và hiện trạng thái đang nhập qua Supabase Realtime.
+- Trung tâm thông báo theo hoạt động dự án: duyệt bài, lượt đánh dấu hữu ích, bình luận và đánh giá; có badge chưa đọc, mở nhanh dự án liên quan và cập nhật qua Realtime.
 - Bảng quản trị có biểu đồ truy cập, tài khoản/role/xác minh, quản lý toàn bộ dự án và hàng chờ, báo cáo cộng đồng.
 - Trang `/admin` chỉ hiển thị với hồ sơ có role `admin`; số liệu truy cập được ghi từ lúc triển khai SQL mới.
 - Logo EduHub được dùng ở thanh điều hướng và favicon; giao diện có chuyển động nhẹ, skeleton tải và hỗ trợ giảm chuyển động.

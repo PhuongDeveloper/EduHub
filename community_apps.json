@@ -60,8 +60,8 @@
       "tipsForTeachers": "Nên kết hợp cùng phiếu học tập để đánh giá mức độ tiếp thu của học sinh."
     },
     "healthStatus": "online",
-    "lastHealthCheckedAt": "2026-10-13T05:19:29.847Z",
-    "responseTimeMs": 340,
+    "lastHealthCheckedAt": "2026-10-13T05:34:29.852Z",
+    "responseTimeMs": 343,
     "emailOutreachStatus": "sent",
     "outreachEmailContent": "",
     "tags": [
@@ -146,8 +146,8 @@
       "tipsForTeachers": "Giáo viên Ngữ văn có thể dùng VanMaster để giao đề luyện viết đoạn văn 200 chữ hoặc đề đọc hiểu định kỳ. Nên tận dụng tính năng chấm barem chi tiết của hệ thống để giảm tải thời gian chấm bài thủ công mà học sinh vẫn nhận được nhận xét tức thì."
     },
     "healthStatus": "online",
-    "lastHealthCheckedAt": "2026-10-13T05:19:29.847Z",
-    "responseTimeMs": 242,
+    "lastHealthCheckedAt": "2026-10-13T05:34:29.852Z",
+    "responseTimeMs": 267,
     "emailOutreachStatus": "sent",
     "outreachEmailContent": "",
     "tags": [
@@ -239,8 +239,8 @@
       "tipsForTeachers": "Nên đặt 1 câu hỏi gợi mở ngay trước khi chiếu video để học sinh tập trung quan sát."
     },
     "healthStatus": "online",
-    "lastHealthCheckedAt": "2026-10-13T05:19:29.847Z",
-    "responseTimeMs": 227
+    "lastHealthCheckedAt": "2026-10-13T05:34:29.852Z",
+    "responseTimeMs": 181
   },
   {
     "id": "app-magicschool-ai",
@@ -327,8 +327,8 @@
       "tipsForTeachers": "Nên kết hợp cùng công cụ tạo Rubric để có sẵn thang điểm đánh giá sản phẩm học tập của học sinh."
     },
     "healthStatus": "online",
-    "lastHealthCheckedAt": "2026-10-13T05:19:29.847Z",
-    "responseTimeMs": 349
+    "lastHealthCheckedAt": "2026-10-13T05:34:29.852Z",
+    "responseTimeMs": 438
   },
   {
     "id": "app-phet-simulations",
@@ -417,8 +417,8 @@
       "tipsForTeachers": "Nên tải trước bản HTML5 về máy tính để phòng ngừa trường hợp mạng Internet của trường bị gián đoạn trong giờ dạy."
     },
     "healthStatus": "online",
-    "lastHealthCheckedAt": "2026-10-13T05:19:29.847Z",
-    "responseTimeMs": 833
+    "lastHealthCheckedAt": "2026-10-13T05:34:29.852Z",
+    "responseTimeMs": 230
   },
   {
     "id": "app-geogebra-math",
@@ -504,7 +504,7 @@
       "tipsForTeachers": "Nên sử dụng thanh trượt (Slider) để biểu diễn tham số m trong khảo sát hàm số, học sinh sẽ nhìn thấy ngay sự biến thiên trực quan."
     },
     "healthStatus": "online",
-    "lastHealthCheckedAt": "2026-10-13T05:19:29.847Z",
-    "responseTimeMs": 70
+    "lastHealthCheckedAt": "2026-10-13T05:34:29.852Z",
+    "responseTimeMs": 80
   }
 ]

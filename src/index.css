@@ -447,3 +447,36 @@ h1, h2, h3, h4, .brand-word, .primary-nav, .button, .section-kicker { font-famil
 .project-title { font-size: 15px; line-height: 1.45; }
 .project-description { font-size: 13px; line-height: 1.65; }
 @media (max-width: 650px) { .top-actions { gap: 5px; } .theme-toggle { width: 34px; height: 34px; } }
+
+/* Compact activity center and strict avatar clipping. */
+.login-avatar { width: 30px; height: 30px; flex: 0 0 30px; overflow: hidden; position: relative; isolation: isolate; line-height: 0; }
+.login-avatar img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; max-width: none; max-height: none; border-radius: inherit; object-fit: cover; object-position: center; }
+.community-avatar { overflow: hidden; position: relative; isolation: isolate; line-height: 1; }
+.community-avatar img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; max-width: none; max-height: none; object-fit: cover; object-position: center; }
+.community-proof-copy small { color: rgba(245, 241, 233, .84); }
+.notification-wrap { position: relative; display: grid; place-items: center; }
+.notification-button { position: relative; }
+.notification-count { position: absolute; top: -3px; right: -3px; min-width: 17px; height: 17px; display: grid; place-items: center; padding: 0 4px; border: 2px solid var(--canvas); border-radius: 999px; background: #ed6257; color: #fff; font: 700 9px 'Manrope', sans-serif; line-height: 1; }
+.mobile-notification-badge { margin-left: auto; margin-right: 7px; padding: 3px 7px; border-radius: 20px; background: #ed6257; color: #fff; font-size: 10px; font-weight: 700; }
+.notification-panel { position: absolute; z-index: 60; top: calc(100% + 13px); right: -44px; width: min(390px, calc(100vw - 24px)); max-height: min(540px, calc(100vh - 100px)); overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 70px rgba(0, 0, 0, .25); animation: card-enter .18s ease both; }
+.notification-panel > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 16px 13px; border-bottom: 1px solid var(--line); }
+.notification-panel > header > div { display: grid; gap: 4px; }
+.notification-panel > header b { color: var(--ink); font: 750 15px 'Manrope', 'Be Vietnam Pro', sans-serif; }
+.notification-panel > header small { color: var(--muted); font-size: 11px; line-height: 1.45; }
+.notification-list { max-height: 440px; overflow: auto; padding: 5px 8px; }
+.notification-item { width: 100%; position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr) 7px; align-items: start; gap: 10px; padding: 11px 9px; border: 0; border-radius: 10px; background: transparent; text-align: left; }
+.notification-item:hover { background: color-mix(in srgb, var(--canvas) 80%, var(--paper)); }
+.notification-icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: color-mix(in srgb, var(--green) 15%, var(--paper)); color: var(--green-dark); }
+.notification-project_approved { background: color-mix(in srgb, #40a56c 16%, var(--paper)); color: #25844f; }
+.notification-item > span:nth-child(2) { display: grid; gap: 4px; min-width: 0; }
+.notification-item b { color: var(--ink); font-size: 12px; font-weight: 650; line-height: 1.45; }
+.notification-item strong { overflow: hidden; color: var(--muted); font-size: 11px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.notification-item small { color: var(--muted); font-size: 10px; }
+.notification-item > i { width: 7px; height: 7px; margin-top: 6px; border-radius: 50%; background: #ed6257; }
+.notification-empty { display: grid; justify-items: center; gap: 9px; padding: 28px 22px; text-align: center; }
+.notification-empty > span { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 13px; background: color-mix(in srgb, var(--green) 13%, var(--paper)); color: var(--green-dark); }
+.notification-empty b { color: var(--ink); font: 700 13px 'Manrope', sans-serif; }
+.notification-empty p { max-width: 270px; margin: 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
+@media (max-width: 650px) {
+  .notification-panel { position: fixed; top: 62px; left: 12px; right: 12px; width: auto; max-height: calc(100vh - 76px); }
+}
