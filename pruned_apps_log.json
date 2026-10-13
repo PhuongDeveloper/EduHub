@@ -1,0 +1,98 @@
+[
+  {
+    "id": "app-canva-education",
+    "title": "Canva for Education (Thiết kế Bài giảng & Học liệu Sư phạm)",
+    "platformUrl": "https://www.canva.com/vi_vn/giao-duc/",
+    "author": "Canva Global & Ban Điều phối Giáo Dục Việt Nam",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-13T03:34:29.770Z"
+  },
+  {
+    "id": "app-classpoint-ai",
+    "title": "ClassPoint AI (Tương tác trực tiếp trên PowerPoint)",
+    "platformUrl": "https://www.classpoint.io/",
+    "author": "Giáo Viên Đổi Mới & Inknoe",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-12T12:45:06.742Z"
+  },
+  {
+    "id": "app-submit-1791084693463",
+    "title": "Hỗ trợ dạy hoặc học bài về FLIP_FLOP D",
+    "platformUrl": "https://gemini.google.com/share/2081325a44de",
+    "author": "Nguyễn Chí Thanh_PTDTNT ATK Sơn Dương",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-12T01:00:06.506Z"
+  },
+  {
+    "id": "app-submit-1791084608579",
+    "title": "Hỗ trợ học bài Máy phát điện xoay chiều Ba pha",
+    "platformUrl": "https://m-ph-ng-m-y-ph-t-i-n-xoay-chi-u-3-pha.ai.studio/",
+    "author": "Nguyễn Chí Thanh_PTDTNT ATK Sơn Dương",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-12T01:00:06.506Z"
+  },
+  {
+    "id": "app-submit-1791084482603",
+    "title": "AI Mentor STEM THCS",
+    "platformUrl": "https://ai-mentor-stem-thcs.ai.studio",
+    "author": "Nguyễn Chí Thanh_PTDTNT ATK Sơn Dương",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-12T01:00:06.506Z"
+  },
+  {
+    "id": "app-submit-1791084473720",
+    "title": "AI Mentor STEM THCS",
+    "platformUrl": "https://ai-mentor-stem-thcs.ai.studio",
+    "author": "Nguyễn Chí Thanh_PTDTNT ATK Sơn Dương",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-12T01:00:06.506Z"
+  },
+  {
+    "id": "app-vn-01",
+    "title": "Trợ lý soạn KHBD 5512 AI",
+    "platformUrl": "https://khbd5512.eduviet.community",
+    "author": "Thầy Nguyễn Văn Hoà và CLB Giáo viên Sáng tạo Hà Nội",
+    "reason": "Đã tự động gỡ bỏ: Đường dẫn không tồn tại / Không thể phân giải DNS (ERR_NAME_NOT_RESOLVED). Yêu cầu thanh lọc để bảo vệ trải nghiệm giáo viên.",
+    "removedAt": "2026-10-03T16:25:00.000Z"
+  },
+  {
+    "id": "app-vn-02",
+    "title": "Ma trận và bảng đặc tả đề kiểm tra GDPT 2018",
+    "platformUrl": "https://matrandac-ta.vietmath.dev",
+    "author": "Cô Trần Thị Mai Phương và Nhóm giáo viên Toán THPT TP.HCM",
+    "reason": "Đã tự động gỡ bỏ: Đường dẫn không truy cập được (Mã lỗi DNS). Hệ thống tự động thanh lọc.",
+    "removedAt": "2026-10-03T16:25:00.000Z"
+  },
+  {
+    "id": "app-vn-03",
+    "title": "VietEdu Slide và học liệu tương tác",
+    "platformUrl": "https://vieteduslide.web.app",
+    "author": "Nhóm cựu sinh viên Sư phạm Kỹ thuật Đà Nẵng",
+    "reason": "Mã lỗi HTTP 404 - Liên kết bị xóa bỏ hoặc máy chủ không tồn tại",
+    "removedAt": "2026-10-03T16:11:26.901Z"
+  },
+  {
+    "id": "app-vn-04",
+    "title": "Trình viết lời nhận xét học bạ nhân văn (TT 27 & TT 22)",
+    "platformUrl": "https://nhanxet-hocba.giaovien.vn",
+    "author": "Cô Đặng Thu Hà (Trường Tiểu học Chu Văn An, Hải Phòng)",
+    "reason": "Đã tự động gỡ bỏ: Đường dẫn không hoạt động (Mã lỗi kết nối máy chủ không phản hồi).",
+    "removedAt": "2026-10-03T16:25:00.000Z"
+  },
+  {
+    "id": "app-vn-05",
+    "title": "Soạn kế hoạch giáo dục và biên bản sinh hoạt chuyên môn",
+    "platformUrl": "https://sinhoatchuyenmon.edu-share.org",
+    "author": "Thầy Bùi Quang Vinh (Sở GD&ĐT Nghệ An)",
+    "reason": "Đã tự động gỡ bỏ: Máy chủ ngoại tuyến, không thể kết nối.",
+    "removedAt": "2026-10-03T16:25:00.000Z"
+  },
+  {
+    "id": "app-vn-06",
+    "title": "STEM Lab Simulator - Mô phỏng thí nghiệm ảo",
+    "platformUrl": "https://stem-sim.hnue-lab.vn",
+    "author": "Nhóm nghiên cứu giáo dục STEM Đại học Sư phạm Hà Nội",
+    "reason": "Đã tự động gỡ bỏ: Tên miền thử nghiệm đã hết hạn lưu trữ.",
+    "removedAt": "2026-10-03T16:25:00.000Z"
+  }
+]

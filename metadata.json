@@ -1,0 +1,6 @@
+{
+  "name": "EduHub - Cộng đồng giáo viên chuyển đổi số Việt Nam",
+  "description": "Nền tảng chia sẻ học liệu số, Slide PowerPoint, KHBD 5512, Đề thi và Công cụ giáo dục sáng tạo do giáo viên Việt Nam xây dựng theo chuẩn GDPT 2018.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

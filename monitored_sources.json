@@ -1,0 +1,101 @@
+[
+  {
+    "id": "src-fb-01",
+    "name": "Cộng đồng Giáo viên 4.0 - Ứng dụng AI dạy học",
+    "category": "facebook_group",
+    "url": "https://facebook.com/groups/giaovien4.0.ai",
+    "membersOrVisitors": "145.000+ giáo viên",
+    "description": "Diễn đàn chia sẻ prompt dạy học, công cụ AI tự tạo, phần mềm tạo đề và video bài giảng của giáo viên khắp 3 miền.",
+    "scanFrequency": "Mỗi 6 giờ (Chỉ mục công khai)",
+    "discoveredAppsCount": 8,
+    "status": "active"
+  },
+  {
+    "id": "src-fb-02",
+    "name": "CLB Giáo viên Sáng tạo Việt Nam (VCE)",
+    "category": "facebook_group",
+    "url": "https://facebook.com/groups/vce.vietnam",
+    "membersOrVisitors": "98.000+ thành viên",
+    "description": "Nhóm tập hợp các dự án đổi mới phương pháp giảng dạy, dạy học tích hợp STEM và học liệu số tương tác.",
+    "scanFrequency": "Mỗi 12 giờ (Chỉ mục công khai)",
+    "discoveredAppsCount": 6,
+    "status": "active"
+  },
+  {
+    "id": "src-violet-01",
+    "name": "Thư viện Giáo dục & Bài giảng Violet.vn",
+    "category": "forum_violet",
+    "url": "https://violet.vn",
+    "membersOrVisitors": "1.200.000+ giáo viên",
+    "description": "Cổng thông tin và thư viện bài giảng điện tử, giáo án theo Công văn 5512 và đề thi lớn nhất Việt Nam.",
+    "scanFrequency": "Mỗi ngày (Hệ thống mở)",
+    "discoveredAppsCount": 15,
+    "status": "active"
+  },
+  {
+    "id": "src-forum-02",
+    "name": "Diễn đàn Giáo viên GDPT 2018 Toàn quốc",
+    "category": "forum_violet",
+    "url": "https://diendan.gdpt2018.edu.vn",
+    "membersOrVisitors": "65.000+ thành viên",
+    "description": "Thảo luận chuyên sâu về chương trình GDPT 2018, kinh nghiệm dạy 3 bộ SGK (Cánh Diều, Kết nối tri thức, Chân trời sáng tạo).",
+    "scanFrequency": "Mỗi ngày (Công khai)",
+    "discoveredAppsCount": 5,
+    "status": "active"
+  },
+  {
+    "id": "src-hf-01",
+    "name": "Hugging Face Spaces - Cộng đồng EdTech Việt Nam",
+    "category": "open_repo",
+    "url": "https://huggingface.co/spaces?sort=trending&search=vietnamese+education",
+    "membersOrVisitors": "Hàng trăm mô hình AI giáo dục",
+    "description": "Kho chứa các ứng dụng AI NLP thuần Việt do kỹ sư và thầy cô tự host (tóm tắt bài đọc, sinh câu hỏi đọc hiểu, chấm trắc nghiệm).",
+    "scanFrequency": "Mỗi 12 giờ (API mở)",
+    "discoveredAppsCount": 11,
+    "status": "active"
+  },
+  {
+    "id": "src-git-01",
+    "name": "GitHub Vietnam Education - Open Source EdTech",
+    "category": "open_repo",
+    "url": "https://github.com/topics/vietnam-education",
+    "membersOrVisitors": "Kho mã nguồn mở sư phạm",
+    "description": "Các công cụ mã nguồn mở của cộng đồng lập trình viên giáo dục Việt Nam (công cụ chuyển đổi văn bản sang âm thanh, sinh ma trận đề thi).",
+    "scanFrequency": "Mỗi 24 giờ (Git API)",
+    "discoveredAppsCount": 9,
+    "status": "active"
+  },
+  {
+    "id": "src-bgd-01",
+    "name": "Kho bài giảng e-Learning & Học liệu số Bộ GD&ĐT",
+    "category": "edtech_portal",
+    "url": "https://elearning.moet.edu.vn",
+    "membersOrVisitors": "Hàng triệu lượt truy cập",
+    "description": "Kho tài nguyên chính thống của ngành giáo dục gồm hàng chục nghìn bài giảng điện tử đạt giải quốc gia.",
+    "scanFrequency": "Mỗi tuần (Dữ liệu mở)",
+    "discoveredAppsCount": 14,
+    "status": "active"
+  },
+  {
+    "id": "src-olm-01",
+    "name": "Cổng Học liệu số & Luyện tập OLM / Hocmai Edu",
+    "category": "edtech_portal",
+    "url": "https://olm.vn",
+    "membersOrVisitors": "Hàng trăm nghìn trường học",
+    "description": "Hệ thống hỗ trợ quản lý học tập, ngân hàng câu hỏi phân hóa theo chuẩn Thông tư 22 và Thông tư 27.",
+    "scanFrequency": "Mỗi tuần (Công khai)",
+    "discoveredAppsCount": 7,
+    "status": "active"
+  },
+  {
+    "id": "src-yt-01",
+    "name": "Kênh Công Nghệ Giáo Dục Số (YouTube Edu VN)",
+    "category": "youtube_edu",
+    "url": "https://youtube.com/results?search_query=ung+dung+ai+trong+day+hoc+viet+nam",
+    "membersOrVisitors": "300.000+ lượt xem",
+    "description": "Kênh chuyên hướng dẫn thầy cô tạo ứng dụng AI, làm video bài giảng ngắn và tự động hóa công việc sư phạm.",
+    "scanFrequency": "Mỗi ngày (Chỉ mục video)",
+    "discoveredAppsCount": 4,
+    "status": "active"
+  }
+]

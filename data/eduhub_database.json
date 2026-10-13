@@ -1,0 +1,414 @@
+{
+  "teachers": [
+    {
+      "id": "teacher-1",
+      "name": "Thầy Nguyễn Chí Thanh",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "schoolName": "PTDTNT ATK Sơn Dương",
+      "province": "Tuyên Quang",
+      "subjectSpecialty": "Tin học & KHTN",
+      "eduPoints": 2455,
+      "voteWeight": 3,
+      "badges": [
+        "Giáo viên Tiên phong GDPT 2018",
+        "Nhà phát triển AI Sư phạm"
+      ],
+      "resourcesCount": 6,
+      "joinedAt": "2025-08-15"
+    },
+    {
+      "id": "teacher-2",
+      "name": "Cô Trần Mai Lan",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+      "schoolName": "THCS Thăng Long",
+      "province": "Hà Nội",
+      "subjectSpecialty": "Ngữ văn",
+      "eduPoints": 1980,
+      "voteWeight": 2,
+      "badges": [
+        "Cây bút KHBD Vàng",
+        "Chuyên gia Đổi mới Đánh giá"
+      ],
+      "resourcesCount": 8,
+      "joinedAt": "2025-09-01"
+    },
+    {
+      "id": "teacher-3",
+      "name": "Thầy Lê Hoàng Long",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      "schoolName": "THPT Chuyên Lê Hồng Phong",
+      "province": "TP. Hồ Chí Minh",
+      "subjectSpecialty": "Toán học",
+      "eduPoints": 1725,
+      "voteWeight": 2,
+      "badges": [
+        "Bậc thầy GeoGebra",
+        "Tác giả Ma trận Đề chuẩn"
+      ],
+      "resourcesCount": 5,
+      "joinedAt": "2025-10-10"
+    },
+    {
+      "id": "teacher-4",
+      "name": "Cô Vũ Bích Ngọc",
+      "avatar": "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=150&auto=format&fit=crop&q=80",
+      "schoolName": "Tiểu học Lê Quý Đôn",
+      "province": "Đà Nẵng",
+      "subjectSpecialty": "Tiểu học & Tiếng Anh",
+      "eduPoints": 1450,
+      "voteWeight": 2,
+      "badges": [
+        "Sáng tạo Game Bài giảng",
+        "Giáo viên Chủ nhiệm Tiêu biểu"
+      ],
+      "resourcesCount": 7,
+      "joinedAt": "2025-11-05"
+    }
+  ],
+  "resources": [
+    {
+      "id": "res-1",
+      "title": "Bộ Slide tương tác & Video AI Khởi động 45s môn KHTN 7",
+      "tagline": "Tình huống có vấn đề mở đầu tiết học, bám sát 4 hoạt động Công văn 5512",
+      "description": "KẾ HOẠCH BÀI DẠY VÀ SLIDE TƯƠNG TÁC\nI. Mục tiêu cần đạt:\n- Nêu được khái niệm và vai trò quang hợp ở thực vật.\n- Nhận biết các yếu tố ánh sáng, nước, khí CO2.\nII. Tiến trình 4 hoạt động:\n- Hoạt động 1: Khởi động qua video ngắn 45 giây.\n- Hoạt động 2: Hình thành kiến thức qua phiếu học tập.\n- Hoạt động 3: Luyện tập giải quyết tình huống.\n- Hoạt động 4: Vận dụng trồng cây xanh trong lớp học.",
+      "resourceType": "powerpoint",
+      "fileFormat": "pptx",
+      "fileSize": "45.2 MB",
+      "downloadUrl": "https://drive.google.com/drive/folders/sample-khtn7",
+      "schoolLevels": [
+        "thcs"
+      ],
+      "gradeLevels": [
+        "Lớp 7"
+      ],
+      "subjects": [
+        "KHTN"
+      ],
+      "curriculumBooks": [
+        "KetNoi",
+        "CanhDieu"
+      ],
+      "author": {
+        "id": "teacher-1",
+        "name": "Thầy Nguyễn Chí Thanh",
+        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+        "schoolName": "PTDTNT ATK Sơn Dương",
+        "province": "Tuyên Quang",
+        "subjectSpecialty": "Tin học & KHTN",
+        "eduPoints": 2450,
+        "voteWeight": 3,
+        "badges": [
+          "Giáo viên Tiên phong GDPT 2018"
+        ],
+        "resourcesCount": 6,
+        "joinedAt": "2025-08-15"
+      },
+      "upvotesCount": 142,
+      "viewsCount": 1890,
+      "downloadsCount": 520,
+      "ratingAverage": 5,
+      "ratingCount": 38,
+      "gdpt2018FitScore": 5,
+      "tags": [
+        "KHTN 7",
+        "Slide PowerPoint",
+        "Khởi động 5512"
+      ],
+      "createdAt": "2026-09-15T08:30:00Z"
+    },
+    {
+      "id": "res-2",
+      "title": "Phần mềm Trộn đề & Xuất ma trận trắc nghiệm định dạng mới BGD&ĐT",
+      "tagline": "Hỗ trợ trắc nghiệm Đúng/Sai 4 ý, Trả lời ngắn, Nhiều lựa chọn (Offline & Web)",
+      "description": "CÔNG CỤ XỬ LÝ MA TRẬN & TRỘN ĐỀ:\n- Tự động tạo ma trận và bảng đặc tả theo Thông tư 22.\n- Hỗ trợ đầy đủ 3 phần cấu trúc định dạng mới nhất của Bộ Giáo dục.\n- Xuất file Word (.docx) sạch đẹp, không lỗi font MathType.",
+      "resourceType": "tool_software",
+      "fileFormat": "zip",
+      "fileSize": "12.8 MB",
+      "downloadUrl": "https://github.com/edu-vietnam/tron-de-dinh-dang-moi",
+      "schoolLevels": [
+        "thcs",
+        "thpt"
+      ],
+      "gradeLevels": [
+        "Lớp 9",
+        "Lớp 10",
+        "Lớp 11",
+        "Lớp 12"
+      ],
+      "subjects": [
+        "Toán",
+        "Vật lí",
+        "Hóa học"
+      ],
+      "curriculumBooks": [
+        "DungChung"
+      ],
+      "author": {
+        "id": "teacher-3",
+        "name": "Thầy Lê Hoàng Long",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+        "schoolName": "THPT Chuyên Lê Hồng Phong",
+        "province": "TP. Hồ Chí Minh",
+        "subjectSpecialty": "Toán học",
+        "eduPoints": 1720,
+        "voteWeight": 2,
+        "badges": [
+          "Tác giả Ma trận Đề chuẩn"
+        ],
+        "resourcesCount": 5,
+        "joinedAt": "2025-10-10"
+      },
+      "upvotesCount": 216,
+      "viewsCount": 3420,
+      "downloadsCount": 1150,
+      "ratingAverage": 4.9,
+      "ratingCount": 52,
+      "gdpt2018FitScore": 5,
+      "tags": [
+        "Tool Trộn Đề",
+        "Định Dạng Mới BGD",
+        "Toán 10-12"
+      ],
+      "createdAt": "2026-09-02T14:20:00Z"
+    },
+    {
+      "id": "res-3",
+      "title": "Kế hoạch bài dạy (KHBD 5512) trọn bộ Ngữ văn 8: Đọc hiểu ngoài SGK",
+      "tagline": "Hồ sơ bài dạy phát triển năng lực thẩm mỹ, kèm 6 phiếu học tập phân hóa",
+      "description": "TRỌN BỘ KHBD 5512 NGỮ VĂN 8:\n- Chủ đề Đọc hiểu văn bản ngoài sách giáo khoa.\n- Hệ thống câu hỏi 3 mức độ: Nhận biết, Thông hiểu, Vận dụng.\n- Phiếu học tập in sẵn cho học sinh hoạt động nhóm.",
+      "resourceType": "khbd_5512",
+      "fileFormat": "docx",
+      "fileSize": "8.4 MB",
+      "downloadUrl": "https://drive.google.com/drive/folders/sample-van8-5512",
+      "schoolLevels": [
+        "thcs"
+      ],
+      "gradeLevels": [
+        "Lớp 8"
+      ],
+      "subjects": [
+        "Ngữ văn"
+      ],
+      "curriculumBooks": [
+        "KetNoi",
+        "ChanTroi"
+      ],
+      "author": {
+        "id": "teacher-2",
+        "name": "Cô Trần Mai Lan",
+        "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+        "schoolName": "THCS Thăng Long",
+        "province": "Hà Nội",
+        "subjectSpecialty": "Ngữ văn",
+        "eduPoints": 1980,
+        "voteWeight": 2,
+        "badges": [
+          "Cây bút KHBD Vàng"
+        ],
+        "resourcesCount": 8,
+        "joinedAt": "2025-09-01"
+      },
+      "upvotesCount": 98,
+      "viewsCount": 1450,
+      "downloadsCount": 680,
+      "ratingAverage": 4.9,
+      "ratingCount": 27,
+      "gdpt2018FitScore": 4.9,
+      "tags": [
+        "KHBD 5512",
+        "Ngữ văn 8",
+        "Đọc hiểu mở"
+      ],
+      "createdAt": "2026-09-18T11:00:00Z"
+    },
+    {
+      "id": "res-4",
+      "title": "Game tương tác Vòng quanh Việt Nam ôn tập Lịch sử & Địa lí",
+      "tagline": "Template PowerPoint có âm thanh và bộ đếm giờ, click chuột lật mở ô số",
+      "description": "SLIDE GAME TƯƠNG TÁC:\n- Bản đồ 7 vùng kinh tế sinh thái Việt Nam.\n- 35 câu hỏi trắc nghiệm kèm âm thanh cổ vũ.\n- Thích hợp cho tiết Ôn tập và hoạt động nhóm.",
+      "resourceType": "game_interactive",
+      "fileFormat": "pptx",
+      "fileSize": "32.1 MB",
+      "downloadUrl": "https://drive.google.com/drive/folders/sample-game-geo",
+      "schoolLevels": [
+        "tieuhoc",
+        "thcs"
+      ],
+      "gradeLevels": [
+        "Lớp 5",
+        "Lớp 6"
+      ],
+      "subjects": [
+        "Lịch sử & Địa lí"
+      ],
+      "curriculumBooks": [
+        "CanhDieu",
+        "KetNoi"
+      ],
+      "author": {
+        "id": "teacher-4",
+        "name": "Cô Vũ Bích Ngọc",
+        "avatar": "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=150&auto=format&fit=crop&q=80",
+        "schoolName": "Tiểu học Lê Quý Đôn",
+        "province": "Đà Nẵng",
+        "subjectSpecialty": "Tiểu học & Tiếng Anh",
+        "eduPoints": 1450,
+        "voteWeight": 2,
+        "badges": [
+          "Sáng tạo Game Bài giảng"
+        ],
+        "resourcesCount": 7,
+        "joinedAt": "2025-11-05"
+      },
+      "upvotesCount": 167,
+      "viewsCount": 2210,
+      "downloadsCount": 890,
+      "ratingAverage": 5,
+      "ratingCount": 44,
+      "gdpt2018FitScore": 4.8,
+      "tags": [
+        "Game PowerPoint",
+        "Lịch sử & Địa lí",
+        "Tương tác lớp"
+      ],
+      "createdAt": "2026-08-25T07:45:00Z"
+    },
+    {
+      "id": "res-5",
+      "title": "Bảng tính Excel tự động sinh lời nhận xét học bạ Thông tư 22",
+      "tagline": "Gõ điểm tự động phân loại Đạt / Tốt và sinh nhận xét cá nhân hóa theo năng lực",
+      "description": "CÔNG CỤ HỖ TRỢ XỬ LÝ SỔ ĐIỂM:\n- Tự động sinh nhận xét phong phú theo từng học sinh.\n- Tương thích vnEdu, SMAS, CSDL ngành không bị lệch cột.",
+      "resourceType": "tool_software",
+      "fileFormat": "xlsx",
+      "fileSize": "3.1 MB",
+      "downloadUrl": "https://github.com/edu-vietnam/excel-thong-tu-22",
+      "schoolLevels": [
+        "thcs",
+        "thpt"
+      ],
+      "gradeLevels": [
+        "Lớp 6",
+        "Lớp 7",
+        "Lớp 8",
+        "Lớp 9",
+        "Lớp 10"
+      ],
+      "subjects": [
+        "Toán",
+        "Ngữ văn",
+        "Tiếng Anh"
+      ],
+      "curriculumBooks": [
+        "DungChung"
+      ],
+      "author": {
+        "id": "teacher-1",
+        "name": "Thầy Nguyễn Chí Thanh",
+        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+        "schoolName": "PTDTNT ATK Sơn Dương",
+        "province": "Tuyên Quang",
+        "subjectSpecialty": "Tin học & KHTN",
+        "eduPoints": 2450,
+        "voteWeight": 3,
+        "badges": [
+          "Giáo viên Tiên phong GDPT 2018"
+        ],
+        "resourcesCount": 6,
+        "joinedAt": "2025-08-15"
+      },
+      "upvotesCount": 189,
+      "viewsCount": 2900,
+      "downloadsCount": 1320,
+      "ratingAverage": 5,
+      "ratingCount": 61,
+      "gdpt2018FitScore": 5,
+      "tags": [
+        "Excel Nhận Xét",
+        "Thông tư 22",
+        "Sổ điểm"
+      ],
+      "createdAt": "2026-09-08T15:10:00Z"
+    }
+  ],
+  "talks": [
+    {
+      "id": "talk-1791737572515",
+      "subjectChannel": "khtn",
+      "title": "Kinh nghiệm dạy STEM môn KHTN 7",
+      "content": "Thầy cô cho em xin kinh nghiệm triển khai chủ đề STEM quang hợp ở THCS ạ.",
+      "author": {
+        "name": "Cô Đỗ Thị Mai",
+        "schoolName": "THCS Giảng Võ, Hà Nội"
+      },
+      "repliesCount": 1,
+      "upvotesCount": 1,
+      "createdAt": "2026-10-11T16:52:52.515Z"
+    },
+    {
+      "id": "talk-1",
+      "subjectChannel": "toan",
+      "title": "Cách dạy chủ đề Xác suất thống kê Lớp 10 sao cho học sinh không bị khô khan?",
+      "content": "Kính chào quý thầy cô toán học! Trong chương trình GDPT 2018 lớp 10, phần Thống kê và Xác suất có nhiều bài tập gắn liền thực tế nhưng học sinh trường em thường lúng túng khi xác định không gian mẫu. Thầy cô có trò chơi nhỏ hoặc hoạt động trải nghiệm nào hiệu quả xin chia sẻ kinh nghiệm giúp em với ạ!",
+      "author": {
+        "id": "teacher-3",
+        "name": "Thầy Lê Hoàng Long",
+        "schoolName": "THPT Chuyên Lê Hồng Phong",
+        "province": "TP. Hồ Chí Minh"
+      },
+      "repliesCount": 2,
+      "upvotesCount": 45,
+      "createdAt": "2026-10-08T10:15:00Z"
+    },
+    {
+      "id": "talk-2",
+      "subjectChannel": "van",
+      "title": "Kinh nghiệm chọn ngữ liệu đọc hiểu ngoài SGK môn Ngữ văn tránh tranh cãi",
+      "content": "Chào các thầy cô tổ Văn! Khi ra đề kiểm tra định kỳ có văn bản ngoài sách, em thường băn khoăn về tiêu chí chọn đoạn trích vừa đảm bảo tính giáo dục vừa vừa sức học sinh. Xin các thầy cô chia sẻ thêm nguồn ngữ liệu uy tín.",
+      "author": {
+        "id": "teacher-2",
+        "name": "Cô Trần Mai Lan",
+        "schoolName": "THCS Thăng Long",
+        "province": "Hà Nội"
+      },
+      "repliesCount": 1,
+      "upvotesCount": 67,
+      "createdAt": "2026-10-09T14:40:00Z"
+    }
+  ],
+  "talkReplies": {
+    "talk-1": [
+      {
+        "id": "rep-1",
+        "author": "Cô Đỗ Thị Hạnh",
+        "school": "THPT Yên Hòa, Hà Nội",
+        "content": "Trường em chia nhóm học sinh tung xúc xắc 50 lần rồi vẽ biểu đồ Excel, học sinh hiểu bản chất xác suất thực nghiệm ngay!",
+        "createdAt": "Hôm qua"
+      },
+      {
+        "id": "rep-2",
+        "author": "Thầy Vũ Văn Khiêm",
+        "school": "THPT Ngô Sĩ Liên, Bắc Giang",
+        "content": "Thầy có thể dùng app GeoGebra mô phỏng biến cố ngẫu nhiên, cho học sinh bấm nút chạy thử trên điện thoại rất cuốn.",
+        "createdAt": "2 ngày trước"
+      }
+    ],
+    "talk-2": [
+      {
+        "id": "rep-3",
+        "author": "Thầy Nguyễn Trọng Hoàng",
+        "school": "THCS Lê Quý Đôn, TP.HCM",
+        "content": "Cô có thể dùng các tuyển tập tản văn của Nguyễn Ngọc Tư hoặc Hoàng Phủ Ngọc Tường, ngữ liệu rất đẹp và an toàn sư phạm.",
+        "createdAt": "Hôm qua"
+      }
+    ],
+    "talk-1791737572515": [
+      {
+        "id": "rep-1791737576229",
+        "author": "Thầy Nguyễn Chí Thanh",
+        "school": "PTDTNT ATK Sơn Dương",
+        "content": "Chào cô Mai, cô có thể cho học sinh làm mô hình lá cây bằng bìa tái chế và gắn đèn LED để mô phỏng ánh sáng mặt trời nhé!",
+        "createdAt": "Vừa xong"
+      }
+    ]
+  }
+}

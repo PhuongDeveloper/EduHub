@@ -1,0 +1,510 @@
+[
+  {
+    "id": "app-submit-1791046638403",
+    "title": "Chiếc nón kì diệu_quay chọn học sinh",
+    "author": "Nguyễn Chí Thanh, Trường PTDTNT ATK Sơn Dương",
+    "authorContact": "ncthanh0383@tuyenquang.edu.vn",
+    "sourceType": "vietnam_created",
+    "platformUrl": "https://chi-c-n-n-k-di-u-v-ng-quay-h-c-sinh.ai.studio",
+    "gradeLevels": [
+      "Toàn cấp",
+      "Tiểu học",
+      "THCS",
+      "THPT"
+    ],
+    "subjects": [
+      "Đa môn học"
+    ],
+    "purpose": [
+      "Học liệu số"
+    ],
+    "description": "Vòng quay ngẫu nhiên chọn học sinh trả lời câu hỏi, có thể thêm danh sách học sinh hoặc câu hỏi để kiểm tra",
+    "detailedReview": "Ứng dụng do cộng đồng giáo viên chia sẻ, cam kết 100% miễn phí và phục vụ mục đích sư phạm phi lợi nhuận.",
+    "gdpt2018FitScore": 4.9,
+    "safetyScore": 5,
+    "ratingCount": 1,
+    "ratingAverage": 5,
+    "isFreeVerified": true,
+    "hasNoAdsVerified": true,
+    "licenseType": "FreeNonCommercial",
+    "copyrightVerified": true,
+    "copyrightNotes": "Tác giả cấp phép miễn phí phi thương mại phục vụ giáo viên Việt Nam.",
+    "freeGuarantee": "Cam kết 100% miễn phí trọn đời cho giáo viên và học sinh.",
+    "copyrightAudit": {
+      "isFreeConfirmed": true,
+      "licenseName": "Giấy phép Phi thương mại dành cho Giáo viên",
+      "authorDeclaration": "Tác giả cấp phép miễn phí phi thương mại phục vụ giáo viên Việt Nam.",
+      "noHiddenPaywall": true,
+      "noCommercialAds": true,
+      "riskAssessment": "safe_clean",
+      "watermarkFree": true,
+      "offlineUsable": false
+    },
+    "tutorialArticles": [
+      {
+        "title": "Hướng dẫn áp dụng Chiếc nón kì diệu_quay chọn học sinh trong tiết dạy GDPT 2018",
+        "source": "Cộng đồng Giáo viên Sáng tạo Việt Nam",
+        "url": "https://chi-c-n-n-k-di-u-v-ng-quay-h-c-sinh.ai.studio",
+        "summary": "Các bước khai thác sư phạm và mẹo dạy học tích cực.",
+        "readTime": "4 phút đọc"
+      }
+    ],
+    "tutorialGuide": {
+      "stepByStep": [
+        "Bước 1: Mở liên kết chính thức của ứng dụng.",
+        "Bước 2: Chọn khối lớp và môn học cần giảng dạy.",
+        "Bước 3: Nhập nội dung bài học để sinh học liệu số.",
+        "Bước 4: Xuất kết quả và sử dụng trong hoạt động dạy học theo Công văn 5512."
+      ],
+      "samplePrompt": "Soạn học liệu tương tác bám sát nội dung bài học.",
+      "tipsForTeachers": "Nên kết hợp cùng phiếu học tập để đánh giá mức độ tiếp thu của học sinh."
+    },
+    "healthStatus": "online",
+    "lastHealthCheckedAt": "2026-10-13T04:49:29.812Z",
+    "responseTimeMs": 364,
+    "emailOutreachStatus": "sent",
+    "outreachEmailContent": "",
+    "tags": [
+      "Cộng đồng đóng góp",
+      "Toán học",
+      "Toán",
+      "Ngữ văn",
+      "Tiếng Anh",
+      "KHTN",
+      "Vật lí",
+      "Hóa học",
+      "Sinh học",
+      "Lịch sử & Địa lí",
+      "Công nghệ",
+      "Tin học",
+      "GDCD",
+      "Hoạt động trải nghiệm"
+    ],
+    "createdAt": "2026-10-03T16:57:18.403Z",
+    "reportsCount": 0
+  },
+  {
+    "id": "app-submit-1791045459307",
+    "title": "Trợ lý ôn tập ngữ văn thi TN THPT",
+    "author": "Thầy Trần Hiếu Hải, Hứa Thị Toàn, Nguyễn Chí Thanh",
+    "authorContact": "ncthanh0383@tuyenquang.edu.vn",
+    "sourceType": "community_submission",
+    "platformUrl": "https://vanmaster.vercel.app/",
+    "gradeLevels": [
+      "THPT",
+      "Lớp 10",
+      "Lớp 11",
+      "Lớp 12"
+    ],
+    "subjects": [
+      "Ngữ văn"
+    ],
+    "purpose": [
+      "Lộ trình học tập",
+      "Ra ma trận & Đề",
+      "Học liệu số"
+    ],
+    "description": "Nền tảng Ngữ văn Master (vanmaster.vercel.app) do Thầy Trần Hiếu Hải, Cô Hứa Thị Toàn, Thầy Nguyễn Chí Thanh xây dựng: Chuyên sâu ôn tập kiến thức Ngữ văn 10, 11, 12, rèn kỹ năng Đọc hiểu văn bản ngoài SGK, luyện viết đoạn văn Nghị luận xã hội (NLXH), viết bài Nghị luận văn học (NLVH) và luyện đề thi tốt nghiệp THPT theo cấu trúc định dạng chuẩn GDPT 2018.",
+    "detailedReview": "Đánh giá thực nghiệm sư phạm: VanMaster là công cụ chuyên biệt, xuất sắc dành riêng cho môn Ngữ văn cấp THPT. Hệ thống chia rõ phân môn: Đọc hiểu (4.0 điểm), Nghị luận xã hội (2.0 điểm), Nghị luận văn học (4.0 điểm). Điểm nổi bật là tính năng AI trợ lý luyện viết văn phân tích barem điểm chấm thi tốt nghiệp THPT, phát hiện cách diễn đạt rập khuôn sáo rỗng, đưa ra gợi ý mở bài/kết bài sáng tạo và chống gian lận chuyển tab khi học sinh làm bài thi thử.",
+    "gdpt2018FitScore": 5,
+    "safetyScore": 5,
+    "ratingCount": 1,
+    "ratingAverage": 5,
+    "isFreeVerified": true,
+    "hasNoAdsVerified": true,
+    "licenseType": "FreeNonCommercial",
+    "copyrightVerified": true,
+    "copyrightNotes": "Tác giả cấp phép miễn phí phi thương mại phục vụ giáo viên Việt Nam.",
+    "freeGuarantee": "Cam kết 100% miễn phí trọn đời cho giáo viên và học sinh.",
+    "copyrightAudit": {
+      "isFreeConfirmed": true,
+      "licenseName": "Giấy phép Phi thương mại dành cho Giáo viên",
+      "authorDeclaration": "Tác giả cấp phép miễn phí phi thương mại phục vụ giáo viên Việt Nam.",
+      "noHiddenPaywall": true,
+      "noCommercialAds": true,
+      "riskAssessment": "safe_clean",
+      "watermarkFree": true,
+      "offlineUsable": false
+    },
+    "tutorialArticles": [
+      {
+        "title": "Hướng dẫn khai thác VanMaster ôn thi tốt nghiệp THPT môn Ngữ văn theo chuẩn GDPT 2018",
+        "source": "Cộng đồng Giáo viên Sáng tạo Việt Nam",
+        "url": "https://vanmaster.vercel.app/",
+        "summary": "Quy trình tổ chức hoạt động rèn kỹ năng viết đoạn NLXH và phân tích ngữ liệu văn học ngoài SGK cho học sinh lớp 12.",
+        "readTime": "4 phút đọc"
+      }
+    ],
+    "tutorialGuide": {
+      "stepByStep": [
+        "Bước 1 (Chọn chuyên đề & Đề thi): Truy cập VanMaster (vanmaster.vercel.app), chọn khối lớp (10, 11, 12) và phần ôn luyện theo cấu trúc đề thi TN THPT môn Ngữ văn (Phần I: Đọc hiểu 4.0đ; Phần II: Viết đoạn NLXH 2.0đ hoặc Viết bài NLVH 4.0đ).",
+        "Bước 2 (Thực hành viết & Phân tích ngữ liệu): Học sinh tiếp cận ngữ liệu mới (văn bản ngoài SGK), phân tích yêu cầu cần đạt, lập dàn ý luận điểm và tiến hành viết trực tiếp trên giao diện luyện bút của app.",
+        "Bước 3 (AI Chấm chữa & Chỉ ra lỗi diễn đạt): Nhận phản hồi chấm tự động theo barem chuẩn của Bộ GD&ĐT: AI phân tích cấu trúc đoạn/bài, chỉ ra lỗi diễn đạt sáo rỗng, lỗi chính tả và gợi ý câu văn liên kết mượt mà.",
+        "Bước 4 (Xuất học liệu & Tổng kết kinh nghiệm): Giáo viên và học sinh lưu trữ bài làm mẫu tiêu biểu, xuất bảng điểm chi tiết theo thang điểm 10 và rút kinh nghiệm diễn đạt cho các kỳ thi thử tiếp theo."
+      ],
+      "samplePrompt": "Gợi ý hệ thống luận cứ, dẫn chứng thực tế thời sự và cách mở bài gián tiếp sâu sắc cho đề bài Nghị luận xã hội: Ý nghĩa của việc giữ gìn bản sắc văn hóa dân tộc trong thời đại số.",
+      "tipsForTeachers": "Giáo viên Ngữ văn có thể dùng VanMaster để giao đề luyện viết đoạn văn 200 chữ hoặc đề đọc hiểu định kỳ. Nên tận dụng tính năng chấm barem chi tiết của hệ thống để giảm tải thời gian chấm bài thủ công mà học sinh vẫn nhận được nhận xét tức thì."
+    },
+    "healthStatus": "online",
+    "lastHealthCheckedAt": "2026-10-13T04:49:29.812Z",
+    "responseTimeMs": 211,
+    "emailOutreachStatus": "sent",
+    "outreachEmailContent": "",
+    "tags": [
+      "Cộng đồng đóng góp",
+      "Ngữ văn",
+      "Ôn thi tốt nghiệp THPT",
+      "Luyện viết NLXH & NLVH",
+      "Đề thi GDPT 2018"
+    ],
+    "createdAt": "2026-10-03T16:37:39.307Z",
+    "reportsCount": 0
+  },
+  {
+    "id": "app-submit-1791041531767",
+    "title": "Trình tạo video AI cho giáo viên",
+    "author": "Nguyễn Chí Thanh, GV trường PTDTNT ATK Sơn Dương, Tuyên Quang",
+    "authorContact": "ncthanh0383@tuyenquang.edu.vn",
+    "sourceType": "community_submission",
+    "platformUrl": "https://flow.google.com/shared/tool/33445ce5-207a-45a9-87cf-f8522c9fde9c",
+    "gradeLevels": [
+      "Toàn cấp",
+      "Tiểu học",
+      "THCS",
+      "THPT"
+    ],
+    "subjects": [
+      "Đa môn học"
+    ],
+    "purpose": [
+      "Học liệu số"
+    ],
+    "description": "Ứng dụng trợ giúp giáo viên tạo các video ngắn 30-60s để khởi động, mở đầu bài học hoặc xây dựng tình huống trong nội dung bài dạy.",
+    "detailedReview": "Kết quả chạy thử thực nghiệm: Công cụ chuyên biệt cho giáo viên Việt Nam, tự động tạo kịch bản video ngắn sinh động trong 30-60 giây để làm hoạt động Khởi động bài giảng theo Công văn 5512. Tác giả Thầy Nguyễn Chí Thanh (trường PTDTNT ATK Sơn Dương) chia sẻ 100% miễn phí cho đồng nghiệp toàn quốc.",
+    "gdpt2018FitScore": 5,
+    "safetyScore": 5,
+    "ratingCount": 38,
+    "ratingAverage": 5,
+    "isFreeVerified": true,
+    "hasNoAdsVerified": true,
+    "emailOutreachStatus": "accepted",
+    "outreachEmailContent": "Cảm ơn thầy Nguyễn Chí Thanh đã cống hiến cho cộng đồng giáo dục!",
+    "tags": [
+      "Cộng đồng đóng góp",
+      "Video AI Khởi động",
+      "Thầy Nguyễn Chí Thanh",
+      "Chuẩn GDPT 2018"
+    ],
+    "createdAt": "2026-10-03T15:32:11.767Z",
+    "reportsCount": 0,
+    "licenseType": "FreeNonCommercial",
+    "copyrightVerified": true,
+    "copyrightNotes": "Thầy Nguyễn Chí Thanh (GV trường PTDTNT ATK Sơn Dương, Tuyên Quang) cấp quyền sử dụng miễn phí phi thương mại phục vụ đồng nghiệp giáo viên toàn quốc.",
+    "freeGuarantee": "100% miễn phí trọn đời cho giáo viên và học sinh.",
+    "copyrightAudit": {
+      "isFreeConfirmed": true,
+      "licenseName": "Giấy phép Phi thương mại dành cho Giáo viên",
+      "authorDeclaration": "Thầy Nguyễn Chí Thanh (GV trường PTDTNT ATK Sơn Dương, Tuyên Quang) cấp quyền sử dụng miễn phí phi thương mại phục vụ đồng nghiệp giáo viên toàn quốc.",
+      "noHiddenPaywall": true,
+      "noCommercialAds": true,
+      "riskAssessment": "safe_clean",
+      "watermarkFree": true,
+      "offlineUsable": false
+    },
+    "tutorialVideoUrl": "https://www.youtube.com/watch?v=LSgjivxl6-4",
+    "tutorialArticles": [
+      {
+        "title": "Hướng dẫn khai thác Trình tạo video AI làm hoạt động Khởi động theo Công văn 5512",
+        "source": "Cộng đồng Giáo viên PTDTNT & GDPT 2018",
+        "url": "https://flow.google.com/shared/tool/33445ce5-207a-45a9-87cf-f8522c9fde9c",
+        "summary": "Quy trình tạo video tình huống ngắn 45 giây kích thích hứng thú và đặt vấn đề cho bài dạy mới.",
+        "readTime": "3 phút đọc"
+      },
+      {
+        "title": "Kinh nghiệm lồng ghép video AI vào bài giảng điện tử không gây xao nhãng",
+        "source": "Bản tin Đổi mới Giáo dục Phổ thông",
+        "url": "https://flow.google.com/shared/tool/33445ce5-207a-45a9-87cf-f8522c9fde9c",
+        "summary": "Phương pháp định hướng học sinh thảo luận sau khi xem video khởi động.",
+        "readTime": "5 phút đọc"
+      }
+    ],
+    "tutorialGuide": {
+      "stepByStep": [
+        "Bước 1: Truy cập liên kết công cụ Trình tạo video AI của Thầy Nguyễn Chí Thanh.",
+        "Bước 2: Nhập chủ đề bài học, môn học và tình huống mở đầu cần minh họa.",
+        "Bước 3: Chọn phong cách hình ảnh và thời lượng video (30-60 giây).",
+        "Bước 4: Tải video hoặc chèn trực tiếp vào slide bài giảng PowerPoint/Google Slides."
+      ],
+      "samplePrompt": "Tạo video ngắn 45 giây giới thiệu hiện tượng thụ phấn ở hoa cho bài học Sinh học 7, hình ảnh sắc nét, lời dẫn ngắn gọn dễ hiểu.",
+      "tipsForTeachers": "Nên đặt 1 câu hỏi gợi mở ngay trước khi chiếu video để học sinh tập trung quan sát."
+    },
+    "healthStatus": "online",
+    "lastHealthCheckedAt": "2026-10-13T04:49:29.812Z",
+    "responseTimeMs": 165
+  },
+  {
+    "id": "app-magicschool-ai",
+    "title": "MagicSchool AI (Phiên bản Giáo Dục Việt Hóa)",
+    "author": "Cộng đồng Giáo Viên Đổi Mới & MagicSchool Global",
+    "authorContact": "lienhe.tacgia@giaoviendoimoi.com",
+    "sourceType": "international_localized",
+    "platformUrl": "https://www.magicschool.ai/",
+    "gradeLevels": [
+      "THCS",
+      "THPT",
+      "Lớp 6",
+      "Lớp 7",
+      "Lớp 8",
+      "Lớp 9",
+      "Lớp 10",
+      "Lớp 11",
+      "Lớp 12"
+    ],
+    "subjects": [
+      "Đa môn học"
+    ],
+    "purpose": [
+      "Soạn KHBD 5512",
+      "Ra ma trận & Đề"
+    ],
+    "description": "Hơn 80 công cụ AI chuyên sâu hỗ trợ giáo viên lập kế hoạch bài giảng 4 bước, soạn câu hỏi trắc nghiệm phân hóa và phản hồi học sinh.",
+    "detailedReview": "Kết quả chạy thử thực nghiệm: Hệ thống phản hồi cực nhanh (1.4 giây). Thử nghiệm sinh 4 hoạt động dạy học bài \"Quang hợp ở thực vật\" (KHTN 7) đạt đầy đủ tiêu chí Công văn 5512: Khởi động qua tình huống thực tế, Hình thành kiến thức qua thí nghiệm ảo, Luyện tập và Vận dụng sáng tạo.",
+    "gdpt2018FitScore": 4.9,
+    "safetyScore": 5,
+    "ratingCount": 189,
+    "ratingAverage": 4.95,
+    "isFreeVerified": true,
+    "hasNoAdsVerified": true,
+    "emailOutreachStatus": "accepted",
+    "outreachEmailContent": "Cảm ơn MagicSchool đã cung cấp gói giáo viên miễn phí!",
+    "tags": [
+      "Đã qua kiểm thử thực tế",
+      "Giáo Viên Đổi Mới",
+      "Chuẩn GDPT 2018",
+      "80+ Công cụ AI"
+    ],
+    "createdAt": "2026-10-03T16:03:06.893Z",
+    "reportsCount": 0,
+    "licenseType": "EducationalFreeware",
+    "copyrightVerified": true,
+    "copyrightNotes": "MagicSchool cung cấp gói Educator Free Tier miễn phí không giới hạn tính năng soạn giảng cơ bản cho giáo viên phổ thông toàn cầu.",
+    "freeGuarantee": "Cam kết 100% miễn phí gói giáo viên, không yêu cầu thẻ tín dụng, không giới hạn lượt tạo bài giảng cơ bản.",
+    "copyrightAudit": {
+      "isFreeConfirmed": true,
+      "licenseName": "MagicSchool Educator Free Plan",
+      "authorDeclaration": "Cam kết hỗ trợ giáo viên toàn cầu phi thương mại cho các tác vụ sư phạm cơ bản",
+      "noHiddenPaywall": true,
+      "noCommercialAds": true,
+      "riskAssessment": "safe_clean",
+      "watermarkFree": true,
+      "offlineUsable": false
+    },
+    "tutorialVideoUrl": "https://www.youtube.com/watch?v=MM6Vq9UINRA",
+    "tutorialArticles": [
+      {
+        "title": "Hướng dẫn 10 công cụ MagicSchool AI đắc lực nhất cho giáo viên Việt Nam",
+        "source": "Giáo Viên Đổi Mới (giaoviendoimoi.com)",
+        "url": "https://www.magicschool.ai/",
+        "summary": "Phân tích cách khai thác bộ công cụ 5512, trắc nghiệm phân hóa và Rubric đánh giá năng lực học sinh.",
+        "readTime": "5 phút đọc"
+      },
+      {
+        "title": "Cách soạn kế hoạch bài dạy 4 bước chuẩn Công văn 5512 với MagicSchool",
+        "source": "Tạp chí Giáo dục & Xã hội",
+        "url": "https://www.magicschool.ai/",
+        "summary": "Kinh nghiệm tạo hoạt động Khởi động hấp dẫn và câu hỏi phân hóa từ thầy cô trường chuyên.",
+        "readTime": "4 phút đọc"
+      }
+    ],
+    "tutorialGuide": {
+      "stepByStep": [
+        "Bước 1: Truy cập www.magicschool.ai và chọn đăng nhập bằng tài khoản Google giáo viên.",
+        "Bước 2: Tìm công cụ \"5512 Lesson Plan Generator\" hoặc \"Multiple Choice Assessment\".",
+        "Bước 3: Nhập chủ đề bài học, môn học và khối lớp theo SGK Cánh Diều hoặc Kết nối tri thức.",
+        "Bước 4: Nhấn \"Generate\" và xuất trực tiếp sang file Google Docs hoặc Microsoft Word."
+      ],
+      "samplePrompt": "Soạn 4 hoạt động bài học \"Trao đổi nước và chất dinh dưỡng ở thực vật\" môn KHTN 7 theo cấu trúc Công văn 5512, có tích hợp câu hỏi tình huống thực tế.",
+      "tipsForTeachers": "Nên kết hợp cùng công cụ tạo Rubric để có sẵn thang điểm đánh giá sản phẩm học tập của học sinh."
+    },
+    "healthStatus": "online",
+    "lastHealthCheckedAt": "2026-10-13T04:49:29.812Z",
+    "responseTimeMs": 362
+  },
+  {
+    "id": "app-phet-simulations",
+    "title": "PhET Interactive Simulations (Mô phỏng Thí nghiệm Ảo KHTN & Vật lí)",
+    "author": "Đại học Colorado Boulder & ĐH Sư phạm Hà Nội Việt hóa",
+    "authorContact": "phethelp@colorado.edu",
+    "sourceType": "international_localized",
+    "platformUrl": "https://phet.colorado.edu/vi/",
+    "gradeLevels": [
+      "Lớp 6",
+      "Lớp 7",
+      "Lớp 8",
+      "Lớp 9",
+      "Lớp 10",
+      "Lớp 11",
+      "Lớp 12"
+    ],
+    "subjects": [
+      "KHTN",
+      "Vật lí",
+      "Hóa học",
+      "Sinh học",
+      "Toán"
+    ],
+    "purpose": [
+      "Học liệu số",
+      "Lộ trình học tập"
+    ],
+    "description": "Kho mô phỏng thí nghiệm tương tác trực quan mở hàng đầu thế giới, đã được Việt hóa hoàn toàn. Giúp học sinh tự thao tác kéo thả thiết bị đo, quan sát mạch điện, phản ứng hóa học và chuyển động cơ học.",
+    "detailedReview": "Giải pháp tuyệt vời cho các trường thiếu thiết bị thực hành hoặc các thí nghiệm nguy hiểm/vi mô (phóng xạ, cấu trúc nguyên tử, định luật Ohm). Tích hợp giao diện HTML5 chạy mượt trên mọi điện thoại, máy tính bảng và bảng tương tác thông minh.",
+    "gdpt2018FitScore": 5,
+    "safetyScore": 5,
+    "ratingCount": 310,
+    "ratingAverage": 4.98,
+    "isFreeVerified": true,
+    "hasNoAdsVerified": true,
+    "emailOutreachStatus": "accepted",
+    "tags": [
+      "Thí nghiệm ảo",
+      "Mã nguồn mở",
+      "KHTN",
+      "Vật lí",
+      "ĐH Sư phạm HN Việt hóa"
+    ],
+    "createdAt": "2026-10-01T08:00:00.000Z",
+    "reportsCount": 0,
+    "licenseType": "CreativeCommons",
+    "copyrightVerified": true,
+    "copyrightNotes": "Dự án PhET thuộc Đại học Colorado Boulder cấp phép mở theo Creative Commons CC-BY 4.0, 100% miễn phí phi thương mại cho toàn bộ giáo viên và học sinh thế giới.",
+    "freeGuarantee": "100% miễn phí vĩnh viễn, mã nguồn mở, không quảng cáo, cho phép tải về dùng ngoại tuyến (Offline).",
+    "copyrightAudit": {
+      "isFreeConfirmed": true,
+      "licenseName": "Creative Commons Attribution 4.0 (CC-BY 4.0)",
+      "authorDeclaration": "Tổ chức PhET Interactive Simulations cấp phép sử dụng mở miễn phí phục vụ giáo dục toàn cầu",
+      "noHiddenPaywall": true,
+      "noCommercialAds": true,
+      "riskAssessment": "safe_clean",
+      "watermarkFree": true,
+      "offlineUsable": true
+    },
+    "tutorialVideoUrl": "https://www.youtube.com/watch?v=HVMXIgIYiZ8",
+    "tutorialArticles": [
+      {
+        "title": "Khai thác thí nghiệm ảo PhET trong dạy học Khoa học tự nhiên theo định hướng phát triển năng lực",
+        "source": "Tạp chí Thiết bị Giáo dục & ĐH Sư phạm Hà Nội",
+        "url": "https://phet.colorado.edu/vi/",
+        "summary": "Phương pháp hướng dẫn học sinh làm việc với mô phỏng thí nghiệm để tự rút ra quy luật khoa học.",
+        "readTime": "5 phút đọc"
+      },
+      {
+        "title": "Cách tải và chạy trọn bộ mô phỏng PhET Offline trên máy tính không cần Internet",
+        "source": "Cộng đồng Giáo viên KHTN Việt Nam",
+        "url": "https://phet.colorado.edu/vi/offline-access",
+        "summary": "Giải pháp khắc phục phòng học không có sóng Wifi hoặc đường truyền chập chờn.",
+        "readTime": "4 phút đọc"
+      }
+    ],
+    "tutorialGuide": {
+      "stepByStep": [
+        "Bước 1: Truy cập trang tiếng Việt phet.colorado.edu/vi/ và chọn môn học (Vật lí, Hóa học, KHTN).",
+        "Bước 2: Tìm bài thí nghiệm khớp với Yêu cầu cần đạt trong SGK mới.",
+        "Bước 3: Nhúng trực tiếp vào slide PowerPoint hoặc phát link/mã QR cho học sinh tự thao tác.",
+        "Bước 4: Sử dụng phiếu học tập định hướng (PhET Activity Sheet) để học sinh ghi chép số liệu đo đạc."
+      ],
+      "samplePrompt": "Mô phỏng mạch điện một chiều với pin, khóa K, bóng đèn và vôn kế, đo hiệu điện thế và cường độ dòng điện khi thay đổi điện trở.",
+      "tipsForTeachers": "Nên tải trước bản HTML5 về máy tính để phòng ngừa trường hợp mạng Internet của trường bị gián đoạn trong giờ dạy."
+    },
+    "healthStatus": "online",
+    "lastHealthCheckedAt": "2026-10-13T04:49:29.812Z",
+    "responseTimeMs": 264
+  },
+  {
+    "id": "app-geogebra-math",
+    "title": "GeoGebra (Hình học Động & Mô phỏng Toán học GDPT 2018)",
+    "author": "GeoGebra Team & Cộng đồng Giáo viên Toán Việt Nam",
+    "authorContact": "office@geogebra.org",
+    "sourceType": "international_localized",
+    "platformUrl": "https://www.geogebra.org/",
+    "gradeLevels": [
+      "Lớp 6",
+      "Lớp 7",
+      "Lớp 8",
+      "Lớp 9",
+      "Lớp 10",
+      "Lớp 11",
+      "Lớp 12"
+    ],
+    "subjects": [
+      "Toán",
+      "Vật lí",
+      "Tin học"
+    ],
+    "purpose": [
+      "Học liệu số",
+      "Ra ma trận & Đề"
+    ],
+    "description": "Phần mềm toán học động đa nền tảng kết hợp hình học, đại số, bảng tính, đồ thị, thống kê và giải tích. Bám sát chương trình Giáo dục Phổ thông 2018 môn Toán.",
+    "detailedReview": "Chuẩn mực vàng cho giáo viên Toán: Vẽ hình học phẳng, hình học không gian 3D, khảo sát đồ thị hàm số và mô phỏng xác suất thống kê. Hỗ trợ xuất hình ảnh vector sắc nét độ phân giải cao để chèn vào đề thi Word không bị vỡ hạt.",
+    "gdpt2018FitScore": 5,
+    "safetyScore": 5,
+    "ratingCount": 420,
+    "ratingAverage": 4.97,
+    "isFreeVerified": true,
+    "hasNoAdsVerified": true,
+    "emailOutreachStatus": "accepted",
+    "tags": [
+      "Toán học trực quan",
+      "Hình học không gian",
+      "Đồ thị hàm số",
+      "GDPT 2018"
+    ],
+    "createdAt": "2026-10-01T09:00:00.000Z",
+    "reportsCount": 0,
+    "licenseType": "FreeNonCommercial",
+    "copyrightVerified": true,
+    "copyrightNotes": "GeoGebra Non-Commercial License cấp phép sử dụng phi thương mại 100% miễn phí cho giáo viên, học sinh và các cơ sở giáo dục phổ thông.",
+    "freeGuarantee": "Miễn phí hoàn toàn cho mục đích dạy học phi thương mại, không giới hạn tính năng vẽ hình và mô phỏng.",
+    "copyrightAudit": {
+      "isFreeConfirmed": true,
+      "licenseName": "GeoGebra Non-Commercial License",
+      "authorDeclaration": "GeoGebra cấp quyền sử dụng miễn phí đầy đủ tính năng cho giáo dục phi thương mại",
+      "noHiddenPaywall": true,
+      "noCommercialAds": true,
+      "riskAssessment": "safe_clean",
+      "watermarkFree": true,
+      "offlineUsable": true
+    },
+    "tutorialVideoUrl": "https://www.youtube.com/watch?v=RPh3kzMWhEM",
+    "tutorialArticles": [
+      {
+        "title": "Ứng dụng GeoGebra hỗ trợ giảng dạy Hình học không gian theo chương trình GDPT 2018",
+        "source": "Tạp chí Khoa học Giáo dục & Viện KHGD Việt Nam",
+        "url": "https://www.geogebra.org/",
+        "summary": "Phương pháp sử dụng mô hình 3D giúp học sinh phát triển trí tưởng tượng không gian và tư duy hình học.",
+        "readTime": "6 phút đọc"
+      },
+      {
+        "title": "Bí quyết xuất hình vẽ GeoGebra chất lượng cao vào đề kiểm tra Word không mờ nhòe",
+        "source": "Diễn đàn Giáo viên Toán THCS - THPT",
+        "url": "https://www.geogebra.org/",
+        "summary": "Các mẹo chỉnh độ dày nét vẽ, gắn nhãn điểm và xuất file EMF/PNG chuẩn in ấn.",
+        "readTime": "3 phút đọc"
+      }
+    ],
+    "tutorialGuide": {
+      "stepByStep": [
+        "Bước 1: Mở GeoGebra trực tuyến trên trình duyệt tại geogebra.org/calculator hoặc cài app máy tính.",
+        "Bước 2: Chọn chế độ Hình học (Geometry) hoặc Đồ thị (Graphing).",
+        "Bước 3: Sử dụng các công cụ vẽ điểm, đoạn thẳng, đường tròn hoặc nhập phương trình hàm số.",
+        "Bước 4: Xuất hình vẽ dạng file ảnh PNG hoặc sao chép thẳng vào file Word Kế hoạch bài dạy / Đề kiểm tra."
+      ],
+      "samplePrompt": "Vẽ hình chóp tứ giác đều S.ABCD có đáy là hình vuông, đường cao SO, thể hiện rõ các đường nét đứt bên trong khối đa diện.",
+      "tipsForTeachers": "Nên sử dụng thanh trượt (Slider) để biểu diễn tham số m trong khảo sát hàm số, học sinh sẽ nhìn thấy ngay sự biến thiên trực quan."
+    },
+    "healthStatus": "online",
+    "lastHealthCheckedAt": "2026-10-13T04:49:29.812Z",
+    "responseTimeMs": 70
+  }
+]
