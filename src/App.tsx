@@ -12,7 +12,7 @@ import {
   ArrowDownToLine, ArrowRight, ArrowUpRight, Bell, Bookmark, BookOpen, Check,
   ChevronDown, ChevronRight, CircleHelp, Clock3, Compass, Copy, FileText, Filter,
   GraduationCap, Heart, Image, Lightbulb, Menu, MessageCircle, MoreHorizontal,
-  Play, Plus, Search, Send, ShieldCheck, Sparkles, Star, ThumbsUp, Trophy, Upload, Users,
+  Moon, Play, Plus, Search, Send, ShieldCheck, Sparkles, Star, Sun, ThumbsUp, Trophy, Upload, Users,
   X, type LucideIcon,
 } from 'lucide-react';
 
@@ -68,6 +68,10 @@ function projectFromRow(row: any): Project {
 }
 
 export default function App() {
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try { return localStorage.getItem('eduhub-theme') === 'dark' ? 'dark' : 'light'; }
+    catch { return 'light'; }
+  });
   const [view, setView] = useState<View>(() => window.location.pathname.startsWith('/projects/') ? 'project' : window.location.pathname.startsWith('/teachers/') ? 'profile' : window.location.pathname.startsWith('/talks/') ? 'talk-detail' : window.location.pathname === '/talks' ? 'talks' : window.location.pathname === '/admin' ? 'admin' : 'feed');
   const [query, setQuery] = useState('');
   const [subject, setSubject] = useState('Tất cả bộ môn');
@@ -90,7 +94,13 @@ export default function App() {
   const [adminProfileLoading, setAdminProfileLoading] = useState(true);
   const [adminQueue, setAdminQueue] = useState<Project[]>([]);
   const [activeTeachers, setActiveTeachers] = useState<Array<{ id: string; name: string; subject: string; points: string; initials: string; color: string }>>([]);
+  const [communityProof, setCommunityProof] = useState<{ members: number; projects: number; teachers: Array<{ id: string; name: string; avatar: string | null }> } | null>(null);
   const [showTeacherOnboarding, setShowTeacherOnboarding] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem('eduhub-theme', theme); } catch { /* Keep the selection for this page view. */ }
+  }, [theme]);
 
   useEffect(() => {
     if (!supabase) { setAdminProfileLoading(false); return; }
@@ -114,6 +124,20 @@ export default function App() {
   }, []);
 
   useEffect(() => { if (teacherProfile?.profile_completed_at) setShowTeacherOnboarding(false); }, [teacherProfile?.profile_completed_at]);
+
+  useEffect(() => {
+    if (!supabase) return;
+    let active = true;
+    void Promise.all([
+      supabase.from('profiles').select('id', { count: 'exact', head: true }),
+      supabase.from('resources').select('id', { count: 'exact', head: true }).eq('moderation_status', 'approved'),
+      supabase.from('profiles').select('id,full_name,avatar_url').order('created_at', { ascending: false }).limit(5),
+    ]).then(([members, projects, teachers]) => {
+      if (!active || members.error || projects.error || teachers.error) return;
+      setCommunityProof({ members: members.count || 0, projects: projects.count || 0, teachers: (teachers.data || []).map((teacher) => ({ id: teacher.id, name: teacher.full_name, avatar: teacher.avatar_url })) });
+    });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     if (!supabase) return;
@@ -334,7 +358,7 @@ export default function App() {
   };
 
   return (
-    <div className="edu-app">
+    <div className="edu-app" data-theme={theme}>
       <header className="topbar">
         <div className="topbar-inner">
           <button className="brand" onClick={() => nav('feed')} aria-label="EduHub, về trang chủ">
@@ -351,6 +375,7 @@ export default function App() {
             <label className="searchbox"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm học liệu, dự án..." /><kbd>⌘ K</kbd></label>
             <button className="button button-primary top-share" onClick={openSubmit}><Plus size={16} /> Chia sẻ dự án</button>
             <button className="icon-button notification-button" aria-label="Thông báo" onClick={() => toast('Bạn đã xem hết thông báo mới')}><Bell size={18} /><i /></button>
+            <button className="icon-button theme-toggle" type="button" aria-label={theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'} title={theme === 'dark' ? 'Giao diện sáng' : 'Giao diện tối'} onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}>{theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}</button>
             <button className="button button-quiet login-button" onClick={() => currentUser ? openProfile(currentUser.id) : setShowLogin(true)}><span className="login-avatar">{currentUser ? teacherProfile?.avatar_url ? <img src={teacherProfile.avatar_url} alt="" /> : (teacherProfile?.full_name || currentUser.email || 'GV').slice(0, 1).toUpperCase() : '?'}</span> {currentUser ? teacherProfile?.full_name || 'Hồ sơ' : 'Đăng nhập'}</button>
             <button className="mobile-menu icon-button" aria-label="Mở menu" aria-expanded={mobileNavOpen} onClick={() => setMobileNavOpen((open) => !open)}><Menu size={20} /></button>
           </div>
@@ -368,7 +393,10 @@ export default function App() {
               <button className="button button-light" onClick={() => { nav('projects'); document.getElementById('explore')?.scrollIntoView({ behavior: 'smooth' }); }}>Khám phá dự án <ArrowRight size={16} /></button>
               <button className="welcome-text-button" onClick={openSubmit}><Plus size={16} /> Chia sẻ dự án của bạn</button>
             </div>
-            <div className="community-proof"><span><b>Tiểu học · THCS · THPT</b></span><span className="proof-divider" /><span>Tài liệu · công cụ · trao đổi chuyên môn</span></div>
+            <div className="community-proof">
+              <div className="avatar-stack" aria-hidden="true">{communityProof?.teachers.map((teacher, index) => <span className={`avatar community-avatar avatar-${['mint', 'peach', 'lavender', 'blue', 'yellow'][index]}`} key={teacher.id}>{teacher.avatar ? <img src={teacher.avatar} alt="" /> : teacher.name.split(/\s+/).slice(-2).map((part) => part[0]).join('').toUpperCase()}</span>)}</div>
+              <span className="community-proof-copy">{communityProof ? <><b>{communityProof.members.toLocaleString('vi-VN')}+ thành viên</b><small>{communityProof.projects.toLocaleString('vi-VN')} dự án và học liệu đã chia sẻ</small></> : <><b>Tiểu học · THCS · THPT</b><small>Tài liệu · công cụ · trao đổi chuyên môn</small></>}</span>
+            </div>
           </div>
           <div className="welcome-art" aria-hidden="true">
             <div className="sun-disc" />
