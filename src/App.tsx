@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import type { User } from '@supabase/supabase-js';
 import QRCode from 'qrcode';
 import { supabase } from './lib/supabase';
@@ -17,7 +17,7 @@ import {
   ChevronDown, ChevronRight, CircleHelp, Clock3, Copy, FileText, Filter,
   GraduationCap, Heart, Image, Lightbulb, Menu, MessageCircle, GitCompareArrows, Globe2,
   Moon, Play, Plus, Printer, Search, Send, Share2, ShieldCheck, Star, Sun, ThumbsUp, Trophy, Upload, Users,
-  Trash2, X, BadgeCheck, Maximize2, type LucideIcon,
+  Trash2, X, BadgeCheck, Maximize2, Code2, type LucideIcon,
 } from 'lucide-react';
 
 const TeacherProfileView = lazy(() => import('./components/TeacherProfileView').then((module) => ({ default: module.TeacherProfileView })));
@@ -45,7 +45,7 @@ type Project = {
   grade: string; teacher: string; school: string; initials: string; color: string;
   votes: number; replies: number; downloads: number; time: string; format: string;
   featured?: boolean; demo?: boolean; url?: string; downloadUrl?: string; tags: string[];
-  sourceId?: string; parentResourceId?: string; teacherId?: string; teacherAvatarUrl?: string; coverUrl?: string; descriptionImages?: string[]; websiteHtml?: string; websiteSlug?: string; videoUrl?: string; captionUrl?: string; videoTranscript?: string; usageGuide?: string; moderationStatus?: string; createdAt?: string;
+  sourceId?: string; parentResourceId?: string; teacherId?: string; teacherAvatarUrl?: string; coverUrl?: string; descriptionImages?: string[]; websiteHtml?: string; websiteSlug?: string; videoUrl?: string; captionUrl?: string; videoTranscript?: string; usageGuide?: string; moderationStatus?: string; moderationNote?: string; createdAt?: string;
   ratingAvg?: number; ratingCount?: number; learningOutcomes?: string[]; accessRequirements?: string; worksOffline?: boolean; mobileCompatible?: boolean; requiresLogin?: boolean; freeVerified?: boolean; resourceStatus?: string; replacementResourceId?: string | null; moderationLinkCheck?: string;
 };
 
@@ -117,7 +117,7 @@ function projectFromRow(row: any): Project {
     teacher: name, teacherId: author.id || undefined, teacherAvatarUrl: author.avatar_url || undefined, school: [author.show_school !== false ? author.school_name : null, author.show_location === false ? null : [author.ward, author.province].filter(Boolean).join(', ')].filter(Boolean).join(' · ') || 'Cộng đồng EduHub', initials: name.split(/\s+/).slice(-2).map((part: string) => part[0]).join('').toUpperCase(),
     color, votes: row.upvotes_count || 0, replies: row.comments?.[0]?.count || 0, downloads: row.downloads_count || 0,
     time: when, createdAt: row.created_at || undefined, format, url: row.platform_url || undefined, downloadUrl: row.download_url || undefined, coverUrl: row.cover_url || undefined, websiteHtml: row.website_html || undefined, websiteSlug: row.website_slug || undefined, videoUrl: row.video_url || undefined,
-    usageGuide: row.usage_guide || undefined, descriptionImages: Array.isArray(row.description_images) ? row.description_images.filter((url: unknown) => typeof url === 'string') : [], captionUrl: row.caption_url || undefined, videoTranscript: row.video_transcript || undefined, moderationStatus: row.moderation_status, ratingAvg: Number(row.rating_avg || 0), ratingCount: Number(row.rating_count || 0), moderationLinkCheck: row.moderation_link_check || 'not_checked',
+    usageGuide: row.usage_guide || undefined, descriptionImages: Array.isArray(row.description_images) ? row.description_images.filter((url: unknown) => typeof url === 'string') : [], captionUrl: row.caption_url || undefined, videoTranscript: row.video_transcript || undefined, moderationStatus: row.moderation_status, moderationNote: row.moderation_note || undefined, ratingAvg: Number(row.rating_avg || 0), ratingCount: Number(row.rating_count || 0), moderationLinkCheck: row.moderation_link_check || 'not_checked',
     tags: row.tags || [], learningOutcomes: row.learning_outcomes || [], accessRequirements: row.access_requirements || '', worksOffline: Boolean(row.works_offline), mobileCompatible: row.mobile_compatible !== false, requiresLogin: Boolean(row.requires_login), resourceStatus: row.resource_status || 'current', replacementResourceId: row.replacement_resource_id || null,
     freeVerified: Boolean(row.is_free_verified),
   };
@@ -456,11 +456,12 @@ export default function App() {
   useEffect(() => {
     if (!supabase || !projectRouteId || view !== 'project' || projects.some((item) => item.id === projectRouteId || item.sourceId === projectRouteId)) return;
     let active = true;
-    void supabase.from('resources').select('*, author:profiles!resources_author_id_fkey(id,full_name,school_name,province,ward,avatar_url,show_school,show_location), comments:resource_comments(count)')
-      .eq('id', projectRouteId).eq('moderation_status', 'approved').maybeSingle()
+    let resourceQuery = supabase.from('resources').select('*, author:profiles!resources_author_id_fkey(id,full_name,school_name,province,ward,avatar_url,show_school,show_location), comments:resource_comments(count)').eq('id', projectRouteId);
+    resourceQuery = currentUser ? resourceQuery.or(`moderation_status.eq.approved,author_id.eq.${currentUser.id}`) : resourceQuery.eq('moderation_status', 'approved');
+    void resourceQuery.maybeSingle()
       .then(({ data }) => { if (active && data) setSelectedProject(projectFromRow(data)); });
     return () => { active = false; };
-  }, [projectRouteId, projects, view]);
+  }, [projectRouteId, projects, view, currentUser?.id]);
 
   useEffect(() => {
     if (!supabase || teacherProfile?.role !== 'admin') return;
@@ -710,7 +711,11 @@ export default function App() {
       if (error) throw error;
       if (extraRows.length && createdResource) {
         const { error: fileRowsError } = await supabase.from('resource_files').insert(extraRows.map((row) => ({ ...row, resource_id: createdResource.id })));
-        if (fileRowsError) { toast(`Dự án đã tạo nhưng chưa lưu được danh sách tệp bổ sung: ${fileRowsError.message}`); return null; }
+        if (fileRowsError) {
+          const { error: rollbackError } = await supabase.from('resources').delete().eq('id', createdResource.id).eq('author_id', currentUser.id);
+          if (rollbackError) throw new Error(`Tệp đính kèm không lưu được (${fileRowsError.message}); cũng không thể hoàn tác dự án (${rollbackError.message}).`);
+          throw new Error(`Không lưu được tệp đính kèm, dự án chưa được gửi: ${fileRowsError.message}`);
+        }
       }
       toast('Đã gửi dự án. Dự án sẽ xuất hiện sau khi quản trị viên duyệt.');
       return null;
@@ -979,6 +984,89 @@ function RankingView({ onOpenProfile, onOpenProject }: { onOpenProfile: (id: str
     </div>}
   </section>;
 }
+type GuideItem = { text: string; children: GuideItem[] };
+type GuideBlock = { kind: 'heading'; text: string; section?: string } | { kind: 'paragraph'; text: string } | { kind: 'list'; ordered: boolean; items: GuideItem[] };
+
+function parseUsageGuide(markdown: string): GuideBlock[] {
+  const lines = markdown.replace(/\r\n?/g, '\n').split('\n');
+  const blocks: GuideBlock[] = [];
+  const lastItems = new Map<number, GuideItem>();
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const raw = lines[index];
+    const trimmed = raw.trim();
+    if (!trimmed) continue;
+
+    const markdownHeading = trimmed.match(/^#{1,4}\s+(.+)$/);
+    const numericHeading = trimmed.match(/^(\d{1,2})\.\s+(.+)$/);
+    const nextNonEmpty = lines.slice(index + 1).find((line) => line.trim());
+    const nextList = nextNonEmpty?.match(/^(\s*)([-*+]|\d+[.)])\s+(.+)$/);
+    const isSectionHeading = Boolean(numericHeading && nextList && nextList[1].length === 0 && /^[-*+]$/.test(nextList[2]));
+    if (markdownHeading || isSectionHeading) {
+      const rawHeadingText = markdownHeading?.[1] || numericHeading?.[2] || '';
+      const number = numericHeading?.[1] || rawHeadingText.match(/^(\d{1,2})\.\s+/)?.[1];
+      const headingText = rawHeadingText.replace(/^\d{1,2}\.\s+/, '');
+      blocks.push({ kind: 'heading', text: headingText, section: number });
+      lastItems.clear();
+      continue;
+    }
+
+    const listLine = raw.match(/^(\s*)([-*+]|\d+[.)])\s+(.+)$/);
+    if (listLine) {
+      const indent = listLine[1].length;
+      const ordered = /^\d/.test(listLine[2]);
+      const item = { text: listLine[3], children: [] as GuideItem[] };
+      if (indent > 0 && lastItems.get(0)) {
+        const parentIndent = [...lastItems.keys()].filter((level) => level < indent).sort((a, b) => b - a)[0] ?? 0;
+        lastItems.get(parentIndent)?.children.push(item);
+        lastItems.set(indent, item);
+      } else {
+        const previous = blocks.at(-1);
+        if (previous?.kind === 'list' && previous.ordered === ordered) previous.items.push(item);
+        else blocks.push({ kind: 'list', ordered, items: [item] });
+        lastItems.clear();
+        lastItems.set(0, item);
+      }
+      continue;
+    }
+
+    if (/^\s{2,}\S/.test(raw) && lastItems.size) {
+      const indent = raw.match(/^\s*/)?.[0].length || 0;
+      const itemIndent = [...lastItems.keys()].filter((level) => level <= indent).sort((a, b) => b - a)[0] ?? 0;
+      const item = lastItems.get(itemIndent);
+      if (item) item.text = `${item.text} ${trimmed}`;
+      continue;
+    }
+    lastItems.clear();
+    const previous = blocks.at(-1);
+    if (previous?.kind === 'paragraph') previous.text = `${previous.text} ${trimmed}`;
+    else blocks.push({ kind: 'paragraph', text: trimmed });
+  }
+  return blocks;
+}
+
+function renderGuideInline(text: string): ReactNode[] {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean);
+  return parts.map((part, index) => part.startsWith('**') && part.endsWith('**')
+    ? <strong key={index}>{part.slice(2, -2)}</strong>
+    : part.startsWith('*') && part.endsWith('*')
+      ? <em key={index}>{part.slice(1, -1)}</em>
+      : <span key={index}>{part}</span>);
+}
+
+function GuideList({ items, ordered }: { items: GuideItem[]; ordered: boolean }) {
+  const List = ordered ? 'ol' : 'ul';
+  return <List className={ordered ? 'guide-ordered-list' : 'guide-bullet-list'}>{items.map((item, index) => <li key={`${index}-${item.text}`}><div>{renderGuideInline(item.text)}</div>{item.children.length > 0 && <GuideList items={item.children} ordered={false} />}</li>)}</List>;
+}
+
+function ProjectUsageGuide({ markdown }: { markdown: string }) {
+  return <div className="guide-markdown">{parseUsageGuide(markdown).map((block, index) => block.kind === 'heading'
+    ? <h4 key={index}>{block.section && <span>{block.section.padStart(2, '0')}</span>}{renderGuideInline(block.text)}</h4>
+    : block.kind === 'paragraph'
+      ? <p key={index}>{renderGuideInline(block.text)}</p>
+      : <GuideList key={index} items={block.items} ordered={block.ordered} />)}</div>;
+}
+
 function ProjectModal({ project, allProjects, liked, saved, offlineSaved, onToggleOffline, currentUser, isAdmin, onClose, onLike, onSave, onNotice, onRequireAuth, onOpenTeacher, onOpenRelated, onCreateDerivative }: { project: Project; allProjects: Project[]; liked: boolean; saved: boolean; offlineSaved: boolean; onToggleOffline: () => void; currentUser: User | null; isAdmin: boolean; onClose: () => void; onLike: () => void; onSave: () => void; onNotice: (message: string) => void; onRequireAuth: () => void; onOpenTeacher: () => void; onOpenRelated: (project: Project) => void; onCreateDerivative: (project?: Project) => void }) {
   const previewIframeRef = useRef<HTMLIFrameElement>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -1170,7 +1258,7 @@ function ProjectModal({ project, allProjects, liked, saved, offlineSaved, onTogg
         <button className="project-author project-author-button modal-author" onClick={onOpenTeacher} disabled={!project.teacherId}><span className={`avatar avatar-${project.color}`}>{project.teacherAvatarUrl ? <img src={project.teacherAvatarUrl} alt="" /> : project.initials}</span><span className="modal-author-copy"><b>{project.teacher}</b><small>{project.school}</small></span><span className="author-date">Chia sẻ {project.time}</span></button>
         <p className="modal-description">{project.description}</p>
         {project.descriptionImages && project.descriptionImages.length > 0 && <section className="project-description-gallery" aria-label="Ảnh minh họa dự án"><h3>Ảnh minh họa</h3><div>{project.descriptionImages.map((imageUrl, index) => <a href={imageUrl} target="_blank" rel="noopener noreferrer" key={`${imageUrl}-${index}`}><img src={imageUrl} alt={`${project.title} – ảnh minh họa ${index + 1}`} loading="lazy" /></a>)}</div></section>}
-        {project.websiteHtml && <section className="teacher-website-preview"><header><div><span className="section-kicker">WEBSITE GIÁO DỤC</span><b>Xem thử website</b><small>Các quyền thiết bị cần thiết sẽ được trình duyệt hỏi khi website sử dụng.</small></div><div className="teacher-website-preview-actions"><button className="button button-outline" onClick={openWebsiteFullscreen}><Maximize2 size={14} /> Toàn màn hình</button>{project.websiteSlug && <a className="button button-outline" href={`/web/${encodeURIComponent(project.websiteSlug)}`} target="_blank" rel="noopener noreferrer"><Globe2 size={14} /> Mở trang riêng</a>}</div></header><TeacherWebsiteFrame ref={previewIframeRef} title={`Xem thử ${project.title}`} html={project.websiteHtml} /></section>}
+        {project.websiteHtml && <section className="teacher-website-preview"><header><div><span className="section-kicker">WEBSITE GIÁO DỤC</span><b>Xem thử website</b><small>Các quyền thiết bị cần thiết sẽ được trình duyệt hỏi khi website sử dụng.</small></div><div className="teacher-website-preview-actions">{project.teacherId === currentUser?.id && project.moderationStatus === 'approved' && <button className="button button-outline" onClick={() => { const editor = document.getElementById('resource-revision-submit') as HTMLDetailsElement | null; if (editor) { editor.open = true; editor.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }}><Code2 size={14} /> Sửa mã & gửi cập nhật</button>}<button className="button button-outline" onClick={openWebsiteFullscreen}><Maximize2 size={14} /> Toàn màn hình</button>{project.websiteSlug && project.moderationStatus === 'approved' && <a className="button button-outline" href={`/web/${encodeURIComponent(project.websiteSlug)}`} target="_blank" rel="noopener noreferrer"><Globe2 size={14} /> Mở trang riêng</a>}</div></header>{project.teacherId === currentUser?.id && project.moderationStatus && project.moderationStatus !== 'approved' && <p className={`project-owner-status moderation-${project.moderationStatus}`}>{project.moderationStatus === 'pending' ? 'Dự án đang chờ admin duyệt nên chưa được công khai.' : 'Dự án cần chỉnh sửa trước khi có thể xuất bản.'}{project.moderationNote && <> Phản hồi admin: {project.moderationNote}</>}</p>}<TeacherWebsiteFrame ref={previewIframeRef} title={`Xem thử ${project.title}`} html={project.websiteHtml} /></section>}
         {project.learningOutcomes && project.learningOutcomes.length > 0 && <section className="learning-outcomes"><div><span className="section-kicker">MỤC TIÊU DO TÁC GIẢ TỰ KHAI</span><b>Yêu cầu cần đạt</b></div><ul>{project.learningOutcomes.map((outcome, index) => <li key={`${index}-${outcome}`}>{outcome}</li>)}</ul><small>Thông tin do người chia sẻ cung cấp, chưa phải kết quả kiểm định của EduHub.</small></section>}
         <div className="modal-info-grid"><div><small>LOẠI DỰ ÁN</small><b>{project.type}</b></div><div><small>ĐỊNH DẠNG</small><b>{project.format}</b></div><div><small>PHÙ HỢP</small><b>{project.grade}</b></div></div>
         {safePreview && <section className="resource-preview"><div><span><FileText size={15} /></span><b>Xem trước tài liệu</b><button onClick={() => setPreviewOpen((open) => !open)}>{previewOpen ? 'Thu gọn' : 'Mở bản xem trước'}</button></div>{previewOpen && (safePreview.kind === 'image' ? <img src={safePreview.url} alt={`Xem trước học liệu ${project.title}`} loading="lazy" /> : <div className="resource-pdf-preview"><iframe src={safePreview.url} title={`Bản xem trước PDF: ${project.title}`} sandbox="" referrerPolicy="no-referrer" loading="lazy" /><a href={safePreview.url} target="_blank" rel="noopener noreferrer">Nếu trình duyệt không hiển thị PDF, mở tài liệu ở tab mới.</a></div>)}</section>}
@@ -1185,9 +1273,9 @@ function ProjectModal({ project, allProjects, liked, saved, offlineSaved, onTogg
         </section>
         {project.resourceStatus === 'outdated' && <div className="resource-outdated-note"><b>Học liệu cần được kiểm tra/cập nhật.</b>{project.replacementResourceId && allProjects.find((item) => item.sourceId === project.replacementResourceId) && <button onClick={() => onOpenRelated(allProjects.find((item) => item.sourceId === project.replacementResourceId)!)}>Mở học liệu thay thế</button>}</div>}
         {(isAdmin || project.teacherId === currentUser?.id) && project.sourceId && <div className="resource-status-tools"><select value={replacementCandidate || project.replacementResourceId || ''} onChange={(event) => setReplacementCandidate(event.target.value)} aria-label="Chọn học liệu thay thế"><option value="">Không chọn bản thay thế</option>{allProjects.filter((item) => item.sourceId && item.sourceId !== project.sourceId).map((item) => <option key={item.sourceId} value={item.sourceId}>{item.title}</option>)}</select><button className="resource-status-control" disabled={statusBusy} onClick={() => void setResourceStatus(project.resourceStatus === 'outdated' ? 'current' : 'outdated')}>{statusBusy ? 'Đang lưu trạng thái…' : project.resourceStatus === 'outdated' ? 'Xác nhận còn sử dụng tốt' : 'Báo học liệu cần cập nhật'}</button></div>}
-        <ResourceRevisionPanel resourceId={project.sourceId} authorId={project.teacherId} currentUserId={currentUser?.id} canEdit={project.teacherId === currentUser?.id} current={{ title: project.title, description: project.description, usage_guide: project.usageGuide || '', platform_url: project.url || '', download_url: project.downloadUrl || '', video_url: project.videoUrl || '' }} onNotice={onNotice} />
+        <ResourceRevisionPanel resourceId={project.sourceId} authorId={project.teacherId} currentUserId={currentUser?.id} canEdit={project.teacherId === currentUser?.id} current={{ title: project.title, description: project.description, usage_guide: project.usageGuide || '', platform_url: project.url || '', download_url: project.downloadUrl || '', video_url: project.videoUrl || '' }} currentWebsiteHtml={project.websiteHtml} moderationStatus={project.moderationStatus} moderationNote={project.moderationNote} onNotice={onNotice} />
         {(project.accessRequirements || project.worksOffline || project.mobileCompatible === false || project.requiresLogin) && <section className="resource-requirements-summary"><h3>Điều kiện sử dụng</h3>{project.accessRequirements && <p>{project.accessRequirements}</p>}<div><span>{project.worksOffline ? 'Có thể dùng ngoại tuyến' : 'Cần kết nối mạng'}</span><span>{project.mobileCompatible === false ? 'Ưu tiên máy tính' : 'Hỗ trợ điện thoại'}</span><span>{project.requiresLogin ? 'Cần đăng nhập dịch vụ' : 'Không cần đăng nhập'}</span></div></section>}<section id="project-guide" className="project-guide-section"><h3>Hướng dẫn sử dụng</h3>
-          {project.usageGuide ? <ol className="guide-copy">{project.usageGuide.split('\n').map((line) => line.trim()).filter(Boolean).map((line, index) => <li key={`${index}-${line}`}><span>{String(index + 1).padStart(2, '0')}</span><p>{line.replace(/^\s*\d{1,2}[.)]\s*/, '')}</p></li>)}</ol> : <p className="modal-description">Thầy cô có thể mở tài liệu để xem hướng dẫn, tải về và điều chỉnh cho phù hợp với lớp học của mình.</p>}
+          {project.usageGuide ? <ProjectUsageGuide markdown={project.usageGuide} /> : <p className="modal-description">Thầy cô có thể mở tài liệu để xem hướng dẫn, tải về và điều chỉnh cho phù hợp với lớp học của mình.</p>}
         {project.videoUrl && <a className="video-demo-link" href={project.videoUrl} target="_blank" rel="noopener noreferrer"><span><Play size={17} fill="currentColor" /></span><span><b>Xem video demo</b><small>Mở video hướng dẫn trong thẻ mới{project.captionUrl ? ' · có phụ đề' : ''}</small></span><ArrowUpRight size={16} /></a>}
         {(project.videoTranscript || project.captionUrl) && <section className="video-accessibility"><span className="section-kicker">HỖ TRỢ XEM VIDEO</span>{project.captionUrl && <a href={project.captionUrl} target="_blank" rel="noopener noreferrer">Tải phụ đề WebVTT</a>}{project.videoTranscript && <details><summary>Bản chép lời / nội dung video</summary><p>{project.videoTranscript}</p></details>}</section>}
           {project.usageGuide && <small className="guide-print-note">Bản hướng dẫn có thể in để sử dụng khi chuẩn bị tiết dạy.</small>}
@@ -1203,7 +1291,7 @@ function ProjectModal({ project, allProjects, liked, saved, offlineSaved, onTogg
         </section>
       </div>
       </article>
-      <section id="resource-print-sheet" className="resource-print-sheet"><header><img src="/eduhub-logo.png" alt="EduHub" /><span>HỌC LIỆU CHIA SẺ · CỘNG ĐỒNG GIÁO VIÊN VIỆT NAM</span></header><h1>{project.title}</h1><div className="resource-sheet-meta"><span>{project.subjects.join(' · ') || project.subject}</span><span>{project.grade}</span><span>{project.type}</span></div><p className="resource-sheet-summary">{project.description}</p>{project.learningOutcomes?.length ? <section><h2>Mục tiêu / yêu cầu cần đạt</h2><ul>{project.learningOutcomes.map((item) => <li key={item}>{item}</li>)}</ul></section> : null}<section><h2>Hướng dẫn sử dụng</h2>{project.usageGuide ? project.usageGuide.split('\n').filter(Boolean).map((line, index) => <p key={`${index}-${line}`}>{index + 1}. {line}</p>) : <p>Thầy cô mở liên kết học liệu để xem hướng dẫn đầy đủ.</p>}</section><footer><b>Chia sẻ bởi {project.teacher}{project.school ? ` · ${project.school}` : ''}</b><span>EduHub · {window.location.origin}/projects/{project.sourceId || project.id}</span><span>Vui lòng giữ thông tin tác giả khi chia sẻ lại.</span></footer></section>
+      <section id="resource-print-sheet" className="resource-print-sheet"><header><img src="/eduhub-logo.png" alt="EduHub" /><span>HỌC LIỆU CHIA SẺ · CỘNG ĐỒNG GIÁO VIÊN VIỆT NAM</span></header><h1>{project.title}</h1><div className="resource-sheet-meta"><span>{project.subjects.join(' · ') || project.subject}</span><span>{project.grade}</span><span>{project.type}</span></div><p className="resource-sheet-summary">{project.description}</p>{project.learningOutcomes?.length ? <section><h2>Mục tiêu / yêu cầu cần đạt</h2><ul>{project.learningOutcomes.map((item) => <li key={item}>{item}</li>)}</ul></section> : null}<section><h2>Hướng dẫn sử dụng</h2>{project.usageGuide ? <ProjectUsageGuide markdown={project.usageGuide} /> : <p>Thầy cô mở liên kết học liệu để xem hướng dẫn đầy đủ.</p>}</section><footer><b>Chia sẻ bởi {project.teacher}{project.school ? ` · ${project.school}` : ''}</b><span>EduHub · {window.location.origin}/projects/{project.sourceId || project.id}</span><span>Vui lòng giữ thông tin tác giả khi chia sẻ lại.</span></footer></section>
   </section>;
 }
 

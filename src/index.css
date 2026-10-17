@@ -1092,16 +1092,27 @@ html[data-theme="dark"] .admin-resource-actions button { border-color: #41423e; 
 html,body,#root{max-width:100%;overflow-x:clip}.edu-app,.topbar,.topbar-inner,.page-shell,.content-layout,.projects-section-main,.main-feed{min-width:0;max-width:100%}
 /* Project detail fixes: keep author identity readable, make demos functional, and give guides real hierarchy. */
 .project-detail-card .modal-author{width:100%;max-width:none;min-width:0;gap:12px}
-.project-detail-card .modal-author>.avatar{flex:0 0 44px;width:44px;height:44px}
+.project-detail-card .modal-author>.avatar{flex:0 0 44px;width:44px;height:44px;min-height:44px;max-height:44px;aspect-ratio:1;align-self:center;overflow:hidden}
+.project-detail-card .modal-author>.avatar img{display:block;width:100%;height:100%;aspect-ratio:1;object-fit:cover;border-radius:50%}
 .project-detail-card .modal-author-copy{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
 .project-detail-card .modal-author-copy>b,.project-detail-card .modal-author-copy>small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .project-detail-card .modal-author-copy>b{font-size:13px}
 .project-detail-card .modal-author-copy>small{font-size:11px}
 .project-detail-card .author-date{flex:0 0 auto;font-size:10px;white-space:nowrap}
-.project-detail-card .guide-copy{display:grid;gap:8px;margin:14px 0 10px;padding:0;list-style:none}
-.project-detail-card .guide-copy>li{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:start;gap:10px;padding:11px 13px;border:1px solid #e8ede5;border-radius:10px;background:linear-gradient(100deg,#fbfcf8,#f6f8f2)}
-.project-detail-card .guide-copy>li>span{display:grid;width:26px;height:26px;place-items:center;border-radius:8px;background:#f3ecd9;color:#9a7435;font-size:10px;font-weight:800}
-.project-detail-card .guide-copy>li>p{min-width:0;margin:2px 0;color:#53665a;font-size:14px;line-height:1.65;overflow-wrap:anywhere}
+.project-detail-card .guide-markdown{display:grid;gap:13px;margin:14px 0 10px;color:#405448}
+.project-detail-card .guide-markdown>h4{display:flex;align-items:center;gap:10px;margin:8px 0 0;padding:0 0 10px;border-bottom:1px solid #e7ece4;color:#294b39;font-size:17px;line-height:1.45}
+.project-detail-card .guide-markdown>h4>span{display:grid;width:29px;height:29px;flex:0 0 29px;place-items:center;border-radius:9px;background:#f5eedc;color:#987232;font-size:10px;font-weight:800}
+.project-detail-card .guide-markdown>p{margin:0;color:#53665a;font-size:14px;line-height:1.8;white-space:pre-wrap}
+.project-detail-card .guide-markdown strong{color:#304a38;font-weight:750}
+.project-detail-card .guide-markdown em{color:#647766}
+.project-detail-card .guide-markdown>.guide-bullet-list,.project-detail-card .guide-markdown>.guide-ordered-list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.project-detail-card .guide-markdown>.guide-bullet-list>li{display:grid;grid-template-columns:10px minmax(0,1fr);gap:9px;padding:11px 13px;border:1px solid #e8ede5;border-radius:10px;background:linear-gradient(100deg,#fbfcf8,#f6f8f2);color:#53665a;font-size:14px;line-height:1.7}
+.project-detail-card .guide-markdown>.guide-bullet-list>li:before{content:'';width:7px;height:7px;margin-top:8px;border-radius:50%;background:#4b916b}
+.project-detail-card .guide-markdown>.guide-ordered-list{counter-reset:guide-step}
+.project-detail-card .guide-markdown>.guide-ordered-list>li{counter-increment:guide-step;display:grid;grid-template-columns:33px minmax(0,1fr);align-items:start;gap:10px;padding:13px;border:1px solid #e3e9e0;border-radius:11px;background:#fff;box-shadow:0 3px 10px rgba(35,62,42,.035);color:#53665a;font-size:14px;line-height:1.7}
+.project-detail-card .guide-markdown>.guide-ordered-list>li:before{content:counter(guide-step);display:grid;width:28px;height:28px;place-items:center;border-radius:9px;background:#edf4eb;color:#397251;font-size:11px;font-weight:800}
+.project-detail-card .guide-markdown li>div{min-width:0;overflow-wrap:anywhere}
+.project-detail-card .guide-markdown li>ul,.project-detail-card .guide-markdown li>ol{grid-column:2;display:grid;gap:5px;margin:4px 0 0;padding:10px 0 0 16px;border-top:1px solid #edf0e9;color:#617166;font-size:13px;line-height:1.65}
 .project-detail-card .project-guide-section>h3{margin-bottom:8px;font-size:20px}
 .project-detail-toolbar{flex-wrap:wrap}
 .project-detail-toolbar>span{margin-left:auto}
@@ -1137,13 +1148,32 @@ html,body,#root{max-width:100%;overflow-x:clip}.edu-app,.topbar,.topbar-inner,.p
 .resource-revision-submit textarea{min-height:88px;resize:vertical}
 .resource-revision-submit form>label{max-width:100%}
 .resource-revision-submit form>.button{justify-self:end;min-height:40px;padding-inline:14px}
+.revision-website-code{display:grid;gap:9px;padding:12px;border:1px solid #e1e7df;border-radius:10px;background:#f7f9f5}
+.revision-website-code>label{font-size:12px!important;color:#40564a!important}
+.revision-website-code .website-html-editor{min-height:230px;padding:12px;border-radius:8px}
+.revision-website-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.revision-website-tools small{color:#77847a;font-size:10px;line-height:1.5}
+.revision-website-tools .button{min-height:34px;padding:6px 10px;font-size:11px}
+.revision-website-code .website-preview-frame{height:430px}
+.admin-revision-website{display:grid;gap:8px;margin-top:8px}
+.admin-revision-website summary{color:#356c56;font-size:11px;font-weight:700;cursor:pointer}
+.admin-revision-website .website-html-editor{min-height:160px}
+.profile-project-entry{padding:0 0 9px;border-bottom:1px solid #eef1ec}
+.profile-project-entry:last-child{padding-bottom:0;border-bottom:0}
+.profile-project-entry .profile-project-row{border-bottom:0}
+.project-moderation-pill{padding:4px 7px;border-radius:999px;font-size:9px;font-weight:750}
+.moderation-pending{background:#fff4dc;color:#916622!important}
+.moderation-rejected{background:#fce8e5;color:#a74b40!important}
+.project-moderation-note,.project-owner-status{margin:0 0 4px 63px;padding:8px 10px;border-radius:8px;background:#fff6e7;color:#795c2f;font-size:10px;line-height:1.6;overflow-wrap:anywhere}
+.project-owner-status{margin:0 0 10px;padding:10px 12px}
 .revision-request-history{display:grid;gap:7px;padding:12px;border-radius:9px;background:#f6f8f4}
 .revision-request-history>b{color:#53685a;font-size:12px}
 .revision-request-history>p{margin:0;color:#657368;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
 .revision-state{display:inline-flex;padding:3px 7px;border-radius:99px;background:#f5efdf;color:#8d7136;font-size:10px;font-weight:700}
 .revision-approved{background:#eaf4eb;color:#34714c}.revision-rejected{background:#faeee9;color:#a25843}
-html[data-theme="dark"] .project-detail-card .guide-copy>li{border-color:#3a4038;background:#242820}
-html[data-theme="dark"] .project-detail-card .guide-copy>li>p{color:#d0d6ca}
+html[data-theme="dark"] .project-detail-card .guide-markdown>h4{border-color:#3a4038;color:#e2e9dd}
+html[data-theme="dark"] .project-detail-card .guide-markdown>p,html[data-theme="dark"] .project-detail-card .guide-markdown>.guide-bullet-list>li,html[data-theme="dark"] .project-detail-card .guide-markdown>.guide-ordered-list>li{border-color:#3a4038;background:#242820;color:#d0d6ca}
+html[data-theme="dark"] .project-detail-card .guide-markdown strong{color:#e4ecdf}
 html[data-theme="dark"] .resource-revision-panel{border-color:#3b4038;background:linear-gradient(145deg,#20231e,#252821)}
 html[data-theme="dark"] .resource-revision-panel>header h3,html[data-theme="dark"] .resource-revision-history b,html[data-theme="dark"] .revision-request-history>b{color:#e2e8dd}
 html[data-theme="dark"] .resource-revision-empty,html[data-theme="dark"] .revision-request-history{background:#2a2e27;color:#bbc2b6}
@@ -1152,8 +1182,22 @@ html[data-theme="dark"] .resource-revision-history p,html[data-theme="dark"] .re
 html[data-theme="dark"] .resource-revision-submit>summary{color:#aad1af}
 html[data-theme="dark"] .resource-revision-submit label{color:#c7cec1}
 html[data-theme="dark"] .resource-revision-submit input,html[data-theme="dark"] .resource-revision-submit textarea{border-color:#43483f;background:#1a1d19;color:#e2e7dc}
-@media(max-width:700px){.project-detail-card .modal-author{gap:9px}.project-detail-card .modal-author>.avatar{flex-basis:38px;width:38px;height:38px}.project-detail-card .modal-author-copy>b{font-size:11px}.project-detail-card .modal-author-copy>small{font-size:9px}.project-detail-card .author-date{display:none}.project-detail-card .guide-copy>li{grid-template-columns:27px minmax(0,1fr);gap:8px;padding:10px}.project-detail-card .guide-copy>li>p{font-size:13px}.project-detail-card .project-guide-section>h3{font-size:18px}.teacher-website-preview>header{align-items:flex-start;flex-direction:column}.teacher-website-preview-actions{width:100%;justify-content:flex-start}.teacher-website-preview iframe{height:65vh;min-height:380px}.resource-revision-panel{padding:13px}.resource-revision-fields{grid-template-columns:minmax(0,1fr)}}
+html[data-theme="dark"] .revision-website-code{border-color:#41463e;background:#242820}
+html[data-theme="dark"] .revision-website-code>label{color:#d6dfd3!important}
+html[data-theme="dark"] .revision-website-tools small{color:#b9c0b5}
+html[data-theme="dark"] .admin-revision-website summary{color:#a8d3b4}
+html[data-theme="dark"] .profile-project-entry{border-color:#30312f}
+html[data-theme="dark"] .project-moderation-pill.moderation-pending{background:#463b25;color:#f0cb81!important}
+html[data-theme="dark"] .project-moderation-pill.moderation-rejected,html[data-theme="dark"] .project-owner-status.moderation-rejected{background:#482d2a;color:#f0a69b!important}
+html[data-theme="dark"] .project-owner-status.moderation-pending,html[data-theme="dark"] .project-moderation-note{background:#403823;color:#ecd29b}
+@media(max-width:700px){.project-detail-card .modal-author{gap:9px}.project-detail-card .modal-author>.avatar{flex-basis:38px;width:38px;height:38px}.project-detail-card .modal-author-copy>b{font-size:11px}.project-detail-card .modal-author-copy>small{font-size:9px}.project-detail-card .author-date{display:none}.project-detail-card .guide-markdown>h4{font-size:15px}.project-detail-card .guide-markdown>.guide-bullet-list>li,.project-detail-card .guide-markdown>.guide-ordered-list>li{font-size:13px;padding:10px}.project-detail-card .project-guide-section>h3{font-size:18px}.teacher-website-preview>header{align-items:flex-start;flex-direction:column}.teacher-website-preview-actions{width:100%;justify-content:flex-start}.teacher-website-preview iframe{height:65vh;min-height:380px}.resource-revision-panel{padding:13px}.resource-revision-fields{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:420px){.project-detail-card .modal-author>.avatar{flex-basis:34px;width:34px;height:34px}.resource-revision-panel>header{align-items:flex-start}.resource-revision-history>li{grid-template-columns:38px minmax(0,1fr);gap:8px}}
+@media print{body.print-guide #project-guide .guide-markdown{display:block;margin:10px 0}body.print-guide #project-guide .guide-markdown h4{margin:14px 0 6px;color:#111;font-size:15pt}body.print-guide #project-guide .guide-markdown p,body.print-guide #project-guide .guide-markdown li{color:#222;font-size:12pt;line-height:1.6}body.print-guide #project-guide .guide-markdown ol,body.print-guide #project-guide .guide-markdown ul{padding-left:24px}body.print-guide #project-guide .guide-markdown>ol>li{display:list-item;margin:5px 0;padding:0;border:0;background:transparent;box-shadow:none}body.print-guide #project-guide .guide-markdown>ol>li:before{content:none}body.print-guide #project-guide .guide-markdown>ul>li{display:list-item;margin:4px 0;padding:0;border:0;background:transparent}body.print-guide #project-guide .guide-markdown>ul>li:before{display:none}}
+.project-detail-card .teacher-website-preview>header{align-items:center;justify-content:space-between}
+.project-detail-card .teacher-website-preview>header>div:first-child{display:grid;flex:1;gap:4px;min-width:0}
+.project-detail-card .teacher-website-preview>header>.teacher-website-preview-actions{display:flex;flex:0 0 auto;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
+.project-detail-card .teacher-website-preview iframe{height:clamp(560px,72vh,820px)}
+@media(max-width:700px){.project-detail-card .teacher-website-preview>header{align-items:flex-start;flex-direction:column}.project-detail-card .teacher-website-preview>header>.teacher-website-preview-actions{width:100%;justify-content:flex-start}.project-detail-card .teacher-website-preview iframe{height:68vh;min-height:420px}}
 @media(max-width:1350px) and (min-width:951px){.topbar-inner{padding-inline:18px;gap:9px}.brand{gap:7px}.brand-word{font-size:17px}.top-actions{gap:3px}.searchbox{min-width:120px;width:clamp(120px,12vw,165px)}.top-share{padding-inline:8px}.login-button{max-width:118px;flex-basis:118px}.content-layout{grid-template-columns:185px minmax(0,1fr);gap:20px}.right-rail{display:none}.page-shell{padding-inline:24px}}
 @media(max-width:950px){.mobile-nav{left:0;right:0;width:auto;border-radius:0 0 14px 14px}.filter-disclosure-trigger{min-height:40px}.project-filter-toolbar>label:not(.project-check-filter){min-width:calc(50% - 8px);flex:1 1 calc(50% - 8px)}.project-check-filter{flex:1 1 auto;min-width:max-content}.saved-search-toolbar{gap:8px}}
 @media(max-width:650px){.filter-disclosure-trigger{font-size:11px;padding-inline:10px}.filter-disclosure-trigger>span{max-width:48%;font-size:9px;text-align:right}.project-filter-toolbar{gap:7px}.project-filter-toolbar>label:not(.project-check-filter){min-width:calc(50% - 5px);flex:1 1 calc(50% - 5px)}.project-check-filter{height:36px;font-size:9px}.active-project-filters button{font-size:9px}}

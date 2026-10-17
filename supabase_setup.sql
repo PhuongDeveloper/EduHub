@@ -1884,7 +1884,7 @@ begin
   select * into req from public.resource_revision_requests where id = p_request_id for update;
   if not found or req.status <> 'pending' then raise exception 'Yêu cầu không còn ở trạng thái chờ duyệt.'; end if;
   changes := req.changes;
-  if exists(select 1 from jsonb_object_keys(changes) as keys(key) where key not in ('title','description','usage_guide','platform_url','download_url','video_url')) then raise exception 'Yêu cầu có trường cập nhật không được phép.'; end if;
+  if exists(select 1 from jsonb_object_keys(changes) as keys(key) where key not in ('title','description','usage_guide','platform_url','download_url','video_url','website_html')) then raise exception 'Yêu cầu có trường cập nhật không được phép.'; end if;
   if p_decision = 'approved' then
     select * into res from public.resources where id = req.resource_id for update;
     if not found then raise exception 'Không tìm thấy dự án.'; end if;
@@ -1895,6 +1895,7 @@ begin
       platform_url = case when changes ? 'platform_url' then nullif(changes->>'platform_url','') else platform_url end,
       download_url = case when changes ? 'download_url' then nullif(changes->>'download_url','') else download_url end,
       video_url = case when changes ? 'video_url' then nullif(changes->>'video_url','') else video_url end,
+      website_html = case when changes ? 'website_html' then changes->>'website_html' else website_html end,
       updated_at = now()
     where id = req.resource_id;
     select coalesce(max(version_no),0)+1 into next_version from public.resource_revisions where resource_id = req.resource_id;
@@ -1914,6 +1915,26 @@ end;
 $$;
 revoke all on function public.review_resource_revision(uuid,text,text) from public,anon;
 grant execute on function public.review_resource_revision(uuid,text,text) to authenticated;
+
+create or replace function public.resubmit_rejected_website(p_resource_id uuid,p_website_html text,p_resubmission_note text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'Vui lòng đăng nhập.'; end if;
+  if p_website_html is null or length(p_website_html) > 500000 or p_website_html !~* '<html\b' or p_website_html !~* '</html\s*>' then
+    raise exception 'Mã website cần là file HTML hoàn chỉnh, tối đa 500 KB.';
+  end if;
+  if length(trim(coalesce(p_resubmission_note,''))) < 8 then raise exception 'Ghi chú gửi lại cần ít nhất 8 ký tự.'; end if;
+  update public.resources set website_html=p_website_html, moderation_status='pending', moderation_note=null, updated_at=now()
+  where id=p_resource_id and author_id=auth.uid() and moderation_status='rejected' and website_html is not null;
+  if not found then raise exception 'Không tìm thấy website bị trả lại hoặc thầy cô không có quyền sửa.'; end if;
+  insert into public.admin_audit_log(actor_id,actor_name,action,entity_type,entity_id,summary)
+    select auth.uid(),coalesce(p.full_name,'Giáo viên'),'resource_resubmitted','resource',p_resource_id::text,
+      'Tác giả đã sửa mã website và gửi lại để duyệt: '||left(trim(p_resubmission_note),300)
+    from public.profiles p where p.id=auth.uid();
+end;
+$$;
+revoke all on function public.resubmit_rejected_website(uuid,text,text) from public,anon;
+grant execute on function public.resubmit_rejected_website(uuid,text,text) to authenticated;
 
 -- Threaded replies remain attached to their parent project comment.
 alter table public.resource_comments add column if not exists parent_comment_id uuid references public.resource_comments(id) on delete cascade;
