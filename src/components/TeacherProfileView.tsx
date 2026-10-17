@@ -33,6 +33,7 @@ export function TeacherProfileView({ profileId, currentUser, onRequireAuth, onNo
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [rankPosition, setRankPosition] = useState<number | null>(null);
+  const [projectRankBadges, setProjectRankBadges] = useState<string[]>([]);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followBusy, setFollowBusy] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -47,7 +48,7 @@ export function TeacherProfileView({ profileId, currentUser, onRequireAuth, onNo
   const refresh = async () => {
     if (!supabase) { setError('Cần kết nối Supabase để xem hồ sơ giáo viên.'); setLoading(false); return; }
     setLoading(true); setError('');
-    const [profileResult, resourcesResult, resourceCountResult, downloadsResult, activityResult, ratingsResult, followersResult, followingResult, followResult, rankingResult] = await Promise.all([
+    const [profileResult, resourcesResult, resourceCountResult, downloadsResult, activityResult, ratingsResult, followersResult, followingResult, followResult, rankingResult, likedProjectsResult, downloadedProjectsResult] = await Promise.all([
       supabase.from('profiles').select('*').eq('id', profileId).maybeSingle(),
       supabase.from('resources').select('id,title,tagline,description,subjects,grade_levels,cover_url,rating_avg,rating_count,upvotes_count,downloads_count,created_at').eq('author_id', profileId).eq('moderation_status', 'approved').order('created_at', { ascending: false }).limit(24),
       supabase.from('resources').select('id', { count: 'exact', head: true }).eq('author_id', profileId).eq('moderation_status', 'approved'),
@@ -60,6 +61,8 @@ export function TeacherProfileView({ profileId, currentUser, onRequireAuth, onNo
         ? supabase.from('teacher_follows').select('id').eq('followed_id', profileId).eq('follower_id', currentUser.id).maybeSingle()
         : Promise.resolve({ data: null, error: null }),
       supabase.from('profiles').select('id').order('edu_points', { ascending: false }).limit(20),
+      supabase.from('resources').select('id,author_id').eq('moderation_status', 'approved').order('upvotes_count', { ascending: false }).limit(3),
+      supabase.from('resources').select('id,author_id').eq('moderation_status', 'approved').order('downloads_count', { ascending: false }).limit(3),
     ]);
     setLoading(false);
     if (profileResult.error || !profileResult.data) { setError(profileResult.error?.message || 'Không tìm thấy hồ sơ này.'); return; }
@@ -78,6 +81,12 @@ export function TeacherProfileView({ profileId, currentUser, onRequireAuth, onNo
     setIsFollowing(Boolean(followResult.data));
     const rankIndex = rankingResult.data?.findIndex((teacher) => teacher.id === profileId) ?? -1;
     setRankPosition(rankIndex >= 0 ? rankIndex + 1 : null);
+    const projectBadges: string[] = [];
+    const likedRank = likedProjectsResult.data?.findIndex((resource) => resource.author_id === profileId) ?? -1;
+    const downloadedRank = downloadedProjectsResult.data?.findIndex((resource) => resource.author_id === profileId) ?? -1;
+    if (likedRank >= 0) projectBadges.push(`Tác giả dự án top ${likedRank + 1} yêu thích`);
+    if (downloadedRank >= 0) projectBadges.push(`Tác giả dự án top ${downloadedRank + 1} lan tỏa`);
+    setProjectRankBadges(projectBadges);
   };
 
   useEffect(() => { void refresh(); }, [profileId]);
@@ -220,7 +229,6 @@ export function TeacherProfileView({ profileId, currentUser, onRequireAuth, onNo
     return { earned, next };
   }, [approvedResourceCount, totalDownloads, overallRating, followerCount, profile?.edu_points]);
 
-  const communityVerified = profile?.role === 'admin' || rankPosition !== null || Number(profile?.edu_points || 0) >= 500;
 
   if (loading) return <section className="teacher-profile-page profile-state profile-loading" aria-busy="true" aria-label="Đang tải hồ sơ giáo viên"><div className="skeleton skeleton-profile-cover" /><div className="skeleton-profile-head"><span className="skeleton skeleton-profile-avatar" /><span className="skeleton skeleton-line skeleton-title" /><span className="skeleton skeleton-line skeleton-medium" /></div><div className="skeleton-profile-cards">{[0, 1, 2].map((item) => <span className="skeleton skeleton-profile-card" key={item} />)}</div></section>;
   if (!profile || !draft) return <section className="teacher-profile-page profile-state"><div className="empty-icon"><UserRound size={22} /></div><h2>Chưa thể mở hồ sơ</h2><p>{error}</p><button className="button button-outline" onClick={() => void refresh()}>Thử tải lại</button></section>;
@@ -241,7 +249,7 @@ export function TeacherProfileView({ profileId, currentUser, onRequireAuth, onNo
     <div className="profile-topline">
       <div className="profile-identity">
         <div className="profile-avatar-wrap">{profile.avatar_url ? <img className="profile-avatar" src={profile.avatar_url} alt={profile.full_name} /> : <span className="profile-avatar profile-avatar-placeholder">{profile.full_name.split(/\s+/).slice(-2).map((part) => part[0]).join('').toUpperCase()}</span>}{isOwner && <label className="profile-avatar-upload" title="Đổi ảnh đại diện"><Camera size={14} /><input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => void uploadPhoto(event, 'avatar')} /></label>}</div>
-        <div className="profile-headings"><div className="profile-name-row"><h2>{profile.full_name}</h2>{communityVerified && <span className="community-verified" title={profile?.role === 'admin' ? 'Tài khoản quản trị EduHub' : rankPosition ? `Top ${rankPosition} bảng xếp hạng EduHub` : 'Giáo viên có nhiều đóng góp trên EduHub'}><BadgeCheck size={16} fill="currentColor" /> <span>{profile?.role === 'admin' ? 'Quản trị EduHub' : rankPosition ? `Top ${rankPosition} EduHub` : 'Đóng góp nổi bật'}</span></span>}{profile.teacher_verified && <span className="verified-badge"><ShieldCheck size={13} /> Giáo viên đã xác minh</span>}</div><p>{profile.subject_specialty || 'Giáo viên EduHub'}{profile.school_name && (isOwner || profile.show_school) ? ` · ${profile.school_name}` : ''}</p></div>
+        <div className="profile-headings"><div className="profile-name-row"><h2>{profile.full_name}</h2>{profile?.role === 'admin' && <span className="community-verified"><BadgeCheck size={16} fill="currentColor" /> <span>Quản trị EduHub</span></span>}{rankPosition !== null && <span className="community-verified" title={`Xếp hạng ${rankPosition} trong bảng thầy cô`}><BadgeCheck size={16} fill="currentColor" /> <span>Top {rankPosition} thầy cô</span></span>}{projectRankBadges.map((badge) => <span className="community-verified" key={badge} title={badge}><BadgeCheck size={16} fill="currentColor" /> <span>{badge}</span></span>)}{profile.teacher_verified && <span className="verified-badge"><ShieldCheck size={13} /> Giáo viên đã xác minh</span>}</div><p>{profile.subject_specialty || 'Giáo viên EduHub'}{profile.school_name && (isOwner || profile.show_school) ? ` · ${profile.school_name}` : ''}</p></div>
       </div>
       <div className="profile-top-actions">{!isOwner && <button className={`button ${isFollowing ? 'button-outline' : 'button-primary'}`} onClick={() => void toggleFollow()} disabled={followBusy}><UsersRound size={14} /> {followBusy ? 'Đang cập nhật…' : isFollowing ? 'Đang theo dõi' : 'Theo dõi'}</button>}{isOwner && <div className="profile-export-control"><select value={portfolioRange} onChange={(event) => setPortfolioRange(event.target.value as 'all' | 'year')} aria-label="Khoảng thời gian xuất hồ sơ"><option value="all">Toàn bộ</option><option value="year">12 tháng</option></select><button className="button button-outline" onClick={() => void exportPortfolio()} disabled={exporting}><Download size={14} /> {exporting ? 'Đang xuất…' : 'Xuất hồ sơ'}</button><button className="button button-quiet" onClick={() => void exportPersonalData()} disabled={personalDataExporting}><Download size={14} /> {personalDataExporting ? 'Đang chuẩn bị…' : 'Tải dữ liệu cá nhân'}</button></div>}{isOwner && !editing && <button className="button button-outline" onClick={() => setEditing(true)}><Pencil size={15} /> Chỉnh sửa hồ sơ</button>}{isOwner && <button className="button button-quiet profile-signout" onClick={onSignOut}><X size={14} /> Đăng xuất</button>}</div>
     </div>

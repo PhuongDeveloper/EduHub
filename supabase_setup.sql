@@ -2004,12 +2004,30 @@ alter table public.resources add column if not exists learning_outcomes text[] n
 alter table public.resources add column if not exists caption_url text;
 alter table public.resources add column if not exists video_transcript text not null default '' check (char_length(video_transcript) <= 12000);
 create index if not exists resources_parent_resource_idx on public.resources(parent_resource_id) where parent_resource_id is not null;
+
+-- Check an optional source resource without recursively applying resources RLS.
+create or replace function public.can_submit_resource_parent(p_parent_resource_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = pg_catalog, public, pg_temp
+as $$
+  select exists (
+    select 1
+    from public.resources as source
+    where source.id = p_parent_resource_id
+      and source.moderation_status = 'approved'
+      and source.author_id <> (select auth.uid())
+  );
+$$;
+
+revoke all on function public.can_submit_resource_parent(uuid) from public, anon;
+grant execute on function public.can_submit_resource_parent(uuid) to authenticated;
+
 drop policy if exists resources_submit_pending on public.resources;
 create policy resources_submit_pending on public.resources for insert to authenticated
   with check (
     author_id = (select auth.uid()) and moderation_status = 'pending'
-    and (parent_resource_id is null or exists (
-      select 1 from public.resources source where source.id = parent_resource_id
-        and source.moderation_status = 'approved' and source.author_id <> (select auth.uid())
-    ))
+    and (parent_resource_id is null or public.can_submit_resource_parent(parent_resource_id))
   );
