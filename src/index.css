@@ -1079,7 +1079,6 @@ html[data-theme="dark"] .admin-resource-actions button { border-color: #41423e; 
   .primary-nav{flex:1 1 auto;min-width:0;justify-content:space-between;gap:0}
   .primary-nav button{padding-inline:9px;font-size:12px}
   .primary-nav button.active:after{left:9px;right:9px}
-  .primary-nav button:nth-child(4),.primary-nav button:nth-child(5),.primary-nav button:nth-child(6){display:none}
   .top-actions{flex:0 1 auto;min-width:0;gap:6px}
   .searchbox{flex:0 1 205px;width:clamp(150px,12vw,205px);min-width:138px;gap:7px}
   .top-share{padding-inline:11px}
@@ -1285,6 +1284,45 @@ html[data-theme="dark"] .achievement-badge b,html[data-theme="dark"] .achievemen
 html[data-theme="dark"] .achievement-badge small,html[data-theme="dark"] .achievement-next small{color:#c2c8bc}
 html[data-theme="dark"] .achievement-medal .achievement-lucide{border-color:#222820}
 @media(max-width:580px){.achievement-grid{grid-template-columns:1fr}.community-verified span{display:none}.profile-name-row{flex-wrap:wrap}}
+
+/* Downloaded open-license classroom illustrations, used as small accents across the core journeys. */
+.welcome-lotus-art{position:absolute;left:5%;bottom:9%;width:68px;height:68px;object-fit:contain;opacity:.2;filter:saturate(.75);animation:edu-art-drift 8s ease-in-out infinite}
+.welcome-student-art{position:absolute;right:4%;top:13%;display:grid;place-items:center;width:49px;height:49px;border:1px solid rgba(255,255,255,.55);border-radius:16px;background:rgba(255,250,235,.88);box-shadow:0 12px 28px rgba(28,62,47,.14);transform:rotate(6deg)}
+.welcome-student-art img{width:34px;height:34px;object-fit:contain}
+.cover-openmoji{position:absolute;z-index:2;right:19%;top:29%;width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 7px 9px rgba(27,40,30,.18));transition:transform .25s cubic-bezier(.2,.75,.25,1)}
+.project-cover:hover .cover-openmoji{transform:translateY(-3px) rotate(-4deg) scale(1.05)}
+.collections-icon img,.talks-hero-icon img,.empty-icon img{width:27px;height:27px;object-fit:contain}
+.podium-medal{display:flex;align-items:center;justify-content:center;gap:4px}
+.podium-medal img{width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(90,69,22,.14))}
+.profile-point-art{width:23px;height:23px;object-fit:contain;grid-row:1 / span 2;align-self:center}
+.profile-stats>div:has(.profile-point-art){grid-template-columns:24px minmax(0,1fr);align-content:center;column-gap:8px}
+.profile-stats>div:has(.profile-point-art) small{grid-column:2}
+.profile-achievements:before{opacity:.24}
+html[data-theme="dark"] .welcome-student-art{border-color:rgba(255,255,255,.14);background:rgba(33,38,32,.86)}
+html[data-theme="dark"] .profile-achievements:before{opacity:.13}
+@media(max-width:700px){.welcome-student-art{right:2%;top:8%;width:39px;height:39px;border-radius:13px}.welcome-student-art img{width:28px;height:28px}.welcome-lotus-art{left:2%;bottom:5%;width:51px;height:51px}.cover-openmoji{right:14%;top:31%;width:39px;height:39px}}
+@media(prefers-reduced-motion:reduce){.welcome-lotus-art,.cover-openmoji{animation:none;transition:none}.project-cover:hover .cover-openmoji{transform:none}}
+
+/* Align the desktop header to the same centered content rail and prevent controls from clustering left. */
+@media(min-width:1351px){
+  .topbar-inner{box-sizing:border-box;width:100%;max-width:1468px;min-width:0;padding-inline:24px;gap:clamp(14px,1.6vw,24px)}
+  .top-actions{flex:0 1 auto;min-width:0;margin-left:auto;justify-content:flex-end}
+  .searchbox{flex:0 1 245px;min-width:160px}
+  .login-button{flex:0 1 auto;max-width:220px}
+  .primary-nav button{padding-inline:clamp(8px,1vw,14px)}
+}
+@media(min-width:1600px){.topbar-inner{max-width:1468px;padding-inline:24px;gap:clamp(14px,1.6vw,24px)}}
+
+/* Vietnamese motifs live as low-contrast watermarks behind the reading surfaces. */
+.content-layout{position:relative;isolation:isolate}
+.content-layout:before{position:absolute;z-index:-1;top:35px;right:calc(50% - 160px);width:320px;height:320px;background:url('/edu-vietnam-pattern.svg') center/contain no-repeat;opacity:.095;content:"";pointer-events:none}
+.profile-cover{position:relative;overflow:hidden}
+.profile-cover:after{position:absolute;right:6%;top:50%;width:130px;height:130px;background:url('/assets/lotus.svg') center/contain no-repeat;opacity:.16;content:"";transform:translateY(-50%);pointer-events:none}
+.profile-cover-label,.profile-cover-upload{position:relative;z-index:1}
+html[data-theme="dark"] .content-layout:before{opacity:.055}
+html[data-theme="dark"] .profile-cover:after{opacity:.11;filter:saturate(.7)}
+@media(max-width:950px){.content-layout:before{right:0;width:230px;height:230px;opacity:.065}}
+@media(max-width:600px){.profile-cover:after{right:4%;width:85px;height:85px;opacity:.12}}
 @media(max-width:700px){
   .profile-topline{gap:10px}
   .profile-identity{gap:10px}
