@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef, type Ref } from 'react';
 import { sandboxWebsiteHtml } from '../lib/sandboxWebsite';
 
-type BrowserRequest = { source: 'eduhub-browser-bridge'; type: 'hello' | 'media' | 'geolocation' | 'watch' | 'clearWatch' | 'clipboard-read' | 'clipboard-write'; id?: string; constraints?: MediaStreamConstraints; method?: string; options?: PositionOptions; value?: string };
+type BrowserRequest = { source: 'eduhub-browser-bridge'; type: 'hello' | 'media' | 'geolocation' | 'watch' | 'clearWatch' | 'clipboard-read' | 'clipboard-write' | 'video-ready' | 'stop-media'; id?: string; constraints?: MediaStreamConstraints; method?: string; options?: PositionOptions; value?: string };
 type TeacherWebsiteFrameProps = { title: string; html: string; className?: string };
 const bridgeSource = 'eduhub-browser-bridge';
 const hostSource = 'eduhub-browser-bridge-host';
@@ -16,6 +16,16 @@ export const TeacherWebsiteFrame = forwardRef<HTMLIFrameElement, TeacherWebsiteF
 
   useEffect(() => {
     const watches = new Map<string, number>();
+    const videoRelays = new Map<string, { stream: MediaStream; video: HTMLVideoElement; frameId: number; sending: boolean; lastFrame: number }>();
+    const stopVideoRelay = (id: string) => {
+      const relay = videoRelays.get(id);
+      if (!relay) return;
+      cancelAnimationFrame(relay.frameId);
+      relay.video.pause();
+      relay.video.srcObject = null;
+      relay.stream.getTracks().forEach((track) => track.stop());
+      videoRelays.delete(id);
+    };
     const handleMessage = async (event: MessageEvent<BrowserRequest>) => {
       const frame = frameRef.current;
       const target = frame?.contentWindow;
@@ -29,6 +39,26 @@ export const TeacherWebsiteFrame = forwardRef<HTMLIFrameElement, TeacherWebsiteF
         const failure = error instanceof Error ? error : new Error('Không thể sử dụng tính năng trên thiết bị này.');
         target.postMessage({ source: hostSource, type: 'error', id: message.id, name: failure.name, message: failure.message, code: 'code' in failure ? failure.code : undefined }, '*');
       };
+      if ((message.type === 'stop-media' || message.type === 'video-ready') && typeof message.id === 'string') {
+        if (message.type === 'stop-media') { stopVideoRelay(message.id); return; }
+        const relay = videoRelays.get(message.id);
+        if (!relay) return;
+        const drawFrame = (time: number) => {
+          if (videoRelays.get(message.id!) !== relay) return;
+          if (!relay.sending && time - relay.lastFrame >= 40 && relay.video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+            relay.sending = true;
+            relay.lastFrame = time;
+            void createImageBitmap(relay.video).then((bitmap) => {
+              if (videoRelays.get(message.id!) !== relay) { bitmap.close(); return; }
+              try { target.postMessage({ source: hostSource, type: 'video-frame', id: message.id, bitmap }, '*', [bitmap]); }
+              catch { bitmap.close(); stopVideoRelay(message.id!); }
+            }).catch(() => {}).finally(() => { relay.sending = false; });
+          }
+          relay.frameId = requestAnimationFrame(drawFrame);
+        };
+        relay.frameId = requestAnimationFrame(drawFrame);
+        return;
+      }
       if (message.type === 'clearWatch' && typeof message.id === 'string') {
         const watchId = watches.get(message.id);
         if (watchId !== undefined) navigator.geolocation?.clearWatch(watchId);
@@ -70,8 +100,23 @@ export const TeacherWebsiteFrame = forwardRef<HTMLIFrameElement, TeacherWebsiteF
             stream.getTracks().forEach((track) => track.stop());
             return;
           }
-          target.postMessage({ source: hostSource, type: 'result', id: message.id, tracks }, '*', tracks);
-          stream.getTracks().forEach((track) => track.stop());
+          try {
+            target.postMessage({ source: hostSource, type: 'result', id: message.id, tracks }, '*', tracks);
+            stream.getTracks().forEach((track) => track.stop());
+          } catch (transferError) {
+            tracks.forEach((track) => track.stop());
+            const wantsAudio = Boolean(message.constraints && typeof message.constraints === 'object' && message.constraints.audio);
+            const videoTrack = stream.getVideoTracks()[0];
+            if (wantsAudio || !videoTrack) throw new DOMException('Trình duyệt hiện không hỗ trợ chuyển micro qua khung website an toàn.', 'NotSupportedError');
+            const video = document.createElement('video');
+            video.muted = true;
+            video.playsInline = true;
+            video.srcObject = stream;
+            await video.play();
+            videoRelays.set(message.id, { stream, video, frameId: 0, sending: false, lastFrame: 0 });
+            target.postMessage({ source: hostSource, type: 'video-relay', id: message.id, width: video.videoWidth || videoTrack.getSettings().width || 640, height: video.videoHeight || videoTrack.getSettings().height || 480 }, '*');
+            void transferError;
+          }
         } catch (error) {
           tracks.forEach((track) => track.stop());
           stream?.getTracks().forEach((track) => track.stop());
@@ -82,7 +127,7 @@ export const TeacherWebsiteFrame = forwardRef<HTMLIFrameElement, TeacherWebsiteF
       }
     };
     window.addEventListener('message', handleMessage);
-    return () => { window.removeEventListener('message', handleMessage); watches.forEach((id) => navigator.geolocation?.clearWatch(id)); };
+    return () => { window.removeEventListener('message', handleMessage); watches.forEach((id) => navigator.geolocation?.clearWatch(id)); videoRelays.forEach((_, id) => stopVideoRelay(id)); };
   }, []);
 
   return <iframe
