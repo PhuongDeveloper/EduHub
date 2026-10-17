@@ -1,5 +1,53 @@
 [
   {
+    "id": "app-geogebra-math",
+    "title": "GeoGebra (Hình học Động & Mô phỏng Toán học GDPT 2018)",
+    "platformUrl": "https://www.geogebra.org/",
+    "author": "GeoGebra Team & Cộng đồng Giáo viên Toán Việt Nam",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-16T13:38:04.526Z"
+  },
+  {
+    "id": "app-submit-1791045459307",
+    "title": "Trợ lý ôn tập ngữ văn thi TN THPT",
+    "platformUrl": "https://vanmaster.vercel.app/",
+    "author": "Thầy Trần Hiếu Hải, Hứa Thị Toàn, Nguyễn Chí Thanh",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-15T05:34:56.577Z"
+  },
+  {
+    "id": "app-submit-1791041531767",
+    "title": "Trình tạo video AI cho giáo viên",
+    "platformUrl": "https://flow.google.com/shared/tool/33445ce5-207a-45a9-87cf-f8522c9fde9c",
+    "author": "Nguyễn Chí Thanh, GV trường PTDTNT ATK Sơn Dương, Tuyên Quang",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-14T12:09:27.111Z"
+  },
+  {
+    "id": "app-magicschool-ai",
+    "title": "MagicSchool AI (Phiên bản Giáo Dục Việt Hóa)",
+    "platformUrl": "https://www.magicschool.ai/",
+    "author": "Cộng đồng Giáo Viên Đổi Mới & MagicSchool Global",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-14T12:09:27.111Z"
+  },
+  {
+    "id": "app-phet-simulations",
+    "title": "PhET Interactive Simulations (Mô phỏng Thí nghiệm Ảo KHTN & Vật lí)",
+    "platformUrl": "https://phet.colorado.edu/vi/",
+    "author": "Đại học Colorado Boulder & ĐH Sư phạm Hà Nội Việt hóa",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-14T12:09:27.111Z"
+  },
+  {
+    "id": "app-submit-1791046638403",
+    "title": "Chiếc nón kì diệu_quay chọn học sinh",
+    "platformUrl": "https://chi-c-n-n-k-di-u-v-ng-quay-h-c-sinh.ai.studio",
+    "author": "Nguyễn Chí Thanh, Trường PTDTNT ATK Sơn Dương",
+    "reason": "Hết thời gian chờ (Timeout > 3500ms) - Máy chủ không phản hồi",
+    "removedAt": "2026-10-13T14:34:30.155Z"
+  },
+  {
     "id": "app-canva-education",
     "title": "Canva for Education (Thiết kế Bài giảng & Học liệu Sư phạm)",
     "platformUrl": "https://www.canva.com/vi_vn/giao-duc/",

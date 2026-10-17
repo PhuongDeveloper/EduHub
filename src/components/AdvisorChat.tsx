@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Send, Sparkles, Brain, BookOpen, RefreshCw, Copy, Check, MessageSquare } from 'lucide-react';
+import { GRADE_LABELS, SUBJECT_NAMES } from '../lib/curriculum';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -122,7 +123,7 @@ Thầy cô đang quan tâm đến nội dung bài học hay môn học nào?`,
             onChange={(e) => setSelectedGrade(e.target.value)}
             className="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           >
-            {['Tiểu học', 'Lớp 6', 'Lớp 7', 'Lớp 8', 'Lớp 9', 'Lớp 10', 'Lớp 11', 'Lớp 12'].map((g) => (
+            {GRADE_LABELS.map((g) => (
               <option key={g} value={g}>{g}</option>
             ))}
           </select>
@@ -132,7 +133,7 @@ Thầy cô đang quan tâm đến nội dung bài học hay môn học nào?`,
             onChange={(e) => setSelectedSubject(e.target.value)}
             className="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           >
-            {['Toán học', 'Ngữ văn', 'Khoa học tự nhiên', 'Vật lí', 'Hóa học', 'Sinh học', 'Tiếng Anh', 'Lịch sử & Địa lí', 'Tin học', 'Hoạt động trải nghiệm'].map((s) => (
+            {SUBJECT_NAMES.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>

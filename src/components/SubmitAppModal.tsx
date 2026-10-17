@@ -13,6 +13,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { ResourceItem, ResourceType, SchoolLevel, CurriculumBook, TeacherProfile } from '../types';
+import { SUBJECT_NAMES } from '../lib/curriculum';
 
 interface SubmitAppModalProps {
   isOpen: boolean;
@@ -202,11 +203,13 @@ export const SubmitAppModal: React.FC<SubmitAppModalProps> = ({
               <div>
                 <label className="font-bold text-slate-800 block mb-1">Môn học</label>
                 <select
-                  value={selectedSubjects[0]}
-                  onChange={(e) => setSelectedSubjects([e.target.value])}
+                  multiple
+                  size={5}
+                  value={selectedSubjects}
+                  onChange={(e) => setSelectedSubjects(Array.from(e.target.selectedOptions, (option) => option.value))}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 font-semibold"
                 >
-                  {['Toán', 'Ngữ văn', 'KHTN', 'Tiếng Anh', 'Vật lí', 'Hóa học', 'Sinh học', 'Lịch sử & Địa lí', 'Tin học', 'Công nghệ', 'GDCD'].map((s) => (
+                  {SUBJECT_NAMES.map((s) => (
                     <option key={s} value={s}>{s}</option>
                   ))}
                 </select>

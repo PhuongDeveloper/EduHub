@@ -25,6 +25,7 @@ import {
   Zap
 } from 'lucide-react';
 import { AppItem, DiscoveredAgentApp, MonitoredSource, LiveTestToolItem, SiteLiveTestResponse } from '../types';
+import { SUBJECT_NAMES } from '../lib/curriculum';
 
 interface AgentScannerProps {
   onAddDiscoveredApp: (app: AppItem) => void;
@@ -936,14 +937,8 @@ export const AgentScanner: React.FC<AgentScannerProps> = ({ onAddDiscoveredApp }
                   onChange={(e) => setTargetSubject(e.target.value)}
                   className="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 >
-                  <option value="all">Đa môn học</option>
-                  <option value="Toán học">Toán học</option>
-                  <option value="Ngữ văn">Ngữ văn</option>
-                  <option value="Khoa học tự nhiên">Khoa học tự nhiên (Lý, Hóa, Sinh)</option>
-                  <option value="Tiếng Anh">Tiếng Anh</option>
-                  <option value="Lịch sử & Địa lí">Lịch sử và Địa lí</option>
-                  <option value="Tin học & Công nghệ">Tin học và Công nghệ</option>
-                  <option value="GDCD & Hoạt động trải nghiệm">GDCD và Hoạt động trải nghiệm</option>
+                  <option value="all">Tất cả môn học</option>
+                  {SUBJECT_NAMES.map((subject) => <option value={subject} key={subject}>{subject}</option>)}
                 </select>
               </div>
 

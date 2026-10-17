@@ -14,6 +14,7 @@ import {
   Check
 } from 'lucide-react';
 import { AppItem, CopyrightAuditDetails, TutorialArticle } from '../types';
+import { SUBJECT_NAMES } from '../lib/curriculum';
 
 interface EditAppModalProps {
   isOpen: boolean;
@@ -24,21 +25,7 @@ interface EditAppModalProps {
   initialTab?: 'general' | 'copyright' | 'tutorials' | 'pedagogy';
 }
 
-const COMMON_SUBJECTS = [
-  'Toán',
-  'Ngữ văn',
-  'Tiếng Anh',
-  'KHTN',
-  'Vật lí',
-  'Hóa học',
-  'Sinh học',
-  'Lịch sử & Địa lí',
-  'Tin học',
-  'Công nghệ',
-  'GDCD',
-  'Hoạt động trải nghiệm',
-  'Đa môn học'
-];
+const COMMON_SUBJECTS = [...SUBJECT_NAMES, 'Liên môn / nhiều môn'];
 
 const COMMON_GRADES = [
   'Lớp 1', 'Lớp 2', 'Lớp 3', 'Lớp 4', 'Lớp 5',
@@ -120,7 +107,7 @@ export const EditAppModal: React.FC<EditAppModalProps> = ({
       setSourceType(app.sourceType || 'vietnam_created');
       setPlatformUrl(app.platformUrl || '');
       setGradeLevels(Array.isArray(app.gradeLevels) ? app.gradeLevels : ['Toàn cấp']);
-      setSubjects(Array.isArray(app.subjects) ? app.subjects : ['Đa môn học']);
+      setSubjects(Array.isArray(app.subjects) ? app.subjects : ['Liên môn / nhiều môn']);
       setPurpose(Array.isArray(app.purpose) ? app.purpose : ['Học liệu số']);
       setDescription(app.description || '');
       setDetailedReview(app.detailedReview || '');
@@ -152,7 +139,7 @@ export const EditAppModal: React.FC<EditAppModalProps> = ({
       setSourceType('vietnam_created');
       setPlatformUrl('');
       setGradeLevels(['Toàn cấp']);
-      setSubjects(['Đa môn học']);
+      setSubjects(['Liên môn / nhiều môn']);
       setPurpose(['Học liệu số']);
       setDescription('');
       setDetailedReview('');
@@ -305,7 +292,7 @@ export const EditAppModal: React.FC<EditAppModalProps> = ({
         sourceType,
         platformUrl: platformUrl.trim(),
         gradeLevels: gradeLevels.length > 0 ? gradeLevels : ['Toàn cấp'],
-        subjects: subjects.length > 0 ? subjects : ['Đa môn học'],
+        subjects: subjects.length > 0 ? subjects : ['Liên môn / nhiều môn'],
         purpose: purpose.length > 0 ? purpose : ['Học liệu số'],
         description: description.trim() || 'Ứng dụng hỗ trợ giảng dạy GDPT 2018.',
         detailedReview: detailedReview.trim() || 'Ứng dụng đã được Quản trị viên EduAI Hub kiểm duyệt chất lượng sư phạm và xác thực an toàn tuyệt đối.',

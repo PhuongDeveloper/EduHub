@@ -39,7 +39,7 @@ export interface ResourceItem {
   // Giáo dục GDPT 2018
   schoolLevels: SchoolLevel[];
   gradeLevels: string[]; // ["Lớp 6", "Lớp 7",...]
-  subjects: string[]; // ["Toán", "Ngữ văn", "KHTN",...]
+  subjects: string[]; // Official subject names; multidisciplinary resources can include several.
   curriculumBooks: CurriculumBook[];
   purpose: string[];
 
