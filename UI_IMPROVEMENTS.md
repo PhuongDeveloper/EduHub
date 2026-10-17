@@ -49,3 +49,10 @@ Danh sách do tác nhân UI rà soát trực tiếp các màn hình EduHub. Các
 - Ẩn lối tắt kế hoạch cá nhân, lịch kế hoạch, nhóm, tin nhắn, sự kiện, ngoại tuyến và các trang tiện ích phụ khỏi điều hướng thường dùng; giữ các luồng học liệu, thảo luận, hồ sơ, lưu, yêu cầu học liệu và duyệt nội dung.
 - Gỡ các liên kết chân trang chỉ hiện thông báo “sẽ sớm cập nhật”, bỏ thẻ danh mục và lời mời chia sẻ lặp lại, đồng thời đổi nhãn có mũi tên nhưng không thao tác thành nhãn tĩnh.
 - Subagent thêm chuyển động vào nội dung trang, modal, popover, nút, thẻ học liệu/thảo luận và hình minh họa; tuân thủ cài đặt giảm chuyển động.
+
+## Sửa các lỗi hiển thị theo ảnh gửi
+
+- Tăng tương phản chữ banner ở giao diện sáng; cân lại cỡ chữ bộ môn, bảng đóng góp và hồ sơ giáo viên.
+- Chuyển nút chọn cả cấp học vào hàng tiêu đề riêng, tránh đè lên các nút khối lớp; tăng khoảng bấm và cỡ chữ cho bộ chọn môn.
+- Tách thanh thao tác tường giáo viên khỏi hàng tên/ảnh đại diện để tên không bị ép vỡ dòng; ẩn cột phụ ở màn hình trung bình để giữ đủ chiều rộng cho nội dung.
+- Bổ sung màu nền, chữ và trường nhập tương ứng cho modal ở giao diện tối; kiểm tra lại preview trang chủ ở 1254px và cả hai chủ đề.

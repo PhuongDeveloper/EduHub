@@ -45,7 +45,7 @@ export function CurriculumPicker({ grades, subjects, onGradesChange, onSubjectsC
         const allSelected = stage.gradeLabels.every((grade) => grades.includes(grade));
         return <fieldset className="curriculum-stage" key={stage.id}>
           <legend>{stage.label}</legend>
-          <button className={`curriculum-stage-all${allSelected ? ' active' : ''}`} type="button" onClick={() => toggleStage(stage.gradeLabels)}>{allSelected ? 'Bỏ chọn cấp' : 'Chọn cả cấp'}</button>
+          <button className={`curriculum-stage-all${allSelected ? ' active' : ''}`} type="button" onClick={() => toggleStage(stage.gradeLabels)}>{allSelected ? 'Bỏ chọn' : 'Chọn tất cả'}</button>
           <div className="curriculum-grade-options">{stage.gradeLabels.map((grade) => <button key={grade} type="button" aria-pressed={grades.includes(grade)} className={grades.includes(grade) ? 'active' : ''} onClick={() => toggleGrade(grade)}>{grade.replace('Lớp ', '')}</button>)}</div>
         </fieldset>;
       })}
