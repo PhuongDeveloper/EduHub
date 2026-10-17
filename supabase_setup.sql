@@ -35,6 +35,7 @@ create table if not exists public.resources (
   download_url text,
   platform_url text,
   cover_url text,
+  description_images text[] not null default '{}',
   video_url text,
   usage_guide text,
   school_levels text[] not null default '{}',
@@ -163,6 +164,7 @@ alter table public.resources add column if not exists file_size text;
 alter table public.resources add column if not exists download_url text;
 alter table public.resources add column if not exists platform_url text;
 alter table public.resources add column if not exists cover_url text;
+alter table public.resources add column if not exists description_images text[] not null default '{}';
 alter table public.resources add column if not exists video_url text;
 alter table public.resources add column if not exists usage_guide text;
 alter table public.resources add column if not exists school_levels text[] not null default '{}';

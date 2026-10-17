@@ -1356,3 +1356,25 @@ html[data-theme="dark"] .profile-cover:after{opacity:.11;filter:saturate(.7)}
 .project-cover .cover-openmoji{position:absolute;z-index:1;inset:50% auto auto 50%;width:64px;height:64px;object-fit:contain;transform:translate(-50%,-50%);filter:none;transition:transform .2s ease}
 .project-cover:hover .cover-openmoji{transform:translate(-50%,calc(-50% - 2px))}
 .modal-project-cover .cover-art{display:none}
+
+.project-description-gallery{margin:18px 0 22px;padding:16px;border:1px solid var(--line,#e3e9e2);border-radius:13px;background:color-mix(in srgb,var(--paper,#fff) 92%,#edf4ee)}
+.project-description-gallery h3{margin:0 0 11px;color:var(--ink,#243a30);font-size:13px}
+.project-description-gallery>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.project-description-gallery a{display:block;overflow:hidden;border-radius:9px;background:#e9eee8}
+.project-description-gallery img{display:block;width:100%;max-height:340px;aspect-ratio:16/10;object-fit:cover;transition:transform .2s ease}
+.project-description-gallery a:hover img{transform:scale(1.025)}
+.description-image-previews{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:-4px}
+.description-image-previews figure{position:relative;min-width:0;margin:0;overflow:hidden;border:1px solid var(--line,#e3e9e2);border-radius:9px;background:var(--paper,#fff)}
+.description-image-previews img{display:block;width:100%;height:105px;object-fit:cover}
+.description-image-previews figcaption{overflow:hidden;padding:6px 26px 7px 8px;color:var(--muted,#718076);font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.description-image-previews button{position:absolute;top:5px;right:5px;width:25px;height:25px;display:grid;place-items:center;border:1px solid rgba(20,35,26,.12);border-radius:50%;background:rgba(255,255,255,.94);color:#48564c}
+.achievement-locked{opacity:.78;background:color-mix(in srgb,var(--paper,#fff) 94%,#e7e8e1)}
+.achievement-locked .achievement-medal img{filter:grayscale(.78);opacity:.7}
+.achievement-lockmark{position:absolute;right:-3px;bottom:-3px;width:17px;height:17px;padding:2px;border:2px solid var(--paper,#fff);border-radius:50%;background:#707a72;color:#fff}
+.achievement-progress{display:block;overflow:hidden;width:min(150px,100%);height:4px;margin-top:3px;border-radius:99px;background:#e5e9e2}
+.achievement-progress i{display:block;height:100%;border-radius:inherit;background:#8aa996;transition:width .25s ease}
+html[data-theme="dark"] .achievement-locked{border-color:#3a4039;background:#20241f}
+html[data-theme="dark"] .achievement-lockmark{border-color:#222820;background:#636c63}
+html[data-theme="dark"] .achievement-progress{background:#3b423b}
+@media(max-width:580px){.description-image-previews{grid-template-columns:repeat(2,minmax(0,1fr))}.description-image-previews img{height:92px}.project-description-gallery{padding:12px}.project-description-gallery>div{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.project-description-gallery img,.achievement-progress i{transition:none}.project-description-gallery a:hover img{transform:none}}
