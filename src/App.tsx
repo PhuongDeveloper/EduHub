@@ -112,7 +112,7 @@ function projectFromRow(row: any): Project {
   const format = [row.file_format?.toUpperCase(), row.file_size].filter(Boolean).join(' · ') || (row.platform_url ? 'Dùng trực tuyến' : 'Học liệu');
   return {
     id: row.id, sourceId: row.id, parentResourceId: row.parent_resource_id || undefined, title: row.title, description: row.description || row.tagline || '', subjects: projectSubjects,
-    type: typeNames[row.resource_type] || row.resource_type || 'Dự án', subject: projectSubjects.includes('Mọi môn') ? 'Dùng cho mọi môn' : firstSubject || 'Liên môn / nhiều môn',
+    type: row.website_html ? 'Website giáo dục' : typeNames[row.resource_type] || row.resource_type || 'Dự án', subject: projectSubjects.includes('Mọi môn') ? 'Dùng cho mọi môn' : firstSubject || 'Liên môn / nhiều môn',
     grade: Array.isArray(row.grade_levels) && row.grade_levels.length ? row.grade_levels.join(', ') : 'Mọi khối lớp',
     teacher: name, teacherId: author.id || undefined, teacherAvatarUrl: author.avatar_url || undefined, school: [author.show_school !== false ? author.school_name : null, author.show_location === false ? null : [author.ward, author.province].filter(Boolean).join(', ')].filter(Boolean).join(' · ') || 'Cộng đồng EduHub', initials: name.split(/\s+/).slice(-2).map((part: string) => part[0]).join('').toUpperCase(),
     color, votes: row.upvotes_count || 0, replies: row.comments?.[0]?.count || 0, downloads: row.downloads_count || 0,
@@ -673,7 +673,7 @@ export default function App() {
       const format = draft.websiteHtml ? 'html' : draft.file?.name.split('.').pop()?.toLowerCase() || null;
       const { data: createdResource, error } = await supabase.from('resources').insert({
         title: draft.title, tagline: draft.description.slice(0, 180), description: draft.description,
-        resource_type: draft.websiteHtml ? 'teacher_website' : resourceTypes[draft.type] || 'tool_software', file_format: format,
+        resource_type: draft.websiteHtml ? 'utility_web' : resourceTypes[draft.type] || 'tool_software', file_format: format,
         download_url: attachmentUrl, platform_url: draft.websiteHtml && websiteSlug ? `${window.location.origin}/web/${websiteSlug}` : draft.url || null, cover_url: coverUrl, description_images: descriptionImages,
         website_html: draft.websiteHtml || null, website_slug: websiteSlug,
         video_url: draft.videoUrl || null, usage_guide: draft.guide || null,
@@ -690,7 +690,14 @@ export default function App() {
       return null;
     } catch (error) {
       if (uploadedPaths.length) await supabase.storage.from('eduhub-assets').remove(uploadedPaths);
-      return error instanceof Error ? error.message : 'Không thể gửi dự án.';
+      const failure = error as { message?: string; details?: string; hint?: string; code?: string; status?: number };
+      const message = [failure?.message, failure?.details, failure?.hint].filter((part): part is string => Boolean(part)).join(' · ');
+      if (failure?.code === '42703' || /website_html|website_slug|schema cache|column.+does not exist/i.test(message)) {
+        return 'Cơ sở dữ liệu Supabase chưa có các cột website_html và website_slug. Anh chạy lại toàn bộ file supabase_setup.sql rồi gửi lại nhé.';
+      }
+      console.error('EduHub project submission failed', failure);
+      if (failure?.status === 500) return 'Supabase gặp lỗi nội bộ khi lưu dự án. Hãy chạy lại supabase_setup.sql để đồng bộ schema website; nếu lỗi còn, xem chi tiết lỗi được ghi trong Console.';
+      return message ? `Supabase không lưu được dự án${failure?.code ? ` (${failure.code})` : ''}: ${message}` : 'Không thể gửi dự án. Vui lòng thử lại; nếu vẫn lỗi, mở Console để xem chi tiết Supabase.';
     }
   };
 

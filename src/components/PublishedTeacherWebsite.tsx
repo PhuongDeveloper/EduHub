@@ -14,7 +14,7 @@ export function PublishedTeacherWebsite({ slug }: { slug: string }) {
     let active = true;
     if (!supabase) { setError('Website tạm thời chưa thể tải.'); setLoading(false); return () => { active = false; }; }
     setLoading(true); setError('');
-    void Promise.resolve(supabase.from('resources').select('title,website_html,website_slug,author:profiles!resources_author_id_fkey(full_name)').eq('website_slug', slug).eq('resource_type', 'teacher_website').eq('moderation_status', 'approved').maybeSingle())
+    void Promise.resolve(supabase.from('resources').select('title,website_html,website_slug,author:profiles!resources_author_id_fkey(full_name)').eq('website_slug', slug).eq('moderation_status', 'approved').maybeSingle())
       .then(({ data, error: queryError }) => {
         if (!active) return;
         if (queryError) setError(queryError.message);
