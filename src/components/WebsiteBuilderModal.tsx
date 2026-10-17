@@ -1,10 +1,10 @@
-import { useState, type FormEvent } from 'react';
-import { ArrowLeft, ArrowRight, Check, Clipboard, ExternalLink, Globe2, Lightbulb, MonitorPlay, Send, WandSparkles, X } from 'lucide-react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { ArrowLeft, ArrowRight, Check, Clipboard, ExternalLink, Globe2, Image, Lightbulb, MonitorPlay, Send, Upload, WandSparkles, X } from 'lucide-react';
 import { CurriculumPicker } from './CurriculumPicker';
 import { sandboxWebsiteHtml } from '../lib/sandboxWebsite';
 import { WebsiteVisualEditor } from './WebsiteVisualEditor';
 
-export type TeacherWebsiteDraft = { title: string; description: string; subjects: string[]; grades: string[]; websiteHtml: string };
+export type TeacherWebsiteDraft = { title: string; description: string; subjects: string[]; grades: string[]; websiteHtml: string; cover: File | null; descriptionImages: File[]; videoUrl: string; guide: string };
 type Step = 'idea' | 'prompt' | 'code' | 'publish';
 
 const aiProviders = [
@@ -47,8 +47,28 @@ export function WebsiteBuilderModal({ onClose, onSubmit }: { onClose: () => void
   const [description, setDescription] = useState('');
   const [grades, setGrades] = useState<string[]>([]);
   const [subjects, setSubjects] = useState<string[]>([]);
+  const [allSubjects, setAllSubjects] = useState(false);
+  const [cover, setCover] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState('');
+  const [descriptionImages, setDescriptionImages] = useState<File[]>([]);
+  const [descriptionPreviews, setDescriptionPreviews] = useState<string[]>([]);
+  const [videoUrl, setVideoUrl] = useState('');
+  const [guide, setGuide] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!cover) { setCoverPreview(''); return; }
+    const url = URL.createObjectURL(cover);
+    setCoverPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [cover]);
+
+  useEffect(() => {
+    const urls = descriptionImages.map((file) => URL.createObjectURL(file));
+    setDescriptionPreviews(urls);
+    return () => urls.forEach((url) => URL.revokeObjectURL(url));
+  }, [descriptionImages]);
 
   const copyPrompt = async () => {
     try {
@@ -73,6 +93,21 @@ export function WebsiteBuilderModal({ onClose, onSubmit }: { onClose: () => void
     } catch { setPromptCopied(false); }
   };
 
+  const selectCover = (file?: File) => {
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(file.type)) { setError('Ảnh bìa cần là JPG, PNG, WebP hoặc AVIF.'); return; }
+    if (file.size > 8 * 1024 * 1024) { setError('Ảnh bìa tối đa 8 MB.'); return; }
+    setError(''); setCover(file);
+  };
+
+  const addDescriptionImages = (incoming: File[]) => {
+    const additions = incoming.filter((item) => !descriptionImages.some((existing) => existing.name === item.name && existing.size === item.size && existing.lastModified === item.lastModified));
+    if (descriptionImages.length + additions.length > 6) { setError('Mỗi website tải tối đa 6 ảnh minh họa.'); return; }
+    if (additions.some((image) => !['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(image.type))) { setError('Ảnh minh họa cần là JPG, PNG, WebP hoặc AVIF.'); return; }
+    if (additions.some((image) => image.size > 8 * 1024 * 1024) || [...descriptionImages, ...additions].reduce((sum, image) => sum + image.size, 0) > 32 * 1024 * 1024) { setError('Ảnh minh họa tối đa 8 MB mỗi ảnh và 32 MB tổng cộng.'); return; }
+    setError(''); setDescriptionImages((current) => [...current, ...additions]);
+  };
+
   const publish = async (event: FormEvent) => {
     event.preventDefault();
     if (!title.trim() || !description.trim() || !html.trim()) { setError('Điền tên, mô tả và mã HTML trước khi gửi.'); return; }
@@ -80,7 +115,7 @@ export function WebsiteBuilderModal({ onClose, onSubmit }: { onClose: () => void
     if (html.length > 500_000) { setError('File HTML vượt quá 500 KB. Hãy yêu cầu AI rút gọn mã và bỏ tài nguyên nhúng quá lớn.'); return; }
     if (!subjects.length || !grades.length) { setError('Chọn ít nhất một môn học và một khối lớp để gửi duyệt.'); return; }
     setSaving(true); setError('');
-    const result = await onSubmit({ title: title.trim(), description: description.trim(), subjects, grades, websiteHtml: html });
+    const result = await onSubmit({ title: title.trim(), description: description.trim(), subjects, grades, websiteHtml: html, cover, descriptionImages, videoUrl: videoUrl.trim(), guide: guide.trim() });
     setSaving(false);
     if (result) setError(result);
   };
@@ -99,7 +134,8 @@ export function WebsiteBuilderModal({ onClose, onSubmit }: { onClose: () => void
 
       {step === 'code' && <div className="website-builder-content website-code-step"><span className="section-kicker">BƯỚC 3 · DÁN FILE AI TẠO</span><h2>Đưa website vào xem thử</h2><p className="website-builder-intro">Dán toàn bộ HTML. Thầy cô có thể chọn trực tiếp phần tử trên canvas để sửa nội dung, kích thước, căn chữ và vị trí; vẫn có thể mở mã để chỉnh sâu.</p><details className="website-source-editor" open={!html.trim()}><summary>{html.trim() ? 'Mở mã HTML để chỉnh sửa' : 'Dán mã HTML'}</summary><label className="form-label">Mã HTML<textarea className="website-html-editor" value={html} onChange={(event) => { setHtml(event.target.value); setError(''); }} maxLength={500_000} rows={html.trim() ? 8 : 12} spellCheck={false} placeholder="Dán toàn bộ file HTML ở đây…" /></label></details><div className="website-code-toolbar"><small>{html.length.toLocaleString('vi-VN')} / 500.000 ký tự</small><button className="button button-outline" disabled={!html.trim()} onClick={() => setPreviewOpen((open) => !open)}><MonitorPlay size={15} /> {previewOpen ? 'Đóng canvas' : 'Mở canvas chỉnh sửa'}</button></div>{previewOpen && html.trim() && <WebsiteVisualEditor html={html} onSave={setHtml} />}<div className="website-prompt-actions"><button className="button button-quiet" onClick={() => setStep('prompt')}><ArrowLeft size={14} /> Quay lại prompt</button><button className="button button-primary" onClick={() => { setDescription(idea.trim()); setStep('publish'); }}>{html.trim() ? 'Tiếp tục hoàn thiện' : 'Tiếp tục'} <ArrowRight size={14} /></button></div></div>}
 
-      {step === 'publish' && <form className="website-builder-content website-publish-step" onSubmit={(event) => void publish(event)}><span className="section-kicker">BƯỚC 4 · HOÀN THIỆN & GỬI DUYỆT</span><h2>Chuẩn bị trang chia sẻ</h2><p className="website-builder-intro">Thêm thông tin để đồng nghiệp tìm đúng website. Admin sẽ xem trước mã và duyệt trước khi website được xuất bản.</p><div className="form-two-col"><label className="form-label">Tên website<input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} required /></label><div className="website-published-route"><small>Đường dẫn sau khi được duyệt</small><b>eduhub.vn/web/{title.trim().toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'ten-website'}-xxxxxxxxxx</b><small>Mã ngẫu nhiên sẽ được thêm để đường dẫn không bị trùng.</small></div></div><label className="form-label">Mô tả ngắn<textarea value={description} onChange={(event) => setDescription(event.target.value)} maxLength={800} rows={3} required placeholder="Website giúp giáo viên và học sinh làm được gì?" /></label><CurriculumPicker grades={grades} subjects={subjects} onGradesChange={setGrades} onSubjectsChange={setSubjects} /><details className="website-final-preview"><summary><MonitorPlay size={15} /> Xem lại website trước khi gửi</summary><iframe className="website-preview-frame" title="Bản xem trước website trước khi gửi duyệt" sandbox="allow-scripts allow-popups" referrerPolicy="no-referrer" srcDoc={sandboxWebsiteHtml(html)} /></details>{error && <div className="submit-error">{error}</div>}<div className="website-prompt-actions"><button className="button button-quiet" type="button" onClick={() => setStep('code')}><ArrowLeft size={14} /> Chỉnh sửa mã</button><button className="button button-primary" type="submit" disabled={saving}><Send size={14} /> {saving ? 'Đang gửi…' : 'Gửi admin duyệt'}</button></div><p className="website-builder-footnote">Sau khi duyệt, website sẽ có đường dẫn riêng trên tên miền EduHub và có thể chia sẻ cho mọi người.</p></form>}
+      {step === 'publish' && <form className="website-builder-content website-publish-step" onSubmit={(event) => void publish(event)}><span className="section-kicker">BƯỚC 4 · HOÀN THIỆN & GỬI DUYỆT</span><h2>Chuẩn bị trang chia sẻ</h2><p className="website-builder-intro">Thêm thông tin để đồng nghiệp tìm đúng website. Admin sẽ xem trước mã và duyệt trước khi website được xuất bản.</p><div className="form-two-col"><label className="form-label">Tên website<input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} required /></label><div className="website-published-route"><small>Đường dẫn sau khi được duyệt</small><b>eduhub.vn/web/{title.trim().toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'ten-website'}-xxxxxxxxxx</b><small>Mã ngẫu nhiên sẽ được thêm để đường dẫn không bị trùng.</small></div></div><label className="form-label">Mô tả ngắn<textarea value={description} onChange={(event) => setDescription(event.target.value)} maxLength={800} rows={3} required placeholder="Website giúp giáo viên và học sinh làm được gì?" /></label><CurriculumPicker grades={grades} subjects={subjects} onGradesChange={setGrades} onSubjectsChange={setSubjects} allSubjects={allSubjects} onAllSubjectsChange={setAllSubjects} />
+<section className="website-assets-upload"><header><b>Ảnh dự án</b><small>Thêm ảnh bìa và ảnh chụp màn hình để đồng nghiệp dễ hình dung website.</small></header><div className="website-image-upload-grid"><label className="website-image-upload-card website-cover-upload"><input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => { selectCover(event.currentTarget.files?.[0]); event.currentTarget.value = ''; }} />{coverPreview ? <img src={coverPreview} alt="Xem trước ảnh bìa website" /> : <span className="website-upload-placeholder"><Image size={20} /><b>Chọn ảnh bìa</b></span>}<small>{cover ? cover.name : 'Ảnh đại diện dự án · JPG, PNG, WebP, AVIF · tối đa 8 MB'}</small>{cover && <button type="button" className="website-image-remove" aria-label="Xóa ảnh bìa" onClick={(event) => { event.preventDefault(); setCover(null); }}><X size={14} /></button>}</label><label className="website-image-upload-card website-gallery-upload"><input type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => { addDescriptionImages(Array.from(event.currentTarget.files || [])); event.currentTarget.value = ''; }} /><span className="website-upload-placeholder"><Upload size={19} /><b>Thêm ảnh minh họa</b><small>{descriptionImages.length}/6 ảnh · tối đa 8 MB/ảnh</small></span></label></div>{descriptionImages.length > 0 && <div className="website-image-preview-grid">{descriptionImages.map((file, index) => <figure key={`${file.name}-${file.lastModified}-${index}`}><img src={descriptionPreviews[index]} alt={`Ảnh minh họa ${index + 1}`} /><figcaption title={file.name}>{file.name}</figcaption><button type="button" aria-label={`Xóa ảnh minh họa ${index + 1}`} onClick={() => setDescriptionImages((items) => items.filter((_, itemIndex) => itemIndex !== index))}><X size={13} /></button></figure>)}</div>}{error && <div className="submit-error">{error}</div>}</section><div className="form-two-col"><label className="form-label">Video demo (không bắt buộc)<input value={videoUrl} onChange={(event) => setVideoUrl(event.target.value)} type="url" placeholder="https://youtube.com/..." /></label><label className="form-label">Hướng dẫn sử dụng<textarea value={guide} onChange={(event) => setGuide(event.target.value)} rows={3} maxLength={1800} placeholder="Cách mở website và gợi ý sử dụng trong lớp học…" /></label></div><details className="website-final-preview"><summary><MonitorPlay size={15} /> Xem lại website trước khi gửi</summary><iframe className="website-preview-frame" title="Bản xem trước website trước khi gửi duyệt" sandbox="allow-scripts allow-popups" referrerPolicy="no-referrer" srcDoc={sandboxWebsiteHtml(html)} /></details>{error && <div className="submit-error">{error}</div>}<div className="website-prompt-actions"><button className="button button-quiet" type="button" onClick={() => setStep('code')}><ArrowLeft size={14} /> Chỉnh sửa mã</button><button className="button button-primary" type="submit" disabled={saving}><Send size={14} /> {saving ? 'Đang gửi…' : 'Gửi admin duyệt'}</button></div><p className="website-builder-footnote">Sau khi duyệt, website sẽ có đường dẫn riêng trên tên miền EduHub và có thể chia sẻ cho mọi người.</p></form>}
     </section>
   </div>;
 }

@@ -7,9 +7,11 @@ interface CurriculumPickerProps {
   subjects: string[];
   onGradesChange: (grades: string[]) => void;
   onSubjectsChange: (subjects: string[]) => void;
+  allSubjects?: boolean;
+  onAllSubjectsChange?: (all: boolean) => void;
 }
 
-export function CurriculumPicker({ grades, subjects, onGradesChange, onSubjectsChange }: CurriculumPickerProps) {
+export function CurriculumPicker({ grades, subjects, onGradesChange, onSubjectsChange, allSubjects = false, onAllSubjectsChange }: CurriculumPickerProps) {
   const [subjectSearch, setSubjectSearch] = useState('');
   const availableSubjects = useMemo(() => subjectsForGrades(grades), [grades]);
   const visibleSubjects = availableSubjects.filter((subject) => subject.toLocaleLowerCase('vi').includes(subjectSearch.toLocaleLowerCase('vi')));
@@ -18,7 +20,7 @@ export function CurriculumPicker({ grades, subjects, onGradesChange, onSubjectsC
     const nextGrades = grades.includes(grade) ? grades.filter((item) => item !== grade) : [...grades, grade].sort((a, b) => Number(a.slice(5)) - Number(b.slice(5)));
     onGradesChange(nextGrades);
     const validSubjects = subjectsForGrades(nextGrades);
-    onSubjectsChange(subjects.filter((subject) => validSubjects.includes(subject)));
+    if (!allSubjects) onSubjectsChange(subjects.filter((subject) => validSubjects.includes(subject)));
   };
 
   const toggleStage = (stageGrades: readonly string[]) => {
@@ -28,11 +30,12 @@ export function CurriculumPicker({ grades, subjects, onGradesChange, onSubjectsC
       : [...new Set([...grades, ...stageGrades])].sort((a, b) => Number(a.slice(5)) - Number(b.slice(5)));
     onGradesChange(nextGrades);
     const validSubjects = subjectsForGrades(nextGrades);
-    onSubjectsChange(subjects.filter((subject) => validSubjects.includes(subject)));
+    if (!allSubjects) onSubjectsChange(subjects.filter((subject) => validSubjects.includes(subject)));
   };
 
   const toggleSubject = (subject: string) => {
-    onSubjectsChange(subjects.includes(subject) ? subjects.filter((item) => item !== subject) : [...subjects, subject]);
+    onAllSubjectsChange?.(false);
+    onSubjectsChange(subjects.includes(subject) ? subjects.filter((item) => item !== subject) : [...subjects.filter((item) => item !== 'Mọi môn'), subject]);
   };
 
   return <section className="curriculum-picker" aria-label="Chọn cấp học, lớp và môn học">
@@ -52,11 +55,12 @@ export function CurriculumPicker({ grades, subjects, onGradesChange, onSubjectsC
     </div>
 
     <div className="curriculum-picker-heading curriculum-subject-heading">
-      <div><b>Chọn môn học *</b><small>Không gộp môn tích hợp; chọn nhiều môn nếu học liệu có nội dung liên môn.</small></div>
-      <span>{subjects.length} đã chọn</span>
+      <div><b>Chọn môn học *</b><small>Chọn môn cụ thể hoặc đánh dấu dùng được cho mọi môn học.</small></div>
+      <span>{allSubjects ? 'Mọi môn' : `${subjects.length} đã chọn`}</span>
     </div>
-    <label className="curriculum-subject-search"><Search size={15} /><input value={subjectSearch} onChange={(event) => setSubjectSearch(event.target.value)} placeholder={grades.length ? 'Tìm tên môn học…' : 'Chọn khối lớp để xem môn học'} disabled={!grades.length} /><kbd>⌕</kbd></label>
-    {visibleSubjects.length ? <div className="curriculum-subject-options">{visibleSubjects.map((subject) => <button key={subject} type="button" aria-pressed={subjects.includes(subject)} className={subjects.includes(subject) ? 'active' : ''} onClick={() => toggleSubject(subject)}><span className="curriculum-check">{subjects.includes(subject) && <Check size={13} />}</span><span>{subject}</span></button>)}</div> : <div className="curriculum-empty">{grades.length ? 'Không tìm thấy môn phù hợp.' : 'Hãy chọn ít nhất một khối lớp trước.'}</div>}
-    <p className="curriculum-selection-summary">{subjects.length ? <>Đang chọn: <strong>{subjects.join(', ')}</strong></> : 'Chọn ít nhất một môn để gửi dự án.'}</p>
+    {onAllSubjectsChange && <button type="button" className={`curriculum-all-subjects${allSubjects ? ' active' : ''}`} aria-pressed={allSubjects} onClick={() => { const next = !allSubjects; onAllSubjectsChange(next); onSubjectsChange(next ? ['Mọi môn'] : []); }}><span className="curriculum-check">{allSubjects && <Check size={13} />}</span><span><b>Dùng cho mọi môn / liên môn</b><small>Phù hợp với website tiện ích, công cụ chung hoặc học liệu tích hợp nhiều môn.</small></span></button>}
+    {!allSubjects && <><label className="curriculum-subject-search"><Search size={15} /><input value={subjectSearch} onChange={(event) => setSubjectSearch(event.target.value)} placeholder={grades.length ? 'Tìm tên môn học…' : 'Chọn khối lớp để xem môn học'} disabled={!grades.length} /><kbd>⌕</kbd></label>
+      {visibleSubjects.length ? <div className="curriculum-subject-options">{visibleSubjects.map((subject) => <button key={subject} type="button" aria-pressed={subjects.includes(subject)} className={subjects.includes(subject) ? 'active' : ''} onClick={() => toggleSubject(subject)}><span className="curriculum-check">{subjects.includes(subject) && <Check size={13} />}</span><span>{subject}</span></button>)}</div> : <div className="curriculum-empty">{grades.length ? 'Không tìm thấy môn phù hợp.' : 'Hãy chọn ít nhất một khối lớp trước.'}</div>}</>}
+    <p className="curriculum-selection-summary">{allSubjects ? <>Đang chọn: <strong>Dùng cho mọi môn học</strong></> : subjects.length ? <>Đang chọn: <strong>{subjects.join(', ')}</strong></> : 'Chọn ít nhất một môn để gửi dự án.'}</p>
   </section>;
 }
