@@ -151,10 +151,10 @@ export default function App() {
     if (path === '/groups') return 'groups';
     if (path === '/messages') return 'messages';
     if (path === '/offline') return 'offline';
-    if (path === '/downloads') return 'downloads';
+    if (path === '/downloads') return 'projects';
     if (path === '/requests') return 'requests';
     if (path === '/lesson-plans') return 'lesson-plans';
-    if (path === '/challenges') return 'challenges';
+    if (path === '/challenges') return 'projects';
     if (path === '/creator-analytics') return 'creator-analytics';
     if (path === '/teachers') return 'teachers';
     if (path === '/appeals') return 'appeals';
@@ -421,7 +421,7 @@ export default function App() {
       else if (window.location.pathname === '/offline') setView('offline');
       else if (window.location.pathname === '/requests') setView('requests');
       else if (window.location.pathname === '/lesson-plans') setView('lesson-plans');
-      else if (window.location.pathname === '/challenges') setView('challenges');
+      else if (window.location.pathname === '/challenges' || window.location.pathname === '/downloads') setView('projects');
       else if (window.location.pathname === '/creator-analytics') setView('creator-analytics');
       else if (window.location.pathname === '/teachers') setView('teachers');
       else if (window.location.pathname === '/appeals') setView('appeals');
@@ -430,6 +430,7 @@ export default function App() {
       else if (window.location.pathname === '/events') setView('events');
       else if (window.location.pathname === '/help') setView('help');
       else if (window.location.pathname === '/admin') setView('admin');
+      else if (window.location.pathname === '/profile') setView('profile');
       else { setSelectedProject(null); setView('feed'); }
     };
     syncRoute();
@@ -567,7 +568,7 @@ export default function App() {
 
   const nav = (next: View) => {
     setView(next); setMobileNavOpen(false);
-    const paths: Partial<Record<View, string>> = { feed: '/', projects: '/projects', talks: '/talks', ranking: '/ranking', saved: '/saved', following: '/following', collections: '/collections', 'learning-paths': '/learning-paths', groups: '/groups', messages: '/messages', offline: '/offline', downloads: '/downloads', requests: '/requests', 'lesson-plans': '/lesson-plans', schedule: '/schedule', events: '/events', help: '/help', challenges: '/challenges', 'creator-analytics': '/creator-analytics', teachers: '/teachers', appeals: '/appeals', alerts: '/alerts', admin: '/admin' };
+    const paths: Partial<Record<View, string>> = { feed: '/', projects: '/projects', talks: '/talks', ranking: '/ranking', saved: '/saved', following: '/following', collections: '/collections', 'learning-paths': '/learning-paths', groups: '/groups', messages: '/messages', offline: '/offline', downloads: '/downloads', requests: '/requests', 'lesson-plans': '/lesson-plans', schedule: '/schedule', events: '/events', help: '/help', challenges: '/challenges', 'creator-analytics': '/creator-analytics', teachers: '/teachers', appeals: '/appeals', alerts: '/alerts', admin: '/admin', profile: '/profile' };
     const path = paths[next];
     if (!path) return;
     if (next === 'talks') setTalkDetailId(null);
@@ -797,7 +798,7 @@ export default function App() {
             <button onClick={openWebsiteBuilder}><Globe2 size={15} /> Tạo website bằng AI <ChevronRight size={15} /></button>
             {([['requests', 'Nhu cầu học liệu'], ['collections', 'Bộ sưu tập'], ['saved', 'Học liệu đã lưu']] as const).map(([key, label]) => <button className={view === key ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}
             <span className="mobile-nav-heading">Tiện ích</span>
-            {([['downloads', 'Lịch sử tải'], ['offline', 'Đọc khi mạng yếu']] as const).map(([key, label]) => <button className={view === key ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}
+            <button className={view === 'offline' ? 'active' : ''} onClick={() => nav('offline')}>Đọc khi mạng yếu<ChevronRight size={15} /></button>
             {teacherProfile?.role === 'admin' && <button className={view === 'admin' ? 'active' : ''} onClick={() => nav('admin')}>Duyệt nội dung<ChevronRight size={15} /></button>}
           </div>
         </nav>}
@@ -868,10 +869,8 @@ export default function App() {
             <div className="rail-section">
               <div className="rail-heading">TIỆN ÍCH SƯ PHẠM</div>
               <RailButton icon={Trophy} label="Bảng xếp hạng" active={view === 'ranking'} onClick={() => nav('ranking')} />
-              <RailButton icon={Sparkles} label="Thử thách sư phạm" active={view === 'challenges'} onClick={() => nav('challenges')} />
               <RailButton icon={BookOpen} label="Kế hoạch bài dạy" active={view === 'lesson-plans'} onClick={() => nav('lesson-plans')} />
               <RailButton icon={Download} label="Đọc ngoại tuyến" active={view === 'offline'} onClick={() => nav('offline')} />
-              <RailButton icon={Clock3} label="Lịch sử tải về" active={view === 'downloads'} onClick={() => nav('downloads')} />
               {teacherProfile?.role === 'admin' && (
                 <RailButton icon={ShieldCheck} label="Duyệt nội dung" active={view === 'admin'} count={String(adminQueue.length)} onClick={() => nav('admin')} />
               )}

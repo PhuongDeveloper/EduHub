@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import type { User } from '@supabase/supabase-js';
 import {
   BookOpen, MessageCircle, Plus, School, Send, Trash2, UserPlus, UsersRound,
-  Users, UserCheck, Search, Sparkles, X, ChevronRight, Share2, ShieldCheck
+  Users, UserCheck, Search, Sparkles, X, ChevronRight, Share2, ShieldCheck, ArrowLeft
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { SUBJECT_NAMES } from '../lib/curriculum';
@@ -455,18 +455,26 @@ export function TeacherGroupsPage({
       </header>
 
       {/* Main Groups Layout */}
-      <div className="groups-layout">
-        {/* Left Sidebar: Groups List */}
-        <aside className="groups-sidebar">
-          <div className="groups-sidebar-header">
-            <b>Nhóm của tôi ({groups.length})</b>
-            <button
-              className="button-link-accent text-xs"
-              onClick={() => setShowCreateModal(true)}
-            >
-              + Tạo nhóm
-            </button>
+      {groups.length === 0 && !loading ? (
+        <div className="groups-zero-state-card">
+          <div className="groups-zero-icon">
+            <UsersRound size={40} />
           </div>
+          <h3>Chưa tham gia nhóm chuyên môn nào</h3>
+          <p>
+            Tạo không gian sinh hoạt chuyên môn theo Công văn 5512 để cùng đồng nghiệp trong trường hoặc cụm chuyên môn trao đổi giáo án, học liệu và ma trận đề.
+          </p>
+          <button className="button button-primary" onClick={() => setShowCreateModal(true)}>
+            <Plus size={16} /> Tạo nhóm chuyên môn đầu tiên
+          </button>
+        </div>
+      ) : (
+        <div className={`groups-layout ${active ? 'has-active-group' : ''}`}>
+          {/* Left Sidebar: Groups List */}
+          <aside className="groups-sidebar">
+            <div className="groups-sidebar-header">
+              <b>Nhóm của tôi ({groups.length})</b>
+            </div>
 
           <div className="groups-list-container">
             {groups.map((group) => {
@@ -515,6 +523,13 @@ export function TeacherGroupsPage({
           <article className="group-workspace">
             {/* Group Workspace Header */}
             <header className="group-workspace-header">
+              <button
+                className="button-back-mobile icon-button"
+                onClick={() => setActiveId('')}
+                aria-label="Quay lại danh sách nhóm"
+              >
+                <ArrowLeft size={18} />
+              </button>
               <div className="group-header-info">
                 <span className="group-subject-badge">{active.subject}</span>
                 <h3>{active.name}</h3>
@@ -859,15 +874,15 @@ export function TeacherGroupsPage({
           </article>
         ) : (
           <div className="groups-unselected-state">
-            <School size={44} className="text-slate-300" />
-            <h3>Chọn hoặc tạo một nhóm chuyên môn</h3>
-            <p>Không gian kín để thầy cô sinh hoạt tổ bộ môn và chia sẻ học liệu 5512.</p>
-            <button className="button button-primary" onClick={() => setShowCreateModal(true)}>
-              <Plus size={15} /> Tạo nhóm mới
-            </button>
+            <div className="unselected-icon-wrap">
+              <UsersRound size={36} />
+            </div>
+            <h3>Chọn một nhóm chuyên môn</h3>
+            <p>Chọn nhóm từ danh sách bên trái để xem kế hoạch bài dạy 5512, thảo luận và tài liệu nội bộ.</p>
           </div>
         )}
       </div>
+      )}
 
       {/* CREATE GROUP MODAL */}
       {showCreateModal && (

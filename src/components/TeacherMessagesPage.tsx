@@ -689,9 +689,41 @@ export function TeacherMessagesPage({
             </>
           ) : (
             <div className="messages-unselected-state">
-              <MessageCircle size={44} className="text-slate-300" />
-              <h3>Chọn một cuộc hội thoại</h3>
-              <p>Chọn đồng nghiệp từ danh sách bên trái hoặc tìm kiếm để bắt đầu nhắn tin.</p>
+              <div className="unselected-icon-wrap">
+                <MessageCircle size={36} />
+              </div>
+              <h3>Không gian kết nối sư phạm</h3>
+              <p>Chọn đồng nghiệp từ danh sách bên trái hoặc tìm kiếm giáo viên bộ môn để bắt đầu trao đổi chuyên môn.</p>
+
+              {teachers.length > 0 && (
+                <div className="messages-suggested-colleagues">
+                  <span className="suggested-heading">Gợi ý đồng nghiệp trong cộng đồng</span>
+                  <div className="suggested-teachers-grid">
+                    {teachers.slice(0, 4).map((t) => (
+                      <div key={t.id} className="suggested-teacher-card">
+                        <div className="suggested-avatar">
+                          {t.avatar_url ? (
+                            <img src={t.avatar_url} alt={t.full_name} />
+                          ) : (
+                            <span>{t.full_name.slice(-2).toUpperCase()}</span>
+                          )}
+                        </div>
+                        <div className="suggested-info">
+                          <b>{t.full_name}</b>
+                          <small>{t.subject_specialty || 'Giáo viên'}{t.school_name ? ` · ${t.school_name}` : ''}</small>
+                        </div>
+                        <button
+                          className="button button-outline button-sm"
+                          onClick={() => void startConversation(t)}
+                          disabled={busy}
+                        >
+                          Nhắn tin
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </article>

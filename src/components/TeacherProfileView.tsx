@@ -4,7 +4,7 @@ import {
   Award, BriefcaseBusiness, CalendarDays, Camera, Check, ChevronRight, Clock3, Download,
   GraduationCap, Globe2, Link2, LockKeyhole, Mail, MapPin, MessageCircle, Pencil, School,
   ShieldCheck, Star, UserRound, UsersRound, X, BadgeCheck, BookOpen, Heart, Trophy,
-  UserCheck, UserPlus, Users, Sparkles, FolderHeart
+  UserCheck, UserPlus, Users, Sparkles, FolderHeart, LogOut
 } from 'lucide-react';
 import { TeacherAddressFields, type TeacherAddress } from './TeacherAddressFields';
 import { supabase } from '../lib/supabase';
@@ -785,40 +785,45 @@ export function TeacherProfileView({
 
           {isOwner && (
             <div className="profile-owner-actions">
+              {!editing && (
+                <button
+                  className="button button-primary"
+                  onClick={() => setEditing(true)}
+                  title="Chỉnh sửa thông tin hồ sơ chuyên môn"
+                >
+                  <Pencil size={14} />
+                  <span>Chỉnh sửa hồ sơ</span>
+                </button>
+              )}
+
               <div className="profile-export-control">
                 <select
                   value={portfolioRange}
                   onChange={(e) => setPortfolioRange(e.target.value as 'all' | 'year')}
                   aria-label="Khoảng thời gian xuất hồ sơ"
+                  className="profile-select-range"
                 >
-                  <option value="all">Toàn bộ</option>
+                  <option value="all">Toàn bộ minh chứng</option>
                   <option value="year">12 tháng gần nhất</option>
                 </select>
                 <button
                   className="button button-outline"
                   onClick={() => void exportPortfolio()}
                   disabled={exporting}
+                  title="Xuất danh sách minh chứng ra tệp CSV"
                 >
                   <Download size={14} />
-                  <span>{exporting ? 'Đang xuất…' : 'Xuất minh chứng (CSV)'}</span>
-                </button>
-                <button
-                  className="button button-quiet"
-                  onClick={() => void exportPersonalData()}
-                  disabled={personalDataExporting}
-                >
-                  <Download size={14} />
-                  <span>{personalDataExporting ? 'Đang nén…' : 'Sao lưu dữ liệu'}</span>
+                  <span>{exporting ? 'Đang xuất…' : 'Xuất CSV'}</span>
                 </button>
               </div>
 
-              {!editing && (
-                <button className="button button-outline" onClick={() => setEditing(true)}>
-                  <Pencil size={14} /> Chỉnh sửa hồ sơ
-                </button>
-              )}
-              <button className="button button-quiet profile-signout" onClick={onSignOut}>
-                <X size={14} /> Đăng xuất
+              <button
+                className="button button-quiet profile-signout"
+                onClick={onSignOut}
+                title="Đăng xuất khỏi hệ thống EduHub"
+              >
+                <LogOut size={14} />
+                <span>Đăng xuất</span>
               </button>
             </div>
           )}
