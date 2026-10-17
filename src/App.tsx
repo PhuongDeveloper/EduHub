@@ -8,11 +8,14 @@ import { ProjectCommunityPanel } from './components/ProjectCommunityPanel';
 import { ResourceRevisionPanel } from './components/ResourceRevisionPanel';
 import { ResourceFilesList } from './components/ResourceFilesList';
 import { CurriculumPicker } from './components/CurriculumPicker';
+import { WebsiteBuilderModal, type TeacherWebsiteDraft } from './components/WebsiteBuilderModal';
+import { PublishedTeacherWebsite } from './components/PublishedTeacherWebsite';
+import { sandboxWebsiteHtml } from './lib/sandboxWebsite';
 import { GRADE_LABELS, SUBJECT_NAMES, normalizeSubjectNames, schoolLevelsForGrades } from './lib/curriculum';
 import {
   ArrowDownToLine, ArrowRight, ArrowUpRight, Bell, Bookmark, BookOpen, Check, Download, FileQuestion, QrCode as QrCodeIcon,
   ChevronDown, ChevronRight, CircleHelp, Clock3, Copy, FileText, Filter,
-  GraduationCap, Heart, Image, Lightbulb, Menu, MessageCircle, GitCompareArrows,
+  GraduationCap, Heart, Image, Lightbulb, Menu, MessageCircle, GitCompareArrows, Globe2,
   Moon, Play, Plus, Printer, Search, Send, Share2, ShieldCheck, Star, Sun, ThumbsUp, Trophy, Upload, Users,
   Trash2, X, BadgeCheck, type LucideIcon,
 } from 'lucide-react';
@@ -42,19 +45,19 @@ type Project = {
   grade: string; teacher: string; school: string; initials: string; color: string;
   votes: number; replies: number; downloads: number; time: string; format: string;
   featured?: boolean; demo?: boolean; url?: string; downloadUrl?: string; tags: string[];
-  sourceId?: string; parentResourceId?: string; teacherId?: string; teacherAvatarUrl?: string; coverUrl?: string; descriptionImages?: string[]; videoUrl?: string; captionUrl?: string; videoTranscript?: string; usageGuide?: string; moderationStatus?: string; createdAt?: string;
+  sourceId?: string; parentResourceId?: string; teacherId?: string; teacherAvatarUrl?: string; coverUrl?: string; descriptionImages?: string[]; websiteHtml?: string; websiteSlug?: string; videoUrl?: string; captionUrl?: string; videoTranscript?: string; usageGuide?: string; moderationStatus?: string; createdAt?: string;
   ratingAvg?: number; ratingCount?: number; learningOutcomes?: string[]; accessRequirements?: string; worksOffline?: boolean; mobileCompatible?: boolean; requiresLogin?: boolean; freeVerified?: boolean; resourceStatus?: string; replacementResourceId?: string | null; moderationLinkCheck?: string;
 };
 
 type TeacherProfile = { id: string; full_name: string; school_name: string | null; role: 'teacher' | 'admin'; edu_points: number; avatar_url?: string | null; profile_completed_at?: string | null };
 type NotificationItem = { id: string; activity_type: string; created_at: string; actor?: { full_name?: string } | null; resource?: { id?: string; title?: string } | null };
-type SubmitDraft = { title: string; description: string; type: string; subjects: string[]; grades: string[]; url: string; videoUrl: string; captionUrl: string; videoTranscript: string; file: File | null; files: File[]; cover: File | null; descriptionImages: File[]; guide: string; parentResourceId?: string; learningOutcomes: string[]; accessRequirements: string; worksOffline: boolean; mobileCompatible: boolean; requiresLogin: boolean };
+type SubmitDraft = { title: string; description: string; type: string; subjects: string[]; grades: string[]; url: string; videoUrl: string; captionUrl: string; videoTranscript: string; file: File | null; files: File[]; cover: File | null; descriptionImages: File[]; websiteHtml?: string; guide: string; parentResourceId?: string; learningOutcomes: string[]; accessRequirements: string; worksOffline: boolean; mobileCompatible: boolean; requiresLogin: boolean };
 type SavedSubmitDraft = Omit<SubmitDraft, 'file' | 'files' | 'cover' | 'descriptionImages'>;
 const submitDraftKey = (userId: string, parentId?: string) => `eduhub-submit-draft:${userId}:${parentId || 'new'}`;
 function readSubmitDraft(userId: string, parentId?: string): Partial<SavedSubmitDraft> {
   try { return JSON.parse(localStorage.getItem(submitDraftKey(userId, parentId)) || '{}') as Partial<SavedSubmitDraft>; } catch { return {}; }
 }
-type View = 'feed' | 'projects' | 'talks' | 'talk-detail' | 'ranking' | 'saved' | 'following' | 'collections' | 'learning-paths' | 'groups' | 'messages' | 'offline' | 'downloads' | 'requests' | 'lesson-plans' | 'schedule' | 'events' | 'help' | 'challenges' | 'creator-analytics' | 'teachers' | 'appeals' | 'alerts' | 'admin' | 'profile' | 'project';
+type View = 'feed' | 'projects' | 'talks' | 'talk-detail' | 'ranking' | 'saved' | 'following' | 'collections' | 'learning-paths' | 'groups' | 'messages' | 'offline' | 'downloads' | 'requests' | 'lesson-plans' | 'schedule' | 'events' | 'help' | 'challenges' | 'creator-analytics' | 'teachers' | 'appeals' | 'alerts' | 'admin' | 'profile' | 'project' | 'website';
 const savedStorageKey = 'eduhub-saved-projects-v1';
 const recentStorageKey = 'eduhub-recent-projects-v1';
 const offlineProjectsKey = 'eduhub-offline-reading-v1';
@@ -104,7 +107,7 @@ function projectFromRow(row: any): Project {
   const colors = ['mint', 'peach', 'lavender', 'blue', 'yellow', 'coral'];
   const color = colors[(String(row.id).charCodeAt(0) || 0) % colors.length];
   const name = author.full_name || 'Giáo viên EduHub';
-  const typeNames: Record<string, string> = { powerpoint: 'Bài giảng', khbd_5512: 'Giáo án', exam_matrix: 'Học liệu', tool_software: 'Công cụ', game_interactive: 'Trò chơi', utility_web: 'Website' };
+  const typeNames: Record<string, string> = { powerpoint: 'Bài giảng', khbd_5512: 'Giáo án', exam_matrix: 'Học liệu', tool_software: 'Công cụ', game_interactive: 'Trò chơi', utility_web: 'Website', teacher_website: 'Website giáo dục' };
   const when = row.created_at ? new Date(row.created_at).toLocaleDateString('vi-VN') : 'Mới đăng';
   const format = [row.file_format?.toUpperCase(), row.file_size].filter(Boolean).join(' · ') || (row.platform_url ? 'Dùng trực tuyến' : 'Học liệu');
   return {
@@ -113,7 +116,7 @@ function projectFromRow(row: any): Project {
     grade: Array.isArray(row.grade_levels) && row.grade_levels.length ? row.grade_levels.join(', ') : 'Mọi khối lớp',
     teacher: name, teacherId: author.id || undefined, teacherAvatarUrl: author.avatar_url || undefined, school: [author.show_school !== false ? author.school_name : null, author.show_location === false ? null : [author.ward, author.province].filter(Boolean).join(', ')].filter(Boolean).join(' · ') || 'Cộng đồng EduHub', initials: name.split(/\s+/).slice(-2).map((part: string) => part[0]).join('').toUpperCase(),
     color, votes: row.upvotes_count || 0, replies: row.comments?.[0]?.count || 0, downloads: row.downloads_count || 0,
-    time: when, createdAt: row.created_at || undefined, format, url: row.platform_url || undefined, downloadUrl: row.download_url || undefined, coverUrl: row.cover_url || undefined, videoUrl: row.video_url || undefined,
+    time: when, createdAt: row.created_at || undefined, format, url: row.platform_url || undefined, downloadUrl: row.download_url || undefined, coverUrl: row.cover_url || undefined, websiteHtml: row.website_html || undefined, websiteSlug: row.website_slug || undefined, videoUrl: row.video_url || undefined,
     usageGuide: row.usage_guide || undefined, descriptionImages: Array.isArray(row.description_images) ? row.description_images.filter((url: unknown) => typeof url === 'string') : [], captionUrl: row.caption_url || undefined, videoTranscript: row.video_transcript || undefined, moderationStatus: row.moderation_status, ratingAvg: Number(row.rating_avg || 0), ratingCount: Number(row.rating_count || 0), moderationLinkCheck: row.moderation_link_check || 'not_checked',
     tags: row.tags || [], learningOutcomes: row.learning_outcomes || [], accessRequirements: row.access_requirements || '', worksOffline: Boolean(row.works_offline), mobileCompatible: row.mobile_compatible !== false, requiresLogin: Boolean(row.requires_login), resourceStatus: row.resource_status || 'current', replacementResourceId: row.replacement_resource_id || null,
     freeVerified: Boolean(row.is_free_verified),
@@ -134,6 +137,7 @@ export default function App() {
   });
   const [view, setView] = useState<View>(() => {
     const path = window.location.pathname;
+    if (path.startsWith('/web/')) return 'website';
     if (path.startsWith('/projects/')) return 'project';
     if (path === '/projects') return 'projects';
     if (path.startsWith('/teachers/')) return 'profile';
@@ -189,7 +193,9 @@ export default function App() {
   const [projectPage, setProjectPage] = useState(0);
   const [hasMoreProjects, setHasMoreProjects] = useState(false);
   const [projectRouteId, setProjectRouteId] = useState(() => decodeURIComponent(window.location.pathname.split('/')[2] || ''));
+  const [websiteSlug, setWebsiteSlug] = useState(() => decodeURIComponent(window.location.pathname.match(/^\/web\/([^/]+)/)?.[1] || ''));
   const [showSubmit, setShowSubmit] = useState(false);
+  const [showWebsiteBuilder, setShowWebsiteBuilder] = useState(false);
   const [submitParentProject, setSubmitParentProject] = useState<Project | null>(null);
   const [showLogin, setShowLogin] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -323,7 +329,7 @@ export default function App() {
 
   useEffect(() => {
     if (!supabase || window.location.pathname.startsWith('/admin')) return;
-    const path = (view === 'project' ? `/projects/${projectRouteId}` : view === 'profile' ? `/teachers/${profileId || ''}` : view === 'talk-detail' ? `/talks/${talkDetailId || ''}` : view === 'feed' ? '/' : `/${view}`).slice(0, 300);
+    const path = (view === 'project' ? `/projects/${projectRouteId}` : view === 'website' ? `/web/${websiteSlug}` : view === 'profile' ? `/teachers/${profileId || ''}` : view === 'talk-detail' ? `/talks/${talkDetailId || ''}` : view === 'feed' ? '/' : `/${view}`).slice(0, 300);
     const visitKey = `eduhub-page-view:${path}`;
     try { if (sessionStorage.getItem(visitKey)) return; } catch { /* Continue if session storage is unavailable. */ }
     let visitorId = '';
@@ -334,7 +340,7 @@ export default function App() {
     } catch { visitorId = crypto.randomUUID(); }
     void supabase.from('site_page_views').insert({ visitor_id: visitorId, path, user_id: currentUser?.id || null });
     if (view === 'project' && projectRouteId) void supabase.from('resource_view_events').insert({ resource_id: projectRouteId, visitor_id: visitorId });
-  }, [currentUser?.id, projectRouteId, profileId, talkDetailId, view]);
+  }, [currentUser?.id, projectRouteId, websiteSlug, profileId, talkDetailId, view]);
 
   useEffect(() => {
     if (!supabase || !currentUser) return;
@@ -368,10 +374,12 @@ export default function App() {
 
   useEffect(() => {
     const syncRoute = () => {
+      const websiteMatch = window.location.pathname.match(/^\/web\/([^/]+)/);
       const projectMatch = window.location.pathname.match(/^\/projects\/([^/]+)/);
       const teacherMatch = window.location.pathname.match(/^\/teachers\/([^/]+)/);
       const talkMatch = window.location.pathname.match(/^\/talks\/([^/]+)/);
-      if (projectMatch) { const id = decodeURIComponent(projectMatch[1]); setProjectRouteId(id); setSelectedProject((current) => current?.id === id || current?.sourceId === id ? current : null); setView('project'); }
+      if (websiteMatch) { setWebsiteSlug(decodeURIComponent(websiteMatch[1])); setView('website'); setSelectedProject(null); }
+      else if (projectMatch) { const id = decodeURIComponent(projectMatch[1]); setProjectRouteId(id); setSelectedProject((current) => current?.id === id || current?.sourceId === id ? current : null); setView('project'); }
       else if (teacherMatch) { setProfileId(decodeURIComponent(teacherMatch[1])); setView('profile'); setSelectedProject(null); }
       else if (talkMatch) { setTalkDetailId(decodeURIComponent(talkMatch[1])); setView('talk-detail'); }
       else if (window.location.pathname === '/talks') { setTalkDetailId(null); setView('talks'); }
@@ -611,6 +619,14 @@ export default function App() {
     catch { window.prompt('Sao chép đường dẫn tìm kiếm này:', url); }
   };
   const openSubmit = (sourceProject?: Project) => currentUser ? (setSubmitParentProject(sourceProject || null), setShowSubmit(true)) : setShowLogin(true);
+  const openWebsiteBuilder = () => { setShowWebsiteBuilder(true); setMobileNavOpen(false); };
+
+  const submitTeacherWebsite = async (draft: TeacherWebsiteDraft): Promise<string | null> => {
+    if (!currentUser) { setShowLogin(true); return 'Đăng nhập hoặc tạo tài khoản giáo viên để gửi website duyệt. Ý tưởng và mã hiện tại vẫn được giữ trong cửa sổ này.'; }
+    const error = await submitProject({ title: draft.title, description: draft.description, type: 'Website', subjects: draft.subjects, grades: draft.grades, url: '', videoUrl: '', captionUrl: '', videoTranscript: '', file: null, files: [], cover: null, descriptionImages: [], websiteHtml: draft.websiteHtml, guide: '', learningOutcomes: [], accessRequirements: '', worksOffline: false, mobileCompatible: true, requiresLogin: false });
+    if (!error) toast('Website đã gửi admin duyệt. Sau khi được duyệt, thầy cô sẽ nhận đường dẫn trên EduHub.');
+    return error;
+  };
 
   const submitProject = async (draft: SubmitDraft): Promise<string | null> => {
     if (!supabase || !currentUser) return 'Cần kết nối tài khoản giáo viên để gửi dự án.';
@@ -627,6 +643,7 @@ export default function App() {
       return supabase.storage.from('eduhub-assets').getPublicUrl(path).data.publicUrl;
     };
     try {
+      if (draft.websiteHtml && (draft.websiteHtml.length > 500_000 || !/<html\b/i.test(draft.websiteHtml) || !/<\/html\s*>/i.test(draft.websiteHtml))) throw new Error('Mã website cần là một file HTML hoàn chỉnh, tối đa 500 KB.');
       attachmentUrl = await upload(draft.file, 'resource');
       if (draft.cover) {
         if (!draft.cover.type.startsWith('image/')) throw new Error('Ảnh bìa không đúng định dạng.');
@@ -652,11 +669,13 @@ export default function App() {
         if (extraUrl) extraRows.push({ author_id: currentUser.id, file_name: extra.name.slice(0,240), file_url: extraUrl, storage_path: path || null, mime_type: extra.type.slice(0,120), file_size: extra.size, position: index + 1 });
       }
       const resourceTypes: Record<string, string> = { 'Bài giảng': 'powerpoint', 'Giáo án': 'khbd_5512', 'Học liệu': 'exam_matrix', 'Công cụ': 'tool_software', 'Website': 'utility_web', 'Trò chơi': 'game_interactive', 'Dự án lớp học': 'utility_web' };
-      const format = draft.file?.name.split('.').pop()?.toLowerCase() || null;
+      const websiteSlug = draft.websiteHtml ? `${draft.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'd').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 54) || 'website-giao-duc'}-${crypto.randomUUID().replace(/-/g, '').slice(0, 10)}` : null;
+      const format = draft.websiteHtml ? 'html' : draft.file?.name.split('.').pop()?.toLowerCase() || null;
       const { data: createdResource, error } = await supabase.from('resources').insert({
         title: draft.title, tagline: draft.description.slice(0, 180), description: draft.description,
-        resource_type: resourceTypes[draft.type] || 'tool_software', file_format: format,
-        download_url: attachmentUrl, platform_url: draft.url || null, cover_url: coverUrl, description_images: descriptionImages,
+        resource_type: draft.websiteHtml ? 'teacher_website' : resourceTypes[draft.type] || 'tool_software', file_format: format,
+        download_url: attachmentUrl, platform_url: draft.websiteHtml && websiteSlug ? `${window.location.origin}/web/${websiteSlug}` : draft.url || null, cover_url: coverUrl, description_images: descriptionImages,
+        website_html: draft.websiteHtml || null, website_slug: websiteSlug,
         video_url: draft.videoUrl || null, usage_guide: draft.guide || null,
         subjects: draft.subjects, grade_levels: draft.grades, school_levels: schoolLevelsForGrades(draft.grades),
         access_requirements: draft.accessRequirements, works_offline: draft.worksOffline, mobile_compatible: draft.mobileCompatible, requires_login: draft.requiresLogin,
@@ -686,6 +705,7 @@ export default function App() {
 
   return (
     <div className="edu-app" data-theme={theme}>
+      {view === 'website' ? <PublishedTeacherWebsite slug={websiteSlug} /> : <>
       <header className="topbar">
         <div className="topbar-inner">
           <button className="brand" onClick={() => nav('feed')} aria-label="EduHub, về trang chủ">
@@ -713,7 +733,7 @@ export default function App() {
         </div>
         {mobileNavOpen && <nav className="mobile-nav" aria-label="Điều hướng">
           <div className="mobile-nav-primary">{([['feed', 'Bảng tin'], ['projects', 'Học liệu'], ['talks', 'Thảo luận'], ['ranking', 'Xếp hạng']] as const).map(([key, label]) => <button className={view === key || (key === 'talks' && view === 'talk-detail') ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}</div>
-          <div className="mobile-nav-secondary"><span className="mobile-nav-heading">Dành cho giáo viên</span>{([['requests', 'Nhu cầu học liệu'], ['collections', 'Bộ sưu tập'], ['teachers', 'Danh bạ giáo viên'], ['saved', 'Học liệu đã lưu'], ['following', 'Đang theo dõi']] as const).map(([key, label]) => <button className={view === key ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}<span className="mobile-nav-heading">Kết nối & tiện ích</span>{([['groups', 'Nhóm chuyên môn'], ['messages', 'Tin nhắn riêng'], ['downloads', 'Lịch sử tải'], ['offline', 'Đọc khi mạng yếu']] as const).map(([key, label]) => <button className={view === key ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}
+          <div className="mobile-nav-secondary"><span className="mobile-nav-heading">Dành cho giáo viên</span><button onClick={openWebsiteBuilder}><Globe2 size={15} /> Tạo website bằng AI <ChevronRight size={15} /></button>{([['requests', 'Nhu cầu học liệu'], ['collections', 'Bộ sưu tập'], ['teachers', 'Danh bạ giáo viên'], ['saved', 'Học liệu đã lưu'], ['following', 'Đang theo dõi']] as const).map(([key, label]) => <button className={view === key ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}<span className="mobile-nav-heading">Kết nối & tiện ích</span>{([['groups', 'Nhóm chuyên môn'], ['messages', 'Tin nhắn riêng'], ['downloads', 'Lịch sử tải'], ['offline', 'Đọc khi mạng yếu']] as const).map(([key, label]) => <button className={view === key ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}
             {teacherProfile?.role === 'admin' && <button className={view === 'admin' ? 'active' : ''} onClick={() => nav('admin')}>Duyệt nội dung<ChevronRight size={15} /></button>}
           </div>
         </nav>}
@@ -728,6 +748,7 @@ export default function App() {
             <div className="welcome-actions">
               <button className="button button-light" onClick={() => { nav('projects'); document.getElementById('explore')?.scrollIntoView({ behavior: 'smooth' }); }}>Khám phá dự án <ArrowRight size={16} /></button>
               <button className="welcome-text-button" onClick={() => openSubmit()}><Plus size={16} /> Chia sẻ dự án của bạn</button>
+              <button className="welcome-text-button website-hero-action" onClick={openWebsiteBuilder}><Globe2 size={16} /> Tạo website bằng AI</button>
             </div>
             <button className="community-proof" type="button" aria-label="Khám phá danh bạ giáo viên trong cộng đồng" onClick={() => nav('teachers')}>
               <div className="avatar-stack" aria-hidden="true">{communityProof?.teachers.map((teacher, index) => <span className={`avatar community-avatar avatar-${['mint', 'peach', 'lavender', 'blue', 'yellow'][index]}`} key={teacher.id}>{teacher.avatar ? <img src={teacher.avatar} alt="" /> : teacher.name.split(/\s+/).slice(-2).map((part) => part[0]).join('').toUpperCase()}</span>)}</div>
@@ -796,9 +817,11 @@ export default function App() {
       <footer className="site-footer"><div className="footer-inner"><div className="footer-brand"><img className="brand-mark brand-logo-image" src="/eduhub-logo.png" alt="" /><span className="brand-word">Edu<span>Hub</span><small>.vn</small></span><p>Học liệu do thầy cô chia sẻ,<br />dành cho lớp học Việt.</p></div><div className="footer-links"><div><b>Khám phá</b><button onClick={() => nav('projects')}>Học liệu</button><button onClick={() => nav('talks')}>Thảo luận bộ môn</button><button onClick={() => nav('ranking')}>Bảng xếp hạng</button></div><div><b>Cộng đồng</b><button onClick={() => nav('teachers')}>Danh bạ giáo viên</button><button onClick={() => nav('requests')}>Nhu cầu học liệu</button><button onClick={() => nav('collections')}>Bộ sưu tập</button></div><div><b>Đóng góp</b><button onClick={() => openSubmit()}>Chia sẻ học liệu</button><button onClick={() => setShowLogin(true)}>Tạo tài khoản giáo viên</button></div></div><div className="footer-bottom"><span>© 2026 EduHub · Cộng đồng giáo viên Việt Nam</span><a href="https://openmoji.org/" target="_blank" rel="noreferrer">Minh họa OpenMoji · CC BY-SA 4.0</a><span>Từ lớp học, cho lớp học.</span></div></div></footer>
 
       {notice && <div className="toast-message"><Check size={16} /> {notice}</div>}
+      {showWebsiteBuilder && <WebsiteBuilderModal onClose={() => setShowWebsiteBuilder(false)} onSubmit={async (draft) => { const error = await submitTeacherWebsite(draft); if (!error) setShowWebsiteBuilder(false); return error; }} />}
       {showSubmit && <SubmitModal currentUserId={currentUser?.id || ''} sourceProject={submitParentProject} onClose={() => { setShowSubmit(false); setSubmitParentProject(null); }} onSubmit={async (draft) => { const error = await submitProject(draft); if (!error) { setShowSubmit(false); setSubmitParentProject(null); } return error; }} />}
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} onNotice={toast} />}
       {showTeacherOnboarding && currentUser && teacherProfile && <TeacherOnboardingModal userId={currentUser.id} initialName={teacherProfile.full_name} onComplete={() => { setShowTeacherOnboarding(false); setTeacherProfile((profile) => profile ? { ...profile, profile_completed_at: new Date().toISOString() } : profile); }} onNotice={toast} />}
+      </>}
     </div>
   );
 }
@@ -1039,6 +1062,7 @@ function ProjectModal({ project, allProjects, liked, saved, offlineSaved, onTogg
         <button className="project-author project-author-button modal-author" onClick={onOpenTeacher} disabled={!project.teacherId}><span className={`avatar avatar-${project.color}`}>{project.teacherAvatarUrl ? <img src={project.teacherAvatarUrl} alt="" /> : project.initials}</span><span><b>{project.teacher}</b><small>{project.school}</small></span><span className="author-date">Chia sẻ {project.time}</span></button>
         <p className="modal-description">{project.description}</p>
         {project.descriptionImages && project.descriptionImages.length > 0 && <section className="project-description-gallery" aria-label="Ảnh minh họa dự án"><h3>Ảnh minh họa</h3><div>{project.descriptionImages.map((imageUrl, index) => <a href={imageUrl} target="_blank" rel="noopener noreferrer" key={`${imageUrl}-${index}`}><img src={imageUrl} alt={`${project.title} – ảnh minh họa ${index + 1}`} loading="lazy" /></a>)}</div></section>}
+        {project.websiteHtml && <section className="teacher-website-preview"><header><div><span className="section-kicker">WEBSITE GIÁO DỤC</span><b>Xem thử website</b></div>{project.websiteSlug && <a className="button button-outline" href={`/web/${encodeURIComponent(project.websiteSlug)}`} target="_blank" rel="noopener noreferrer"><Globe2 size={14} /> Mở trang riêng</a>}</header><iframe title={`Xem thử ${project.title}`} sandbox="allow-scripts" referrerPolicy="no-referrer" srcDoc={sandboxWebsiteHtml(project.websiteHtml)} /></section>}
         {project.learningOutcomes && project.learningOutcomes.length > 0 && <section className="learning-outcomes"><div><span className="section-kicker">MỤC TIÊU DO TÁC GIẢ TỰ KHAI</span><b>Yêu cầu cần đạt</b></div><ul>{project.learningOutcomes.map((outcome, index) => <li key={`${index}-${outcome}`}>{outcome}</li>)}</ul><small>Thông tin do người chia sẻ cung cấp, chưa phải kết quả kiểm định của EduHub.</small></section>}
         <div className="modal-info-grid"><div><small>LOẠI DỰ ÁN</small><b>{project.type}</b></div><div><small>ĐỊNH DẠNG</small><b>{project.format}</b></div><div><small>PHÙ HỢP</small><b>{project.grade}</b></div></div>
         {safePreview && <section className="resource-preview"><div><span><FileText size={15} /></span><b>Xem trước tài liệu</b><button onClick={() => setPreviewOpen((open) => !open)}>{previewOpen ? 'Thu gọn' : 'Mở bản xem trước'}</button></div>{previewOpen && (safePreview.kind === 'image' ? <img src={safePreview.url} alt={`Xem trước học liệu ${project.title}`} loading="lazy" /> : <div className="resource-pdf-preview"><iframe src={safePreview.url} title={`Bản xem trước PDF: ${project.title}`} sandbox="" referrerPolicy="no-referrer" loading="lazy" /><a href={safePreview.url} target="_blank" rel="noopener noreferrer">Nếu trình duyệt không hiển thị PDF, mở tài liệu ở tab mới.</a></div>)}</section>}

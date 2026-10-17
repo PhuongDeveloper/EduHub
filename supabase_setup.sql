@@ -36,6 +36,8 @@ create table if not exists public.resources (
   platform_url text,
   cover_url text,
   description_images text[] not null default '{}',
+  website_html text,
+  website_slug text,
   video_url text,
   usage_guide text,
   school_levels text[] not null default '{}',
@@ -165,6 +167,8 @@ alter table public.resources add column if not exists download_url text;
 alter table public.resources add column if not exists platform_url text;
 alter table public.resources add column if not exists cover_url text;
 alter table public.resources add column if not exists description_images text[] not null default '{}';
+alter table public.resources add column if not exists website_html text;
+alter table public.resources add column if not exists website_slug text;
 alter table public.resources add column if not exists video_url text;
 alter table public.resources add column if not exists usage_guide text;
 alter table public.resources add column if not exists school_levels text[] not null default '{}';
@@ -210,6 +214,7 @@ end $$;
 create index if not exists resources_public_feed_idx on public.resources (created_at desc)
   where moderation_status = 'approved';
 create index if not exists resources_author_idx on public.resources (author_id, created_at desc);
+create unique index if not exists resources_website_slug_idx on public.resources (website_slug) where website_slug is not null;
 create index if not exists resource_comments_resource_idx on public.resource_comments (resource_id, created_at desc);
 create index if not exists talks_subject_idx on public.talks (subject_channel, created_at desc);
 create index if not exists resource_bookmarks_user_idx on public.resource_bookmarks (user_id, created_at desc);
