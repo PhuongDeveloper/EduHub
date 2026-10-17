@@ -1559,3 +1559,61 @@ html[data-theme="dark"] .admin-preview-dialog,html[data-theme="dark"] .admin-pre
 @media(max-width:760px){.admin-project-summary>img{flex-basis:94px;width:94px;height:72px}.admin-preview-backdrop{padding:8px}.admin-preview-dialog{max-height:96vh;border-radius:14px}.admin-preview-header{padding:15px}.admin-preview-heading h2{font-size:18px}.admin-preview-scroll{padding:14px}.admin-preview-layout{grid-template-columns:1fr}.admin-preview-aside{position:static}.admin-preview-website iframe{height:55vh}}
 @media(max-width:470px){.admin-project-summary{align-items:stretch;flex-direction:column}.admin-project-summary>img{width:100%;height:150px;flex-basis:150px}.admin-console .admin-tabs button{font-size:11px;padding:8px 9px}.admin-preview-meta{gap:5px}.admin-preview-meta>span:not(.admin-resource-status){font-size:10px}.admin-preview-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .admin-preview-files{display:grid;gap:7px}.admin-preview-files>a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:#36785b;text-decoration:none}.admin-preview-files>a:hover{background:#edf5e9}.admin-preview-files>a>span{display:grid;gap:3px;min-width:0}.admin-preview-files b{overflow:hidden;color:var(--ink);font-size:11px;text-overflow:ellipsis;white-space:nowrap}.admin-preview-files small,.admin-preview-muted{color:var(--muted);font-size:10px}.admin-preview-files>a>svg{flex:none}
+
+/* Project detail: readable editorial hierarchy, uncropped cover, and clear feedback states. */
+.project-detail-page{width:min(100% - 40px,1120px);margin-inline:auto}
+.project-detail-card .modal-project-cover{height:auto;min-height:clamp(250px,29vw,440px);aspect-ratio:2.25/1;padding:22px 24px;isolation:isolate;background-color:#173b34}
+.project-detail-card .detail-cover-image{position:absolute;z-index:-1;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;background:#173b34}
+.project-detail-card .cover-top,.project-detail-card .cover-bottom{position:relative;z-index:1}
+.project-detail-card .cover-type,.project-detail-card .cover-subject,.project-detail-card .cover-bottom>span{font-size:11px}
+.project-detail-card .modal-body{padding:32px 42px 42px}
+.project-detail-card .modal-body>.section-kicker{font-size:10px;letter-spacing:.08em}
+.project-detail-card .modal-body>h2{max-width:950px;margin:9px 0 20px;font-size:clamp(30px,3vw,42px);line-height:1.18;letter-spacing:-1.1px}
+.project-detail-card .modal-description{margin:20px 0;color:#4f6257;font-size:16px;line-height:1.85}
+.project-detail-card .modal-info-grid{gap:15px 20px;margin:22px 0;padding:20px 0}
+.project-detail-card .modal-info-grid small{font-size:10px;line-height:1.4}
+.project-detail-card .modal-info-grid b{font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+.project-detail-card .project-overview{padding:0 18px;border:1px solid #e5ebe3;border-radius:13px;background:#fafbf8}
+.project-detail-card .overview-rating{display:flex;align-items:center;gap:5px;color:#a77922!important}
+.project-detail-card .overview-rating span{color:#78847a;font-size:11px}
+.project-detail-card .project-video-demo{min-height:68px;padding:13px 16px}
+.project-detail-card .project-video-demo b{font-size:14px}
+.project-detail-card .project-video-demo small{font-size:12px}
+.project-detail-card .project-guide-section>h3,.project-detail-card .project-community-heading h3,.project-detail-card .comments-heading h3{font-size:22px}
+.project-detail-card .guide-markdown>p,.project-detail-card .guide-markdown>.guide-bullet-list>li,.project-detail-card .guide-markdown>.guide-ordered-list>li{font-size:15px;line-height:1.8}
+.project-detail-card .guide-markdown li>ul,.project-detail-card .guide-markdown li>ol{font-size:14px}
+.project-detail-card .project-rating{padding:22px;border-radius:14px}
+.project-detail-card .rating-summary>div:first-child>strong{font-size:28px}
+.project-detail-card .rating-summary>div:first-child>small{font-size:12px}
+.project-detail-card .rating-star-picker{gap:7px}
+.project-detail-card .rating-star-picker button{width:40px;height:40px;border:1px solid #ece6d7;border-radius:10px;background:#fffdf8;color:#c6c8c1;transition:transform .15s ease,border-color .15s ease,background .15s ease,color .15s ease}
+.project-detail-card .rating-star-picker button:hover:not(:disabled){transform:translateY(-2px);border-color:#e3c47b;background:#fff8e6;color:#d29b31}
+.project-detail-card .rating-star-picker button.selected{border-color:#ebd293;background:#fff5d9;color:#cb9224}
+.project-detail-card .rating-form textarea,.project-detail-card .comment-form textarea{font-size:14px;line-height:1.65}
+.project-detail-card .rating-submit-group>small,.project-detail-card .rating-review,.project-detail-card .rating-hint{font-size:12px;line-height:1.65}
+.project-detail-card .rating-review{padding:14px 0}
+.project-detail-card .rating-review p{font-size:14px;line-height:1.65}
+.project-detail-card .comment-tools input,.project-detail-card .comment-tools select{font-size:12px}
+.project-detail-card .comment-item>div>b{font-size:13px}
+.project-detail-card .comment-item>div>p{font-size:14px;line-height:1.65}
+.project-detail-card .comment-item>div>small,.project-detail-card .comment-reply-action,.project-detail-card .comment-replies-toggle,.project-detail-card .comment-form-meta>small{font-size:11px}
+.community-load-error,.detail-load-error{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 16px;border:1px solid #eed7ce;border-radius:11px;background:#fff8f5;color:#6c4436}
+.community-load-error>div{display:grid;gap:4px;min-width:0}.community-load-error b{font-size:14px}.community-load-error p{margin:0;color:#8b5b4b;font-size:12px;overflow-wrap:anywhere}.community-load-error small{color:#946f63;font-size:11px;line-height:1.5}
+.community-load-error>.button,.detail-load-error button{flex:none;min-height:36px;font-size:11px}
+.community-loading{padding:17px;border:1px solid #e7ece5;border-radius:10px;background:#fafbf8;color:#65776a;font-size:13px}
+.detail-load-error{padding:11px 13px;font-size:12px;line-height:1.55;overflow-wrap:anywhere}
+.detail-load-error button{padding:6px 9px;border:1px solid #e5d2aa;border-radius:8px;background:#fffdf7;color:#806325;cursor:pointer}
+html[data-theme="dark"] .project-detail-card .project-overview{border-color:#3a4038;background:#20231e}
+html[data-theme="dark"] .project-detail-card .modal-description{color:#d0d6ca}
+html[data-theme="dark"] .project-detail-card .overview-rating span{color:#aeb7aa}
+html[data-theme="dark"] .project-detail-card .rating-star-picker button{border-color:#4a4638;background:#29271f;color:#a6a79d}
+html[data-theme="dark"] .project-detail-card .rating-star-picker button.selected,html[data-theme="dark"] .project-detail-card .rating-star-picker button:hover:not(:disabled){border-color:#7a6330;background:#3c3421;color:#f0c65d}
+html[data-theme="dark"] .community-load-error,html[data-theme="dark"] .detail-load-error{border-color:#64453a;background:#30231f;color:#f0d0c3}
+html[data-theme="dark"] .community-load-error p,html[data-theme="dark"] .community-load-error small{color:#d2a899}
+html[data-theme="dark"] .community-loading{border-color:#3c4038;background:#20231e;color:#d0d6ca}
+html[data-theme="dark"] .detail-load-error button{border-color:#66583a;background:#332c20;color:#f0d18a}
+@media(max-width:700px){.project-detail-page{width:min(100% - 20px,1120px)}.project-detail-card .modal-project-cover{min-height:210px;aspect-ratio:16/10;padding:13px}.project-detail-card .modal-body{padding:22px 18px 28px}.project-detail-card .modal-body>h2{font-size:30px}.project-detail-card .modal-description{font-size:15px}.project-detail-card .modal-info-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.project-detail-card .project-overview{padding-inline:13px}.project-detail-card .rating-star-picker button{width:36px;height:36px}.community-load-error{align-items:flex-start;flex-direction:column}.project-detail-card .guide-markdown>p,.project-detail-card .guide-markdown>.guide-bullet-list>li,.project-detail-card .guide-markdown>.guide-ordered-list>li{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.project-detail-card .rating-star-picker button{transition:none!important}.project-detail-card .rating-star-picker button:hover:not(:disabled){transform:none}}
+
+/* Keep project-card actions in a compact row; the legacy base style is vertical. */
+.project-card-polished .project-aside{flex-direction:row}

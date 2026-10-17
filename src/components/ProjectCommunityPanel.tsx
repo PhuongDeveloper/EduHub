@@ -23,21 +23,33 @@ export function ProjectCommunityPanel({ resourceId, authorId, currentUser, isAdm
   const [body, setBody] = useState('');
   const [version, setVersion] = useState('');
   const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [reportOpen, setReportOpen] = useState(false);
   const [reportReason, setReportReason] = useState('broken_link');
   const [reportDetails, setReportDetails] = useState('');
   const isAuthor = Boolean(currentUser && authorId && currentUser.id === authorId);
 
   const load = async () => {
-    if (!supabase || !resourceId) return;
-    const [{ data: ideas }, { data: updates }, { data: uses }] = await Promise.all([
+    if (!resourceId) { setLoading(false); return; }
+    if (!supabase) { setLoadError('Chưa cấu hình kết nối Supabase cho dự án này.'); setLoading(false); return; }
+    setLoadError('');
+    setLoading(true);
+    const [ideasResult, updatesResult, usesResult] = await Promise.all([
       supabase.from('resource_feedback').select('id,title,body,status,author_id,votes_count,created_at,author:profiles!resource_feedback_author_id_fkey(full_name)').eq('resource_id', resourceId).order('created_at', { ascending: false }),
       supabase.from('resource_changelog').select('id,version,title,body,created_at,author:profiles!resource_changelog_author_id_fkey(full_name)').eq('resource_id', resourceId).order('created_at', { ascending: false }),
       supabase.from('resource_classroom_uses').select('id,teacher_id,grade_level,subject,used_on,outcome,created_at,teacher:profiles!resource_classroom_uses_teacher_id_fkey(full_name)').eq('resource_id', resourceId).order('used_on', { ascending: false }).limit(40),
     ]);
-    setFeedback((ideas || []) as unknown as Feedback[]);
-    setChangelog((updates || []) as unknown as Changelog[]);
-    setClassroomUses((uses || []) as unknown as ClassroomUse[]);
+    const error = ideasResult.error || updatesResult.error || usesResult.error;
+    if (error) {
+      setLoadError(error.message);
+    } else {
+      setLoadError('');
+      setFeedback((ideasResult.data || []) as unknown as Feedback[]);
+      setChangelog((updatesResult.data || []) as unknown as Changelog[]);
+      setClassroomUses((usesResult.data || []) as unknown as ClassroomUse[]);
+    }
+    setLoading(false);
   };
   useEffect(() => { void load(); }, [resourceId]);
   useEffect(() => {
@@ -112,7 +124,7 @@ export function ProjectCommunityPanel({ resourceId, authorId, currentUser, isAdm
   return <section className="project-community-panel">
     <div className="project-community-heading"><div><span className="section-kicker">CÙNG HOÀN THIỆN SẢN PHẨM</span><h3>Góp ý & cập nhật</h3><p>Đề xuất tính năng cho tác giả và theo dõi các phiên bản mới.</p></div>{resourceId && <button className="report-trigger" onClick={() => setReportOpen((open) => !open)}><ShieldAlert size={14} /> Báo nội dung</button>}</div>
     <div className="community-tabs"><button className={tab === 'feedback' ? 'active' : ''} onClick={() => setTab('feedback')}><MessageSquarePlus size={14} /> Góp ý <small>{feedback.length}</small></button><button className={tab === 'updates' ? 'active' : ''} onClick={() => setTab('updates')}><Sparkles size={14} /> Nhật ký phiên bản <small>{changelog.length}</small></button><button className={tab === 'classroom' ? 'active' : ''} onClick={() => setTab('classroom')}><Check size={14} /> Đã áp dụng <small>{classroomUses.length}</small></button></div>
-    {!resourceId ? <p className="community-empty">Góp ý và cập nhật sẽ khả dụng khi dự án được đăng lên EduHub.</p> : tab === 'feedback' ? <>
+    {!resourceId ? <p className="community-empty">Góp ý và cập nhật sẽ khả dụng khi dự án được đăng lên EduHub.</p> : loadError ? <div className="community-load-error" role="alert"><div><b>Chưa tải được dữ liệu cộng đồng</b><p>{loadError}</p><small>Kiểm tra kết nối hoặc cấu hình SQL/RLS của EduHub, rồi thử lại.</small></div><button className="button button-outline" onClick={() => void load()}>Thử tải lại</button></div> : loading ? <p className="community-loading" aria-live="polite">Đang tải góp ý, cập nhật và chia sẻ áp dụng…</p> : tab === 'feedback' ? <>
       <form className="community-compose" onSubmit={addFeedback}><input value={title} onChange={(event) => setTitle(event.target.value)} placeholder={currentUser ? 'Gợi ý điều gì sẽ giúp dự án hữu ích hơn?' : 'Đăng nhập để gửi góp ý'} maxLength={140} required /><textarea value={body} onChange={(event) => setBody(event.target.value)} placeholder="Mô tả ngắn đề xuất (không bắt buộc)" maxLength={3000} rows={2} /><button className="button button-primary" disabled={busy || !title.trim()}><Send size={14} /> Gửi góp ý</button></form>
       <div className="feedback-list">{feedback.length ? feedback.map((item) => <article className="feedback-item" key={item.id}><div className="feedback-copy"><div className="feedback-title-row"><b>{item.title}</b><span className={`feedback-status status-${item.status}`}>{statusLabels[item.status] || item.status}</span></div>{item.body && <p>{item.body}</p>}<small>{item.author?.full_name || 'Giáo viên'} · {new Date(item.created_at).toLocaleDateString('vi-VN')}</small>{(isAuthor || isAdmin) && <label className="feedback-status-edit">Trạng thái<select value={item.status} onChange={(event) => void changeStatus(item, event.target.value)}>{Object.entries(statusLabels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>}</div><button className={`feedback-vote${voted.includes(item.id) ? ' active' : ''}`} onClick={() => void toggleVote(item)} disabled={isAuthor}><ThumbsUp size={14} /><b>{item.votes_count || 0}</b></button></article>) : <p className="community-empty">Chưa có góp ý. Thầy cô có thể đề xuất tài liệu bổ sung hoặc cải thiện cách dùng.</p>}</div>
     </> : tab === 'updates' ? <>
