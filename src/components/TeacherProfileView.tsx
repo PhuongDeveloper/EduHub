@@ -637,6 +637,7 @@ export function TeacherProfileView({
                 {profile.full_name.split(/\s+/).slice(-2).map((part) => part[0]).join('').toUpperCase()}
               </span>
             )}
+            <span className="avatar-status-dot online" title="Đang hoạt động" />
             {isOwner && (
               <label className="profile-avatar-upload" title="Đổi ảnh đại diện">
                 <Camera size={14} />

@@ -323,6 +323,7 @@ export function TeacherDirectoryPage({
                     ) : (
                       <span>{teacher.full_name.slice(-2).toUpperCase()}</span>
                     )}
+                    <span className="avatar-status-dot online" title="Đang hoạt động" />
                     {isMutual && (
                       <span className="directory-friend-badge" title="Bạn bè hai chiều">
                         <UserCheck size={12} />

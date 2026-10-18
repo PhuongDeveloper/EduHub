@@ -415,12 +415,15 @@ export function TeacherMessagesPage({
                     onClick={() => void startConversation(t)}
                     disabled={busy}
                   >
-                    <div className="search-item-avatar">
-                      {t.avatar_url ? (
-                        <img src={t.avatar_url} alt={t.full_name} />
-                      ) : (
-                        <span>{t.full_name.slice(-2).toUpperCase()}</span>
-                      )}
+                    <div className="search-item-avatar-wrap">
+                      <div className="search-item-avatar">
+                        {t.avatar_url ? (
+                          <img src={t.avatar_url} alt={t.full_name} />
+                        ) : (
+                          <span>{t.full_name.slice(-2).toUpperCase()}</span>
+                        )}
+                      </div>
+                      <span className="avatar-status-dot online" />
                     </div>
                     <div className="search-item-meta">
                       <b>{t.full_name}</b>
@@ -505,12 +508,15 @@ export function TeacherMessagesPage({
                   className={`message-conversation-row ${isActive ? 'active' : ''}`}
                   onClick={() => setActiveId(conversation.id)}
                 >
-                  <div className="conversation-avatar">
-                    {person?.avatar_url ? (
-                      <img src={person.avatar_url} alt={person.full_name} />
-                    ) : (
-                      <span>{person?.full_name ? person.full_name.slice(-2).toUpperCase() : 'GV'}</span>
-                    )}
+                  <div className="conversation-avatar-wrap">
+                    <div className="conversation-avatar">
+                      {person?.avatar_url ? (
+                        <img src={person.avatar_url} alt={person.full_name} />
+                      ) : (
+                        <span>{person?.full_name ? person.full_name.slice(-2).toUpperCase() : 'GV'}</span>
+                      )}
+                    </div>
+                    <span className="avatar-status-dot online" />
                   </div>
                   <div className="conversation-text">
                     <div className="conversation-header-line">
@@ -572,12 +578,15 @@ export function TeacherMessagesPage({
                   role="button"
                   title="Nhấn để xem hồ sơ"
                 >
-                  <div className="thread-partner-avatar">
-                    {activeOtherTeacher.avatar_url ? (
-                      <img src={activeOtherTeacher.avatar_url} alt={activeOtherTeacher.full_name} />
-                    ) : (
-                      <span>{activeOtherTeacher.full_name.slice(-2).toUpperCase()}</span>
-                    )}
+                  <div className="thread-partner-avatar-wrap">
+                    <div className="thread-partner-avatar">
+                      {activeOtherTeacher.avatar_url ? (
+                        <img src={activeOtherTeacher.avatar_url} alt={activeOtherTeacher.full_name} />
+                      ) : (
+                        <span>{activeOtherTeacher.full_name.slice(-2).toUpperCase()}</span>
+                      )}
+                    </div>
+                    <span className="avatar-status-dot online" />
                   </div>
                   <div>
                     <div className="thread-partner-name-row">
@@ -588,10 +597,15 @@ export function TeacherMessagesPage({
                         </span>
                       )}
                     </div>
-                    <small>
-                      {activeOtherTeacher.subject_specialty || 'Giáo viên'}
-                      {activeOtherTeacher.school_name ? ` · ${activeOtherTeacher.school_name}` : ''}
-                    </small>
+                    <div className="thread-partner-meta-row">
+                      <small>
+                        {activeOtherTeacher.subject_specialty || 'Giáo viên'}
+                        {activeOtherTeacher.school_name ? ` · ${activeOtherTeacher.school_name}` : ''}
+                      </small>
+                      <span className="partner-live-status">
+                        <span className="status-dot-pulse online" /> Đang trực tuyến
+                      </span>
+                    </div>
                   </div>
                 </div>
 

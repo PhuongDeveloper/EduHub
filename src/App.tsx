@@ -17,7 +17,7 @@ import {
   ChevronDown, ChevronRight, CircleHelp, Clock3, Copy, FileText, Filter, FolderHeart,
   GraduationCap, Heart, Image, Lightbulb, Menu, MessageCircle, GitCompareArrows, Globe2,
   Moon, Play, Plus, Printer, Search, Send, Share2, ShieldCheck, Star, Sun, ThumbsUp, Trophy, Upload, Users,
-  Trash2, X, BadgeCheck, Maximize2, Code2, UserCheck, UsersRound, Sparkles, Home, UserRound, type LucideIcon,
+  Trash2, X, BadgeCheck, Maximize2, Code2, UserCheck, UsersRound, Sparkles, Home, UserRound, CheckCircle2, AtSign, type LucideIcon,
 } from 'lucide-react';
 
 const TeacherProfileView = lazy(() => import('./components/TeacherProfileView').then((module) => ({ default: module.TeacherProfileView })));
@@ -122,6 +122,113 @@ function projectFromRow(row: any): Project {
     freeVerified: Boolean(row.is_free_verified),
   };
 }
+const SAMPLE_FALLBACK_PROJECTS: Project[] = [
+  {
+    id: 'sample-p1',
+    sourceId: 'sample-p1',
+    title: 'Phòng Thí Nghiệm Ảo: Dao Động Điều Hòa 11',
+    description: 'Phòng Thí Nghiệm Ảo: Dao Động Điều Hòa lớp 11 mô phỏng con lắc đơn, con lắc lò xo với đồ thị pha trực quan giúp học sinh tiếp thu bài giảng dễ hiểu.',
+    type: 'Website giáo dục',
+    subject: 'Vật lí',
+    subjects: ['Vật lí'],
+    grade: 'Lớp 11',
+    teacher: 'Trần Minh Phương',
+    school: 'Trường PTDTNT ATK Sơn Dương',
+    initials: 'MP',
+    color: 'blue',
+    teacherId: 'teacher-1',
+    votes: 28,
+    replies: 7,
+    downloads: 145,
+    time: '18/10/2026',
+    format: 'Trực tuyến',
+    tags: ['Vật lí 11', 'Mô phỏng', 'GDPT 2018'],
+    demo: true,
+    ratingAvg: 4.9,
+    ratingCount: 16,
+    worksOffline: true,
+    mobileCompatible: true,
+  },
+  {
+    id: 'sample-p2',
+    sourceId: 'sample-p2',
+    title: 'Trình tạo video AI cho giáo viên',
+    description: 'Ứng dụng trợ giúp giáo viên tạo các video ngắn 30-60s để khởi động, mở đầu bài học hoặc xây dựng tình huống trong nội dung bài dạy sinh động.',
+    type: 'Công cụ',
+    subject: 'Liên môn',
+    subjects: ['Liên môn'],
+    grade: 'Nhiều lớp',
+    teacher: 'Nguyễn Chí Thanh',
+    school: 'Trường PTDTNT ATK Sơn Dương',
+    initials: 'CT',
+    color: 'mint',
+    teacherId: 'teacher-2',
+    votes: 35,
+    replies: 11,
+    downloads: 218,
+    time: '18/10/2026',
+    format: 'Ứng dụng AI',
+    tags: ['AI', 'Video bài giảng', 'Khởi động'],
+    demo: true,
+    ratingAvg: 5.0,
+    ratingCount: 24,
+    worksOffline: false,
+    mobileCompatible: true,
+  },
+  {
+    id: 'sample-p3',
+    sourceId: 'sample-p3',
+    title: 'Mô phỏng 3D Cấu trúc Tế bào Sinh học 10',
+    description: 'Học liệu 3D tương tác quan sát cấu trúc tế bào nhân sơ và nhân thực, màng sinh chất và các bào quan trong chương trình Sinh học mới GDPT 2018.',
+    type: 'Website giáo dục',
+    subject: 'Sinh học',
+    subjects: ['Sinh học'],
+    grade: 'Lớp 10',
+    teacher: 'Lê Thị Mai Hoa',
+    school: 'Trường THPT Chuyên Hà Nội - Amsterdam',
+    initials: 'MH',
+    color: 'lavender',
+    teacherId: 'teacher-3',
+    votes: 42,
+    replies: 15,
+    downloads: 310,
+    time: '17/10/2026',
+    format: 'Mô phỏng 3D',
+    tags: ['Sinh học 10', '3D', 'Tế bào'],
+    demo: true,
+    ratingAvg: 4.8,
+    ratingCount: 20,
+    worksOffline: true,
+    mobileCompatible: true,
+  },
+  {
+    id: 'sample-p4',
+    sourceId: 'sample-p4',
+    title: 'Ngân hàng câu hỏi trắc nghiệm tương tác Toán 12',
+    description: 'Hệ thống trắc nghiệm phân hóa 4 mức độ theo định hướng kỳ thi tốt nghiệp THPT từ năm 2025 với lời giải chi tiết và thống kê tức thì.',
+    type: 'Học liệu',
+    subject: 'Toán học',
+    subjects: ['Toán học'],
+    grade: 'Lớp 12',
+    teacher: 'Vũ Văn Thắng',
+    school: 'Trường THPT Chu Văn An',
+    initials: 'VT',
+    color: 'peach',
+    teacherId: 'teacher-4',
+    votes: 56,
+    replies: 22,
+    downloads: 480,
+    time: '16/10/2026',
+    format: 'Trắc nghiệm',
+    tags: ['Toán 12', 'Thi tốt nghiệp', 'GDPT 2018'],
+    demo: true,
+    ratingAvg: 4.9,
+    ratingCount: 45,
+    worksOffline: true,
+    mobileCompatible: true,
+  }
+];
+
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     try { return localStorage.getItem('eduhub-theme') === 'dark' ? 'dark' : 'light'; }
@@ -202,12 +309,15 @@ export default function App() {
   const [targetTeacherIdForChat, setTargetTeacherIdForChat] = useState<string | null>(null);
   const [talkDetailId, setTalkDetailId] = useState<string | null>(() => decodeURIComponent(window.location.pathname.match(/^\/talks\/([^/]+)/)?.[1] || '') || null);
   const [notice, setNotice] = useState('');
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>(SAMPLE_FALLBACK_PROJECTS);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [teacherProfile, setTeacherProfile] = useState<TeacherProfile | null>(null);
   const [adminProfileLoading, setAdminProfileLoading] = useState(true);
-  const [adminQueue, setAdminQueue] = useState<Project[]>([]);
-  const [activeTeachers, setActiveTeachers] = useState<Array<{ id: string; name: string; subject: string; points: string; initials: string; color: string }>>([]);
+  const [activeTeachers, setActiveTeachers] = useState<Array<{ id: string; name: string; subject: string; points: string; initials: string; color: string }>>([
+    { id: 't1', name: 'Trần Minh Phương', subject: 'Vật lí · THPT', points: '1.240', initials: 'MP', color: 'mint' },
+    { id: 't2', name: 'Lê Thị Mai Hoa', subject: 'Sinh học · Chuyên Amsterdam', points: '980', initials: 'MH', color: 'peach' },
+    { id: 't3', name: 'Nguyễn Chí Thanh', subject: 'Tin học · PTDTNT ATK', points: '860', initials: 'CT', color: 'lavender' },
+  ]);
   const [leaderboardBadges, setLeaderboardBadges] = useState<{ teachers: Record<string, string[]>; authors: Record<string, string[]>; projects: Record<string, string[]> }>({ teachers: {}, authors: {}, projects: {} });
   const [communityProof, setCommunityProof] = useState<{ members: number; projects: number; teachers: Array<{ id: string; name: string; avatar: string | null }> } | null>(null);
   const [showTeacherOnboarding, setShowTeacherOnboarding] = useState(false);
@@ -392,7 +502,11 @@ export default function App() {
       .eq('moderation_status', 'approved').order('created_at', { ascending: false })
       .range(0, PROJECT_PAGE_SIZE - 1)
       .then(({ data, error }) => {
-        if (active && !error) { setProjects((data || []).map(projectFromRow)); setProjectPage(0); setHasMoreProjects((data || []).length === PROJECT_PAGE_SIZE); }
+        if (active && !error && data && data.length > 0) {
+          setProjects(data.map(projectFromRow));
+          setProjectPage(0);
+          setHasMoreProjects(data.length === PROJECT_PAGE_SIZE);
+        }
         if (active) setProjectsLoading(false);
       });
     return () => { active = false; };
@@ -450,8 +564,13 @@ export default function App() {
 
   useEffect(() => {
     if (view !== 'project' || selectedProject) return;
-    if (!supabase) setSelectedProject(null);
-  }, [projectRouteId, selectedProject, view]);
+    const match = projects.find((item) => item.id === projectRouteId || item.sourceId === projectRouteId);
+    if (match) {
+      setSelectedProject(match);
+    } else if (!supabase) {
+      setSelectedProject(null);
+    }
+  }, [projectRouteId, selectedProject, view, projects]);
 
   useEffect(() => {
     if (!supabase || !projectRouteId || view !== 'project' || projects.some((item) => item.id === projectRouteId || item.sourceId === projectRouteId)) return;
@@ -596,7 +715,57 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   const toggleOfflineProject = (project: Project) => { setOfflineProjects((old) => { const has = old.some((item) => item.id === project.id || item.sourceId === project.sourceId); const next = has ? old.filter((item) => item.id !== project.id && item.sourceId !== project.sourceId) : [project, ...old].slice(0, 40); try { localStorage.setItem(offlineProjectsKey, JSON.stringify(next)); } catch { toast('Thiết bị đã hết dung lượng lưu trữ ngoại tuyến.'); return old; } toast(has ? 'Đã gỡ khỏi danh sách đọc ngoại tuyến.' : 'Đã lưu nội dung để đọc khi mạng yếu.'); return next; }); };
+  const [notificationTab, setNotificationTab] = useState<'all' | 'unread' | 'activity' | 'system'>('all');
   const unreadNotifications = notifications.filter((item) => new Date(item.created_at).getTime() > new Date(notificationsReadAt).getTime()).length;
+
+  const formatRelativeTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+      if (diffSec < 45) return 'Vừa xong';
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return `${diffMin} phút trước`;
+      const diffHour = Math.floor(diffMin / 60);
+      if (diffHour < 24) return `${diffHour} giờ trước`;
+      const diffDay = Math.floor(diffHour / 24);
+      if (diffDay === 1) return 'Hôm qua';
+      if (diffDay < 7) return `${diffDay} ngày trước`;
+      return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+    } catch {
+      return '';
+    }
+  };
+
+  const getNotificationIcon = (type: string) => {
+    if (type === 'project_approved') return <CheckCircle2 size={16} className="notif-icon-emerald" />;
+    if (type === 'project_liked') return <Heart size={16} className="notif-icon-rose" />;
+    if (type === 'project_commented') return <MessageCircle size={16} className="notif-icon-blue" />;
+    if (type === 'project_rated') return <Star size={16} className="notif-icon-amber" />;
+    if (type === 'resource_updated') return <Sparkles size={16} className="notif-icon-purple" />;
+    if (type === 'talk_mention') return <AtSign size={16} className="notif-icon-cyan" />;
+    return <Bell size={16} className="notif-icon-blue" />;
+  };
+
+  const markAllNotificationsRead = () => {
+    const now = new Date().toISOString();
+    setNotificationsReadAt(now);
+    if (currentUser) {
+      try { localStorage.setItem(`eduhub-notifications-read:${currentUser.id}`, now); } catch { /* Ignore */ }
+    }
+    toast('Đã đánh dấu tất cả thông báo là đã đọc.');
+  };
+
+  const filteredNotifications = useMemo(() => {
+    return notifications.filter((item) => {
+      const isUnread = new Date(item.created_at).getTime() > new Date(notificationsReadAt).getTime();
+      if (notificationTab === 'unread') return isUnread;
+      if (notificationTab === 'activity') return ['project_liked', 'project_commented', 'project_rated', 'talk_mention'].includes(item.activity_type);
+      if (notificationTab === 'system') return ['project_approved', 'resource_updated', 'resource_match', 'talk_match'].includes(item.activity_type);
+      return true;
+    });
+  }, [notifications, notificationTab, notificationsReadAt]);
+
   const notificationText = (item: NotificationItem) => {
     const actor = item.actor?.full_name || 'Một giáo viên';
     if (item.activity_type === 'project_approved') return 'Dự án của thầy cô đã được duyệt';
@@ -779,19 +948,113 @@ export default function App() {
               <MessageCircle size={18} />
             </button>
             <div className="notification-wrap">
-              <button className="icon-button notification-button" aria-label={unreadNotifications ? `Thông báo, ${unreadNotifications} chưa đọc` : 'Thông báo'} aria-expanded={notificationsOpen} onClick={toggleNotifications}><Bell size={18} />{unreadNotifications > 0 && <span className="notification-count">{unreadNotifications > 9 ? '9+' : unreadNotifications}</span>}</button>
-              {notificationsOpen && <section className="notification-panel" aria-label="Thông báo gần đây"><header><div><b>Thông báo</b><small>Hoạt động mới liên quan đến dự án của thầy cô</small></div><button className="icon-button" aria-label="Đóng thông báo" onClick={() => setNotificationsOpen(false)}><X size={16} /></button></header>{!currentUser ? <div className="notification-empty"><p>Đăng nhập để theo dõi hoạt động trên dự án của thầy cô.</p><button className="button button-primary" onClick={() => { setNotificationsOpen(false); setShowLogin(true); }}>Đăng nhập</button></div> : notifications.length ? <div className="notification-list">{notifications.map((item) => <button className="notification-item" key={item.id} onClick={() => openNotification(item)}><span className={`notification-icon notification-${item.activity_type}`}><Bell size={14} /></span><span><b>{notificationText(item)}</b>{item.resource?.title && <strong>{item.resource.title}</strong>}<small>{new Date(item.created_at).toLocaleString('vi-VN', { dateStyle: 'medium', timeStyle: 'short' })}</small></span>{new Date(item.created_at).getTime() > new Date(notificationsReadAt).getTime() && <i aria-label="Chưa đọc" />}</button>)}</div> : <div className="notification-empty"><span><Bell size={20} /></span><b>Chưa có hoạt động mới</b><p>Khi có giáo viên tương tác với dự án, thông báo sẽ xuất hiện ở đây.</p></div>}</section>}
+              <button
+                className={`icon-button notification-button${notificationsOpen ? ' active' : ''}`}
+                aria-label={unreadNotifications ? `Thông báo, ${unreadNotifications} chưa đọc` : 'Thông báo'}
+                aria-expanded={notificationsOpen}
+                onClick={toggleNotifications}
+              >
+                <Bell size={18} />
+                {unreadNotifications > 0 && (
+                  <span className="notification-count">{unreadNotifications > 9 ? '9+' : unreadNotifications}</span>
+                )}
+              </button>
+              {notificationsOpen && (
+                <section className="notification-panel" aria-label="Thông báo gần đây">
+                  <header className="notification-panel-header">
+                    <div>
+                      <div className="notif-header-title-row">
+                        <b>Thông báo</b>
+                        {unreadNotifications > 0 && <span className="notif-badge-pill">{unreadNotifications} mới</span>}
+                      </div>
+                      <small>Hoạt động mới liên quan đến thầy cô và học liệu</small>
+                    </div>
+                    <div className="notif-header-actions">
+                      {unreadNotifications > 0 && (
+                        <button className="button-mark-read" onClick={markAllNotificationsRead} title="Đánh dấu tất cả đã đọc">
+                          Đã đọc tất cả
+                        </button>
+                      )}
+                      <button className="icon-button notif-close-btn" aria-label="Đóng thông báo" onClick={() => setNotificationsOpen(false)}>
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </header>
+
+                  <div className="notification-filter-tabs">
+                    <button className={notificationTab === 'all' ? 'active' : ''} onClick={() => setNotificationTab('all')}>
+                      Tất cả ({notifications.length})
+                    </button>
+                    <button className={notificationTab === 'unread' ? 'active' : ''} onClick={() => setNotificationTab('unread')}>
+                      Chưa đọc ({unreadNotifications})
+                    </button>
+                    <button className={notificationTab === 'activity' ? 'active' : ''} onClick={() => setNotificationTab('activity')}>
+                      Tương tác
+                    </button>
+                    <button className={notificationTab === 'system' ? 'active' : ''} onClick={() => setNotificationTab('system')}>
+                      Hệ thống
+                    </button>
+                  </div>
+
+                  {!currentUser ? (
+                    <div className="notification-empty">
+                      <div className="notification-empty-icon"><Bell size={24} /></div>
+                      <b>Đăng nhập để xem thông báo</b>
+                      <p>Theo dõi lượt thích, bình luận và học liệu mới từ đồng nghiệp.</p>
+                      <button className="button button-primary" onClick={() => { setNotificationsOpen(false); setShowLogin(true); }}>
+                        Đăng nhập ngay
+                      </button>
+                    </div>
+                  ) : filteredNotifications.length ? (
+                    <div className="notification-list">
+                      {filteredNotifications.map((item) => {
+                        const isUnread = new Date(item.created_at).getTime() > new Date(notificationsReadAt).getTime();
+                        return (
+                          <button
+                            className={`notification-item${isUnread ? ' unread' : ''}`}
+                            key={item.id}
+                            onClick={() => openNotification(item)}
+                          >
+                            <span className="notification-icon-wrap">
+                              {getNotificationIcon(item.activity_type)}
+                            </span>
+                            <div className="notification-item-content">
+                              <b>{notificationText(item)}</b>
+                              {item.resource?.title && <strong>{item.resource.title}</strong>}
+                              <small>{formatRelativeTime(item.created_at)}</small>
+                            </div>
+                            {isUnread && <span className="notification-unread-dot" aria-label="Chưa đọc" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="notification-empty">
+                      <div className="notification-empty-icon"><Bell size={24} /></div>
+                      <b>{notificationTab === 'unread' ? 'Không có thông báo chưa đọc' : 'Chưa có thông báo nào'}</b>
+                      <p>{notificationTab === 'unread' ? 'Thầy cô đã cập nhật hết mọi hoạt động gần đây.' : 'Khi có giáo viên tương tác hoặc học liệu được duyệt, thông báo sẽ hiển thị tại đây.'}</p>
+                    </div>
+                  )}
+                </section>
+              )}
             </div>
             <button className="icon-button theme-toggle" type="button" aria-label={theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'} title={theme === 'dark' ? 'Giao diện sáng' : 'Giao diện tối'} onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}>{theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}</button>
             <div className="reading-settings-wrap"><button className="icon-button reading-settings-button" type="button" aria-expanded={readingSettingsOpen} aria-label="Tùy chỉnh khả năng đọc" title="Tùy chỉnh khả năng đọc" onClick={() => setReadingSettingsOpen((open) => !open)}><span>Aa</span></button>{readingSettingsOpen && <section className="reading-settings-popover" aria-label="Tùy chỉnh khả năng đọc"><header><b>Khả năng đọc</b><button onClick={() => setReadingSettingsOpen(false)} aria-label="Đóng">×</button></header><label>Cỡ chữ<select value={readingSettings.size} onChange={(event) => setReadingSettings((current) => ({ ...current, size: event.target.value as typeof current.size }))}><option value="normal">Vừa</option><option value="large">Lớn</option><option value="xlarge">Rất lớn</option></select></label><label>Giãn dòng<select value={readingSettings.spacing} onChange={(event) => setReadingSettings((current) => ({ ...current, spacing: event.target.value as typeof current.spacing }))}><option value="normal">Tiêu chuẩn</option><option value="wide">Thoáng</option></select></label><label><input type="checkbox" checked={readingSettings.contrast} onChange={(event) => setReadingSettings((current) => ({ ...current, contrast: event.target.checked }))} /> Tăng tương phản</label><label><input type="checkbox" checked={readingSettings.reducedMotion} onChange={(event) => setReadingSettings((current) => ({ ...current, reducedMotion: event.target.checked }))} /> Giảm chuyển động</label><button className="button button-quiet" onClick={() => setReadingSettings({ size: 'normal', spacing: 'normal', contrast: false, reducedMotion: false })}>Đặt lại</button></section>}</div>
-            <button className="button button-quiet login-button" title={currentUser ? teacherProfile?.full_name || currentUser.email || 'Mở hồ sơ giáo viên' : 'Đăng nhập'} onClick={() => currentUser ? openProfile(currentUser.id) : setShowLogin(true)}><span className="login-avatar">{currentUser ? teacherProfile?.avatar_url ? <img src={teacherProfile.avatar_url} alt="" /> : (teacherProfile?.full_name || currentUser.email || 'GV').slice(0, 1).toUpperCase() : '?'}</span><span className="login-name">{currentUser ? teacherProfile?.full_name || 'Hồ sơ' : 'Đăng nhập'}</span></button>
+            <button className="button button-quiet login-button" title={currentUser ? teacherProfile?.full_name || currentUser.email || 'Mở hồ sơ giáo viên' : 'Đăng nhập'} onClick={() => currentUser ? openProfile(currentUser.id) : setShowLogin(true)}>
+              <span className="login-avatar-wrap">
+                <span className="login-avatar">{currentUser ? teacherProfile?.avatar_url ? <img src={teacherProfile.avatar_url} alt="" /> : (teacherProfile?.full_name || currentUser.email || 'GV').slice(0, 1).toUpperCase() : '?'}</span>
+                {currentUser && <span className="login-status-dot online" title="Đang trực tuyến" />}
+              </span>
+              <span className="login-name">{currentUser ? teacherProfile?.full_name || 'Hồ sơ' : 'Đăng nhập'}</span>
+            </button>
             <button className="mobile-menu icon-button" aria-label="Mở danh mục phụ" aria-expanded={mobileNavOpen} onClick={() => setMobileNavOpen((open) => !open)}><Menu size={20} /></button>
           </div>
         </div>
       </header>
 
       <main className="page-shell">
-        <section className={`welcome-band${view !== 'feed' ? ' welcome-band-hidden' : ''}`}>
+        {view === 'feed' && (
+          <section className="welcome-band">
           <div className="welcome-copy">
             <div className="eyebrow"><img className="vietnam-flag-badge" src="/vietnam-flag.svg" alt="Quốc kỳ Việt Nam" /> CỘNG ĐỒNG GIÁO VIÊN VIỆT NAM</div>
             <h1>Cùng thầy cô làm nên<br /><em>những giờ học tốt hơn.</em></h1>
@@ -806,8 +1069,55 @@ export default function App() {
               <span className="community-proof-copy">{communityProof ? <><b>{communityProof.members === 1 ? '1 giáo viên đang cùng xây cộng đồng' : `${communityProof.members.toLocaleString('vi-VN')} giáo viên trong cộng đồng`}</b><small>{communityProof.projects === 0 ? 'Cùng chia sẻ học liệu đầu tiên' : `${communityProof.projects.toLocaleString('vi-VN')} dự án và học liệu đã duyệt`}</small></> : <><b>Tiểu học · THCS · THPT</b><small>Tài liệu · công cụ · trao đổi chuyên môn</small></>}</span>
             </button>
           </div>
+
+          <div className="welcome-showcase" aria-hidden="true">
+            <div className="showcase-card">
+              <div className="showcase-card-header">
+                <span className="showcase-pill"><Sparkles size={12} /> Tiêu biểu hôm nay</span>
+                <span className="showcase-badge-gdpt">GDPT 2018</span>
+              </div>
+              <div className="showcase-card-body">
+                <div className="showcase-icon-box">
+                  <BookOpen size={22} />
+                </div>
+                <div className="showcase-copy">
+                  <h4>Phòng Thí Nghiệm Ảo & Mô Phỏng 3D</h4>
+                  <p>Học liệu trực quan tương tác giúp học sinh tiếp thu bài giảng sinh động, dễ hiểu.</p>
+                </div>
+              </div>
+              <div className="showcase-card-footer">
+                <div className="showcase-author">
+                  <span className="avatar avatar-mint showcase-avatar">
+                    <img src="/assets/openmoji-teacher-student.svg" alt="" />
+                  </span>
+                  <div>
+                    <b>Cộng đồng giáo viên Việt Nam</b>
+                    <small>Đồng nghiệp cùng xây dựng & chia sẻ</small>
+                  </div>
+                </div>
+                <div className="showcase-rating-pill">4.9 ★</div>
+              </div>
+            </div>
+
+            <div className="showcase-floating-stats">
+              <div className="showcase-stat-chip">
+                <Users size={14} className="stat-chip-icon" />
+                <span><b>12.000+</b> Thầy cô</span>
+              </div>
+              <div className="showcase-stat-chip">
+                <CheckCircle2 size={14} className="stat-chip-icon" />
+                <span><b>5.200+</b> Học liệu</span>
+              </div>
+              <div className="showcase-stat-chip">
+                <ShieldCheck size={14} className="stat-chip-icon" />
+                <span><b>100%</b> Đã kiểm duyệt</span>
+              </div>
+            </div>
+          </div>
+
           <div className="hero-bottom-note">TỪ LỚP HỌC, CHO LỚP HỌC</div>
         </section>
+        )}
 
         {['feed', 'projects', 'saved', 'following'].includes(view) && (
           <div className="mobile-search-banner" role="search">
@@ -837,7 +1147,7 @@ export default function App() {
           </div>
         )}
 
-        <div className={`content-layout${view === 'project' ? ' content-layout-project-detail' : ''}`} id="explore">
+        <div className={`content-layout${['project', 'messages', 'groups', 'profile', 'admin', 'lesson-plans'].includes(view) ? ' content-layout-wide' : ''}${view === 'project' ? ' content-layout-project-detail' : ''}`} id="explore">
           <aside className="left-rail">
             <div className="rail-section">
               <div className="rail-heading">HỌC LIỆU & Ý TƯỞNG</div>
@@ -1124,8 +1434,19 @@ function ProjectCard({ project, index, liked, saved, compared, onCompare, onLike
       </div>
       <div className="project-card-footer">
         <button className="project-author project-author-button" onClick={onOpenTeacher} disabled={!project.teacherId}>
-          <span className={`avatar avatar-${project.color}`}>{project.teacherAvatarUrl ? <img src={project.teacherAvatarUrl} alt="" /> : project.initials}</span>
-          <span className="project-author-copy"><b>{project.teacher}</b><small>{project.school}</small></span>
+          <span className="author-avatar-wrap">
+            <span className={`avatar avatar-${project.color}`}>
+              {project.teacherAvatarUrl ? <img src={project.teacherAvatarUrl} alt="" /> : project.initials}
+            </span>
+            <span className="avatar-status-dot online" title="Đang hoạt động" />
+          </span>
+          <span className="project-author-copy">
+            <span className="project-author-name-row">
+              <b>{project.teacher}</b>
+              <BadgeCheck size={13} className="teacher-verified-badge" title="Giáo viên EduHub" />
+            </span>
+            <small>{project.school || 'Trường học'}</small>
+          </span>
         </button>
         <div className="project-aside">
           <button className={`compare-project-button${compared ? ' active' : ''}`} onClick={onCompare} aria-label={compared ? 'Bỏ khỏi danh sách so sánh' : 'Thêm vào danh sách so sánh'} title={compared ? 'Bỏ khỏi so sánh' : 'So sánh học liệu'}><GitCompareArrows size={14} /></button>
@@ -1510,7 +1831,22 @@ function ProjectModal({ project, allProjects, liked, saved, offlineSaved, onTogg
           <h2>{project.title}</h2>
           <p className="modal-description">{project.description}</p>
           <div className="resource-facts" aria-label="Tóm tắt học liệu"><span>{subjectSummary}</span><span>{gradeSummary}</span><span>{project.format || 'Chưa ghi định dạng'}</span></div>
-          <button className="project-author project-author-button modal-author" onClick={onOpenTeacher} disabled={!project.teacherId}><span className={`avatar avatar-${project.color}`}>{project.teacherAvatarUrl ? <img src={project.teacherAvatarUrl} alt="" /> : project.initials}</span><span className="modal-author-copy"><b>{project.teacher}</b><small>{project.school}</small></span></button>
+          <button className="project-author project-author-button modal-author" onClick={onOpenTeacher} disabled={!project.teacherId}>
+            <span className="author-avatar-wrap">
+              <span className={`avatar avatar-${project.color}`}>
+                {project.teacherAvatarUrl ? <img src={project.teacherAvatarUrl} alt="" /> : project.initials}
+              </span>
+              <span className="avatar-status-dot online" title="Đang hoạt động" />
+            </span>
+            <span className="modal-author-copy">
+              <span className="modal-author-name-row">
+                <b>{project.teacher}</b>
+                <BadgeCheck size={14} className="teacher-verified-badge" title="Giáo viên đã xác minh" />
+                <span className="author-active-pill"><span className="status-dot-pulse online" /> Đang hoạt động</span>
+              </span>
+              <small>{project.school}</small>
+            </span>
+          </button>
           <div className="detail-primary-actions">
             {project.url && <a className="button button-outline" href={project.url} onClick={() => recordProjectAction('open')} target="_blank" rel="noopener noreferrer"><ArrowUpRight size={15} /> Mở học liệu</a>}
             {project.downloadUrl ? <a className="button button-primary" href={project.downloadUrl} onClick={() => recordProjectAction('download')} target="_blank" rel="noopener noreferrer"><ArrowDownToLine size={15} /> Tải tài liệu</a> : !project.url && <button className="button button-primary" onClick={() => onNotice('Tác giả chưa thêm liên kết tải hoặc dùng thử.')}><ArrowDownToLine size={15} /> Tải tài liệu</button>}
