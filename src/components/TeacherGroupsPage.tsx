@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import type { User } from '@supabase/supabase-js';
 import {
   BookOpen, MessageCircle, Plus, School, Send, Trash2, UserPlus, UsersRound,
@@ -63,6 +63,237 @@ type GroupPost = {
   }>;
 };
 
+const SAMPLE_TEACHER_GROUPS: Group[] = [
+  {
+    id: 'sample-group-stem',
+    owner_id: 'sample-teacher-1',
+    name: 'Tổ KHTN & Giáo dục STEM THCS (GDPT 2018)',
+    school_name: 'THCS Chu Văn An · Hà Nội',
+    subject: 'Khoa học tự nhiên',
+    members: [
+      {
+        user_id: 'sample-teacher-1',
+        role: 'owner',
+        profile: {
+          id: 'sample-teacher-1',
+          full_name: 'Thầy Nguyễn Văn An',
+          school_name: 'THCS Chu Văn An, Hà Nội',
+          subject_specialty: 'Khoa học tự nhiên - Vật lí',
+          avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+          teacher_verified: true,
+        },
+      },
+      {
+        user_id: 'sample-teacher-2',
+        role: 'member',
+        profile: {
+          id: 'sample-teacher-2',
+          full_name: 'Cô Lê Quỳnh Trang',
+          school_name: 'THCS & THPT Nguyễn Tất Thành',
+          subject_specialty: 'Hóa học & Sinh học',
+          avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+          teacher_verified: true,
+        },
+      },
+      {
+        user_id: 'sample-teacher-3',
+        role: 'member',
+        profile: {
+          id: 'sample-teacher-3',
+          full_name: 'Thầy Trần Minh Đức',
+          school_name: 'THCS Trưng Vương, Hà Nội',
+          subject_specialty: 'STEM & Robotics',
+          avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+          teacher_verified: true,
+        },
+      },
+    ],
+    resources: [
+      {
+        id: 'sr-1',
+        resource_id: 'sample-p1',
+        note: 'KHBD 5512 bài học STEM: Chế tạo nguồn điện từ hoa quả & mạch điện một chiều KHTN 8',
+        resource: {
+          title: 'KHBD STEM: Chế tạo nguồn điện từ hoa quả & mạch điện một chiều KHTN 8',
+          subjects: ['Khoa học tự nhiên'],
+          grade_levels: ['Lớp 8'],
+        },
+      },
+      {
+        id: 'sr-2',
+        resource_id: 'sample-p2',
+        note: 'Bộ tiêu chí rubric đánh giá sản phẩm STEM học sinh theo chuẩn Công văn 5512',
+        resource: {
+          title: 'Bảng Rubric đánh giá năng lực giải quyết vấn đề trong dự án STEM',
+          subjects: ['Khoa học tự nhiên'],
+          grade_levels: ['Lớp 6', 'Lớp 7', 'Lớp 8'],
+        },
+      },
+    ],
+  },
+  {
+    id: 'sample-group-van',
+    owner_id: 'sample-teacher-4',
+    name: 'Cộng đồng Giáo viên Ngữ văn Đổi mới & Đọc hiểu',
+    school_name: 'Cụm Chuyên Ngữ văn Miền Bắc',
+    subject: 'Ngữ văn',
+    members: [
+      {
+        user_id: 'sample-teacher-4',
+        role: 'owner',
+        profile: {
+          id: 'sample-teacher-4',
+          full_name: 'Cô Hoàng Thu Hà',
+          school_name: 'THPT Chuyên Hà Nội - Amsterdam',
+          subject_specialty: 'Ngữ văn THPT',
+          avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+          teacher_verified: true,
+        },
+      },
+      {
+        user_id: 'sample-teacher-5',
+        role: 'member',
+        profile: {
+          id: 'sample-teacher-5',
+          full_name: 'Thầy Vũ Đình Trọng',
+          school_name: 'THPT Chu Văn An',
+          subject_specialty: 'Văn học hiện đại',
+          avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+          teacher_verified: true,
+        },
+      },
+    ],
+    resources: [
+      {
+        id: 'sr-3',
+        resource_id: 'sample-p3',
+        note: 'Phiếu học tập và trạm đọc hiểu văn bản Thơ hiện đại lớp 11',
+        resource: {
+          title: 'Hồ sơ dạy học Đọc hiểu Thơ ca cách mạng theo chiến thuật KWLH',
+          subjects: ['Ngữ văn'],
+          grade_levels: ['Lớp 11'],
+        },
+      },
+    ],
+  },
+  {
+    id: 'sample-group-toan',
+    owner_id: 'sample-teacher-6',
+    name: 'Tổ Toán THPT & Đổi mới Ma trận Đề thi ĐGNL',
+    school_name: 'Cộng đồng Giáo viên Toán Quốc gia',
+    subject: 'Toán',
+    members: [
+      {
+        user_id: 'sample-teacher-6',
+        role: 'owner',
+        profile: {
+          id: 'sample-teacher-6',
+          full_name: 'Thầy Lê Văn Thành',
+          school_name: 'THPT Chuyên Lam Sơn, Thanh Hóa',
+          subject_specialty: 'Toán 12 & Giải tích',
+          avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
+          teacher_verified: true,
+        },
+      },
+    ],
+    resources: [],
+  },
+  {
+    id: 'sample-group-ai',
+    owner_id: 'sample-teacher-7',
+    name: 'CLB Ứng dụng AI & Công nghệ số trong Dạy học',
+    school_name: 'Mạng lưới Giáo viên Sáng tạo Việt Nam',
+    subject: 'Liên môn',
+    members: [
+      {
+        user_id: 'sample-teacher-7',
+        role: 'owner',
+        profile: {
+          id: 'sample-teacher-7',
+          full_name: 'Thầy Đỗ Minh Hoàng',
+          school_name: 'THPT FPT Hà Nội',
+          subject_specialty: 'Tin học & Trợ giảng AI',
+          avatar_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
+          teacher_verified: true,
+        },
+      },
+    ],
+    resources: [],
+  },
+];
+
+const SAMPLE_GROUP_POSTS: Record<string, GroupPost[]> = {
+  'sample-group-stem': [
+    {
+      id: 'sgp-1',
+      author_id: 'sample-teacher-1',
+      body: 'Chào các thầy cô trong tổ KHTN! Em vừa tải lên bản dự thảo Kế hoạch bài dạy (KHBD) 5512 bài học STEM KHTN 8: "Chế tạo pin từ hoa quả & mạch điện một chiều". Nhờ các thầy cô xem qua phần "Tổ chức hoạt động học" ở Hoạt động 3 xem tiến trình học sinh tự lắp ráp mạch và ghi nhật ký thực nghiệm như vậy đã hợp lý chưa ạ?',
+      created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
+      author: {
+        full_name: 'Thầy Nguyễn Văn An',
+        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      },
+      replies: [
+        {
+          id: 'sgpr-1',
+          author_id: 'sample-teacher-2',
+          body: 'Thầy An thiết kế phần tiêu chí Rubric ở Phụ lục rất rõ ràng! Ở phần Hoạt động 3, nếu chia nhóm 4 bạn thì mỗi bạn nên phân công rõ: 1 bạn ghi chép, 1 bạn quan sát số liệu điện kế, 2 bạn thao tác dây nối để tránh việc các em làm hộ nhau thầy nhé.',
+          created_at: new Date(Date.now() - 3600000 * 1.2).toISOString(),
+          author: {
+            full_name: 'Cô Lê Quỳnh Trang',
+            avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+          },
+        },
+        {
+          id: 'sgpr-2',
+          author_id: 'sample-teacher-3',
+          body: 'Đồng ý với cô Trang. Thầy An có thể bổ sung thêm đường link mô phỏng PhET mạch điện DC để nhóm nào chưa kịp hoàn thành ở lớp có thể về nhà tiếp tục kiểm chứng số liệu!',
+          created_at: new Date(Date.now() - 3600000 * 0.5).toISOString(),
+          author: {
+            full_name: 'Thầy Trần Minh Đức',
+            avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+          },
+        },
+      ],
+    },
+    {
+      id: 'sgp-2',
+      author_id: 'sample-teacher-2',
+      body: 'Tuần sau trường mình tổ chức chuyên đề cấp Cụm về "Đổi mới phương pháp kiểm tra đánh giá thường xuyên môn KHTN 7". Thầy cô nào có ma trận câu hỏi tình huống thực tế cho em xin tham khảo với ạ!',
+      created_at: new Date(Date.now() - 3600000 * 18).toISOString(),
+      author: {
+        full_name: 'Cô Lê Quỳnh Trang',
+        avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+      },
+      replies: [],
+    },
+  ],
+  'sample-group-van': [
+    {
+      id: 'sgp-3',
+      author_id: 'sample-teacher-4',
+      body: 'Kính gửi các thầy cô trong cụm Chuyên Ngữ văn, em vừa cập nhật hệ thống phiếu đọc hiểu văn bản Thơ hiện đại lớp 11 bám sát yêu cầu cần đạt của Bộ. Kính mời thầy cô tải ở tab Học liệu chia sẻ và góp ý thêm ạ.',
+      created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
+      author: {
+        full_name: 'Cô Hoàng Thu Hà',
+        avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+      },
+      replies: [
+        {
+          id: 'sgpr-3',
+          author_id: 'sample-teacher-5',
+          body: 'Tài liệu biên soạn rất chỉn chu cô Hà ơi! Hệ thống câu hỏi phân hóa từ nhận biết đến vận dụng sáng tạo rất phù hợp cho học sinh trường chuyên.',
+          created_at: new Date(Date.now() - 3600000 * 3).toISOString(),
+          author: {
+            full_name: 'Thầy Vũ Đình Trọng',
+            avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+          },
+        },
+      ],
+    },
+  ],
+};
+
 export function TeacherGroupsPage({
   currentUser,
   projects,
@@ -115,7 +346,10 @@ export function TeacherGroupsPage({
 
   // 1. Load groups
   const load = async () => {
-    if (!supabase || !currentUser) return;
+    if (!supabase || !currentUser) {
+      if (!activeId) setActiveId(SAMPLE_TEACHER_GROUPS[0].id);
+      return;
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -158,8 +392,8 @@ export function TeacherGroupsPage({
       }));
 
       setGroups(parsedGroups);
-      if (!activeId && parsedGroups[0]) {
-        setActiveId(parsedGroups[0].id);
+      if (!activeId) {
+        setActiveId(parsedGroups[0]?.id || SAMPLE_TEACHER_GROUPS[0].id);
       }
     } catch (err: any) {
       onNotice(err?.message || 'Không thể tải danh sách nhóm.');
@@ -222,11 +456,25 @@ export function TeacherGroupsPage({
     };
   }, [currentUser?.id]);
 
-  const active = groups.find((item) => item.id === activeId) || groups[0] || null;
+  const allGroups = useMemo(() => {
+    if (groups.length === 0) return SAMPLE_TEACHER_GROUPS;
+    const userGroupIds = new Set(groups.map((g) => g.id));
+    return [...groups, ...SAMPLE_TEACHER_GROUPS.filter((g) => !userGroupIds.has(g.id))];
+  }, [groups]);
+
+  const active = allGroups.find((item) => item.id === activeId) || allGroups[0] || null;
 
   // 3. Load posts for active group
   const loadPosts = async () => {
-    if (!supabase || !active) {
+    if (!active) {
+      setPosts([]);
+      return;
+    }
+    if (SAMPLE_GROUP_POSTS[active.id]) {
+      setPosts(SAMPLE_GROUP_POSTS[active.id]);
+      return;
+    }
+    if (!supabase) {
       setPosts([]);
       return;
     }
@@ -253,7 +501,29 @@ export function TeacherGroupsPage({
   // 4. Create post in group
   const createPost = async (event: FormEvent) => {
     event.preventDefault();
-    if (!supabase || !active || !currentUser || !postBody.trim() || posting) return;
+    if (!currentUser) {
+      onRequireAuth();
+      return;
+    }
+    if (!active || !postBody.trim() || posting) return;
+
+    if (active.id.startsWith('sample-group-')) {
+      const newPost: GroupPost = {
+        id: `local-post-${Date.now()}`,
+        author_id: currentUser.id,
+        body: postBody.trim(),
+        created_at: new Date().toISOString(),
+        author: {
+          full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Tôi',
+          avatar_url: currentUser.user_metadata?.avatar_url || null,
+        },
+        replies: [],
+      };
+      setPosts((prev) => [newPost, ...prev]);
+      setPostBody('');
+      onNotice('Đã đăng trao đổi vào nhóm.');
+      return;
+    }
 
     setPosting(true);
     const { error } = await supabase
@@ -273,8 +543,33 @@ export function TeacherGroupsPage({
   // 5. Reply to post
   const replyPost = async (event: FormEvent, postId: string) => {
     event.preventDefault();
+    if (!currentUser) {
+      onRequireAuth();
+      return;
+    }
     const body = replyDrafts[postId]?.trim();
-    if (!supabase || !currentUser || !body) return;
+    if (!body) return;
+
+    if (active?.id.startsWith('sample-group-')) {
+      const newReply = {
+        id: `local-reply-${Date.now()}`,
+        author_id: currentUser.id,
+        body,
+        created_at: new Date().toISOString(),
+        author: {
+          full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Tôi',
+          avatar_url: currentUser.user_metadata?.avatar_url || null,
+        },
+      };
+      setPosts((prev) =>
+        prev.map((p) => (p.id === postId ? { ...p, replies: [...p.replies, newReply] } : p))
+      );
+      setReplyDrafts((current) => ({ ...current, [postId]: '' }));
+      onNotice('Đã gửi phản hồi cho đồng nghiệp.');
+      return;
+    }
+
+    if (!supabase) return;
 
     const { error } = await supabase
       .from('teacher_group_replies')
@@ -405,23 +700,8 @@ export function TeacherGroupsPage({
     }
   };
 
-  if (!currentUser) {
-    return (
-      <div className="empty-state">
-        <div className="empty-icon">
-          <UsersRound size={28} />
-        </div>
-        <h3>Nhóm chuyên môn dành cho giáo viên</h3>
-        <p>Đăng nhập để tạo và tham gia các nhóm kín cùng đồng nghiệp trong trường hoặc tổ bộ môn.</p>
-        <button className="button button-primary" onClick={onRequireAuth}>
-          Đăng nhập ngay
-        </button>
-      </div>
-    );
-  }
-
   // Friends not yet in current active group
-  const friendsNotInGroup = active
+  const friendsNotInGroup = active && currentUser
     ? friends.filter((f) => !active.members.some((m) => m.user_id === f.id))
     : [];
 
@@ -449,72 +729,114 @@ export function TeacherGroupsPage({
             </p>
           </div>
         </div>
-        <button className="button button-primary" onClick={() => setShowCreateModal(true)}>
+        <button
+          className="button button-primary"
+          onClick={() => (currentUser ? setShowCreateModal(true) : onRequireAuth())}
+        >
           <Plus size={15} /> Tạo nhóm mới
         </button>
       </header>
 
-      {/* Main Groups Layout */}
-      {groups.length === 0 && !loading ? (
-        <div className="groups-zero-state-card">
-          <div className="groups-zero-icon">
-            <UsersRound size={40} />
+      {/* Guest Mode Vibrant Banner */}
+      {!currentUser && (
+        <div className="groups-guest-banner">
+          <div className="guest-banner-left">
+            <span className="guest-sparkle-icon">
+              <Sparkles size={20} />
+            </span>
+            <div>
+              <b>Không gian sinh hoạt chuyên môn mở (Chế độ khám phá)</b>
+              <p>
+                Thầy cô đang xem mẫu các tổ chuyên môn theo Chương trình GDPT 2018 và Công văn 5512. Đăng nhập để cùng thảo luận, chia sẻ KHBD kín và tạo tổ bộ môn riêng.
+              </p>
+            </div>
           </div>
-          <h3>Chưa tham gia nhóm chuyên môn nào</h3>
-          <p>
-            Tạo không gian sinh hoạt chuyên môn theo Công văn 5512 để cùng đồng nghiệp trong trường hoặc cụm chuyên môn trao đổi giáo án, học liệu và ma trận đề.
-          </p>
-          <button className="button button-primary" onClick={() => setShowCreateModal(true)}>
-            <Plus size={16} /> Tạo nhóm chuyên môn đầu tiên
+          <button className="button button-primary button-sm" onClick={onRequireAuth}>
+            Đăng nhập ngay
           </button>
         </div>
-      ) : (
-        <div className={`groups-layout ${active ? 'has-active-group' : ''}`}>
-          {/* Left Sidebar: Groups List */}
-          <aside className="groups-sidebar">
-            <div className="groups-sidebar-header">
-              <b>Nhóm của tôi ({groups.length})</b>
-            </div>
+      )}
 
-          <div className="groups-list-container">
-            {groups.map((group) => {
-              const isActive = active?.id === group.id;
-              const isOwner = group.owner_id === currentUser.id;
-              return (
+      {/* Main Groups Layout */}
+      <div className={`groups-layout ${active ? 'has-active-group' : ''}`}>
+        {/* Left Sidebar: Groups List */}
+        <aside className="groups-sidebar">
+          {currentUser && (
+            <div className="groups-sidebar-section">
+              <div className="groups-sidebar-header">
+                <b>Nhóm của tôi ({groups.length})</b>
                 <button
-                  key={group.id}
-                  className={`group-nav-item ${isActive ? 'active' : ''}`}
-                  onClick={() => setActiveId(group.id)}
-                >
-                  <div className="group-nav-icon">
-                    <UsersRound size={16} />
-                  </div>
-                  <div className="group-nav-info">
-                    <b>{group.name}</b>
-                    <small>
-                      {group.subject} · {group.members.length} thành viên
-                      {isOwner && ' · Trưởng nhóm'}
-                    </small>
-                  </div>
-                  {isActive && <ChevronRight size={15} className="group-nav-arrow" />}
-                </button>
-              );
-            })}
-
-            {loading && <div className="groups-loading-note">Đang tải danh sách nhóm…</div>}
-
-            {!groups.length && !loading && (
-              <div className="groups-empty-sidebar">
-                <School size={30} className="empty-icon-subtle" />
-                <p>Thầy cô chưa tham gia nhóm chuyên môn nào.</p>
-                <button
-                  className="button button-outline button-sm"
+                  className="button-icon-mini"
                   onClick={() => setShowCreateModal(true)}
+                  title="Tạo nhóm mới"
                 >
-                  Tạo nhóm đầu tiên
+                  <Plus size={14} />
                 </button>
               </div>
-            )}
+
+              {groups.length > 0 ? (
+                <div className="groups-list-container">
+                  {groups.map((group) => {
+                    const isActive = active?.id === group.id;
+                    const isOwner = group.owner_id === currentUser.id;
+                    return (
+                      <button
+                        key={group.id}
+                        className={`group-nav-item ${isActive ? 'active' : ''}`}
+                        onClick={() => setActiveId(group.id)}
+                      >
+                        <div className="group-nav-icon">
+                          <UsersRound size={16} />
+                        </div>
+                        <div className="group-nav-info">
+                          <b>{group.name}</b>
+                          <small>
+                            {group.subject} · {group.members.length} thành viên
+                            {isOwner && ' · Trưởng nhóm'}
+                          </small>
+                        </div>
+                        {isActive && <ChevronRight size={15} className="group-nav-arrow" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="groups-sidebar-empty-hint">
+                  <small>Thầy cô chưa tạo nhóm riêng.</small>
+                  <button className="button-link-mini" onClick={() => setShowCreateModal(true)}>
+                    + Tạo nhóm
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="groups-sidebar-section">
+            <div className="groups-sidebar-header">
+              <b>Nhóm chuyên môn gợi ý ({SAMPLE_TEACHER_GROUPS.length})</b>
+            </div>
+
+            <div className="groups-list-container">
+              {SAMPLE_TEACHER_GROUPS.map((group) => {
+                const isActive = active?.id === group.id;
+                return (
+                  <button
+                    key={group.id}
+                    className={`group-nav-item sample-group-nav ${isActive ? 'active' : ''}`}
+                    onClick={() => setActiveId(group.id)}
+                  >
+                    <div className="group-nav-icon community">
+                      <School size={16} />
+                    </div>
+                    <div className="group-nav-info">
+                      <b>{group.name}</b>
+                      <small>{group.school_name} · {group.subject}</small>
+                    </div>
+                    {isActive && <ChevronRight size={15} className="group-nav-arrow" />}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </aside>
 
@@ -535,26 +857,24 @@ export function TeacherGroupsPage({
                 <h3>{active.name}</h3>
                 <p>
                   {active.school_name || 'Nhóm chuyên môn'} · {active.members.length} thành viên
-                  {active.owner_id === currentUser.id && ' · Bạn là trưởng nhóm'}
+                  {currentUser && active.owner_id === currentUser.id && ' · Bạn là trưởng nhóm'}
                 </p>
               </div>
 
               <div className="group-workspace-actions">
-                {active.owner_id === currentUser.id && (
-                  <button
-                    className="button button-outline button-sm"
-                    onClick={() => setShowInviteModal(true)}
-                  >
-                    <UserPlus size={14} /> Mời thành viên
-                  </button>
-                )}
+                <button
+                  className="button button-outline button-sm"
+                  onClick={() => (currentUser ? setShowInviteModal(true) : onRequireAuth())}
+                >
+                  <UserPlus size={14} /> Mời thành viên
+                </button>
                 <button
                   className="button button-primary button-sm"
-                  onClick={() => setShowShareModal(true)}
+                  onClick={() => (currentUser ? setShowShareModal(true) : onRequireAuth())}
                 >
                   <Share2 size={14} /> Chia sẻ học liệu
                 </button>
-                {active.owner_id === currentUser.id && (
+                {currentUser && active.owner_id === currentUser.id && (
                   <button
                     className="button button-quiet button-sm text-red-600 hover:bg-red-50"
                     onClick={() => void removeGroup(active)}
@@ -567,7 +887,7 @@ export function TeacherGroupsPage({
             </header>
 
             {/* Suggested Friends Quick Bar (if owner and has friends not yet in group) */}
-            {active.owner_id === currentUser.id && friendsNotInGroup.length > 0 && (
+            {currentUser && active.owner_id === currentUser.id && friendsNotInGroup.length > 0 && (
               <div className="group-friends-suggest-bar">
                 <div className="suggest-bar-title">
                   <Sparkles size={14} className="text-teal-600" />
@@ -635,7 +955,14 @@ export function TeacherGroupsPage({
                     maxLength={3000}
                     value={postBody}
                     onChange={(e) => setPostBody(e.target.value)}
-                    placeholder="Đặt câu hỏi nghiệp vụ, ghi chú nội dung buổi họp tổ hoặc chia sẻ kinh nghiệm giảng dạy…"
+                    onFocus={() => {
+                      if (!currentUser) onRequireAuth();
+                    }}
+                    placeholder={
+                      currentUser
+                        ? 'Đặt câu hỏi nghiệp vụ, ghi chú nội dung buổi họp tổ hoặc chia sẻ kinh nghiệm giảng dạy…'
+                        : 'Đăng nhập để tham gia trao đổi cùng các thầy cô trong tổ…'
+                    }
                   />
                   <div className="post-composer-actions">
                     <small>{postBody.length}/3000 ký tự</small>
@@ -706,7 +1033,12 @@ export function TeacherGroupsPage({
                             onChange={(e) =>
                               setReplyDrafts((curr) => ({ ...curr, [post.id]: e.target.value }))
                             }
-                            placeholder="Gửi phản hồi cho đồng nghiệp…"
+                            onFocus={() => {
+                              if (!currentUser) onRequireAuth();
+                            }}
+                            placeholder={
+                              currentUser ? 'Gửi phản hồi cho đồng nghiệp…' : 'Đăng nhập để gửi phản hồi…'
+                            }
                             maxLength={2000}
                           />
                           <button
@@ -739,7 +1071,7 @@ export function TeacherGroupsPage({
                   <p>Học liệu, slide, đề thi được các thành viên chia sẻ dùng chung trong tổ.</p>
                   <button
                     className="button button-primary button-sm"
-                    onClick={() => setShowShareModal(true)}
+                    onClick={() => (currentUser ? setShowShareModal(true) : onRequireAuth())}
                   >
                     <Plus size={14} /> Chia sẻ học liệu mới
                   </button>
@@ -787,7 +1119,7 @@ export function TeacherGroupsPage({
               <section className="group-tab-panel group-members-panel">
                 <div className="group-tab-toolbar">
                   <p>Danh sách các giáo viên tham gia sinh hoạt chuyên môn trong nhóm này.</p>
-                  {active.owner_id === currentUser.id && (
+                  {currentUser && active.owner_id === currentUser.id && (
                     <button
                       className="button button-outline button-sm"
                       onClick={() => setShowInviteModal(true)}
@@ -800,7 +1132,7 @@ export function TeacherGroupsPage({
                 <div className="group-members-list">
                   {active.members.map((member) => {
                     const isOwner = member.role === 'owner';
-                    const isMe = member.user_id === currentUser.id;
+                    const isMe = currentUser ? member.user_id === currentUser.id : false;
                     const isFriend = friends.some((f) => f.id === member.user_id);
                     const profile = member.profile;
 
@@ -855,7 +1187,7 @@ export function TeacherGroupsPage({
                               <span className="hidden sm:inline">Nhắn tin</span>
                             </button>
                           )}
-                          {active.owner_id === currentUser.id && !isOwner && (
+                          {currentUser && active.owner_id === currentUser.id && !isOwner && (
                             <button
                               className="button button-quiet button-sm text-red-600"
                               onClick={() => void removeMember(member.user_id, profile?.full_name || 'giáo viên')}
@@ -882,7 +1214,6 @@ export function TeacherGroupsPage({
           </div>
         )}
       </div>
-      )}
 
       {/* CREATE GROUP MODAL */}
       {showCreateModal && (

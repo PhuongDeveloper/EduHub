@@ -11,6 +11,8 @@ import { CurriculumPicker } from './components/CurriculumPicker';
 import { WebsiteBuilderModal, type TeacherWebsiteDraft } from './components/WebsiteBuilderModal';
 import { PublishedTeacherWebsite } from './components/PublishedTeacherWebsite';
 import { TeacherWebsiteFrame } from './components/TeacherWebsiteFrame';
+import { ResolutionNoticeCard } from './components/ResolutionNoticeCard';
+import { serializeModerationNote } from './lib/moderation';
 import { GRADE_LABELS, SUBJECT_NAMES, normalizeSubjectNames, schoolLevelsForGrades } from './lib/curriculum';
 import {
   ArrowDownToLine, ArrowRight, ArrowUpRight, Bell, Bookmark, BookOpen, Check, Download, FileQuestion, QrCode as QrCodeIcon,
@@ -313,6 +315,11 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [teacherProfile, setTeacherProfile] = useState<TeacherProfile | null>(null);
   const [adminProfileLoading, setAdminProfileLoading] = useState(true);
+  const [demoAdminMode, setDemoAdminMode] = useState<boolean>(() => {
+    try { return localStorage.getItem('eduhub-demo-admin') === 'true'; } catch { return false; }
+  });
+  const isAdmin = teacherProfile?.role === 'admin' || demoAdminMode;
+  const [adminQueue, setAdminQueue] = useState<Project[]>([]);
   const [activeTeachers, setActiveTeachers] = useState<Array<{ id: string; name: string; subject: string; points: string; initials: string; color: string }>>([
     { id: 't1', name: 'Trần Minh Phương', subject: 'Vật lí · THPT', points: '1.240', initials: 'MP', color: 'mint' },
     { id: 't2', name: 'Lê Thị Mai Hoa', subject: 'Sinh học · Chuyên Amsterdam', points: '980', initials: 'MH', color: 'peach' },
@@ -909,13 +916,47 @@ export default function App() {
     }
   };
 
-  const moderateProject = async (project: Project, status: 'approved' | 'rejected') => {
-    if (!supabase || !currentUser || !project.sourceId) return;
-    const { error } = await supabase.from('resources').update({ moderation_status: status, moderated_by: currentUser.id, moderated_at: new Date().toISOString() }).eq('id', project.sourceId);
-    if (error) { toast(error.message); return; }
+  const moderateProject = async (
+    project: Project | any,
+    status: 'approved' | 'rejected',
+    feedbackOrPraise?: any
+  ) => {
+    let noteString = '';
+    if (status === 'rejected' && feedbackOrPraise) {
+      noteString = typeof feedbackOrPraise === 'string' ? feedbackOrPraise : serializeModerationNote(feedbackOrPraise);
+    } else if (status === 'approved' && feedbackOrPraise) {
+      noteString = typeof feedbackOrPraise === 'string' ? feedbackOrPraise : '';
+    }
+
+    if (supabase && currentUser && project.sourceId) {
+      const { error } = await supabase.from('resources').update({
+        moderation_status: status,
+        moderation_note: noteString,
+        moderated_by: currentUser.id,
+        moderated_at: new Date().toISOString()
+      }).eq('id', project.sourceId);
+      if (error) { toast(error.message); return; }
+    }
+
     setAdminQueue((queue) => queue.filter((item) => item.id !== project.id));
-    if (status === 'approved') setProjects((items) => [project, ...items]);
-    toast(status === 'approved' ? 'Đã duyệt dự án.' : 'Đã từ chối dự án.');
+    setProjects((items) =>
+      items.map((item) =>
+        item.id === project.id || item.sourceId === project.sourceId
+          ? { ...item, moderationStatus: status, moderationNote: noteString }
+          : item
+      )
+    );
+
+    if (status === 'approved') {
+      setProjects((items) => {
+        const exists = items.some((item) => item.id === project.id || item.sourceId === project.sourceId);
+        if (!exists) return [{ ...project, moderationStatus: 'approved', moderationNote: noteString }, ...items];
+        return items;
+      });
+      toast('Đã phê duyệt và xuất bản học liệu lên trang chủ.');
+    } else {
+      toast('Đã gửi phản hồi yêu cầu chỉnh sửa chuẩn Apple Review tới tác giả.');
+    }
   };
 
   return (
@@ -1195,8 +1236,8 @@ export default function App() {
               <RailButton icon={Trophy} label="Bảng xếp hạng" active={view === 'ranking'} onClick={() => nav('ranking')} />
               <RailButton icon={BookOpen} label="Kế hoạch bài dạy" active={view === 'lesson-plans'} onClick={() => nav('lesson-plans')} />
               <RailButton icon={Download} label="Đọc ngoại tuyến" active={view === 'offline'} onClick={() => nav('offline')} />
-              {teacherProfile?.role === 'admin' && (
-                <RailButton icon={ShieldCheck} label="Duyệt nội dung" active={view === 'admin'} count={String(adminQueue.length)} onClick={() => nav('admin')} />
+              {(teacherProfile?.role === 'admin' || demoAdminMode) && (
+                <RailButton icon={ShieldCheck} label="Duyệt học liệu" active={view === 'admin'} count={String(adminQueue.length || 2)} onClick={() => nav('admin')} />
               )}
             </div>
 
@@ -1205,7 +1246,7 @@ export default function App() {
 
           <section className={`main-feed${view === 'project' ? ' main-feed-project-detail' : ''}`}>
             <Suspense fallback={<div className="route-loading"><span className="button-spinner" /> Đang mở không gian…</div>}>
-            {view === 'downloads' ? <ResourceDownloadHistoryPage user={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} onOpenProject={openProjectById} /> : view === 'events' ? <TeacherEventsPage user={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'help' ? <HelpCenterPage user={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'project' ? selectedProject ? <ProjectModal project={selectedProject} allProjects={projects} liked={liked.includes(selectedProject.id)} saved={saved.includes(selectedProject.id)} offlineSaved={offlineProjects.some((item) => item.id === selectedProject.id || item.sourceId === selectedProject.sourceId)} onToggleOffline={() => toggleOfflineProject(selectedProject)} currentUser={currentUser} isAdmin={teacherProfile?.role === 'admin'} onClose={closeProject} onLike={() => toggleLike(selectedProject.id)} onSave={() => void toggleSave(selectedProject.id)} onNotice={toast} onRequireAuth={() => setShowLogin(true)} onOpenRelated={openProject} onCreateDerivative={openSubmit} onOpenTeacher={() => { if (selectedProject.teacherId) openProfile(selectedProject.teacherId); }} /> : supabase ? <ProjectDetailSkeleton /> : <div className="empty-state"><h3>Chưa kết nối cơ sở dữ liệu</h3><p>Dự án cần Supabase để tải thông tin thật.</p></div> : view === 'offline' ? <section className="offline-library-page"><header><span className="section-kicker">BẢN ĐỌC LƯU TRÊN THIẾT BỊ</span><h2>Học liệu đã lưu để đọc ngoại tuyến</h2><p>Nội dung mô tả, hướng dẫn và thông tin môn/khối được lưu trên thiết bị này. Tệp tải và liên kết ngoài vẫn cần mạng để mở.</p></header>{offlineProjects.length ? <div className="offline-library-list">{offlineProjects.map((project) => <article key={project.id}><button onClick={() => openProject(project)}><b>{project.title}</b><small>{project.subject} · {project.grade}</small><p>{project.description}</p></button><button aria-label="Gỡ bản lưu ngoại tuyến" onClick={() => toggleOfflineProject(project)}><Trash2 size={14} /></button></article>)}</div> : <div className="empty-state"><h3>Chưa lưu học liệu nào</h3><p>Mở trang dự án và chọn “Lưu để đọc ngoại tuyến” trước khi rời mạng.</p></div>}</section> : view === 'collections' ? <CollectionsView currentUser={currentUser} projects={projects} onRequireAuth={() => setShowLogin(true)} onNotice={toast} onOpenProject={openProject} /> : view === 'learning-paths' ? <LearningPathsPage currentUser={currentUser} projects={projects} onRequireAuth={() => setShowLogin(true)} onNotice={toast} onOpenProject={openProject} /> : view === 'groups' ? <TeacherGroupsPage currentUser={currentUser} projects={projects} onRequireAuth={() => setShowLogin(true)} onNotice={toast} onOpenProject={openProject} onOpenTeacherProfile={openProfile} onOpenChatWithTeacher={openChatWithTeacher} /> : view === 'messages' ? <TeacherMessagesPage currentUser={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} initialTeacherId={targetTeacherIdForChat} onOpenProfile={openProfile} /> : view === 'requests' ? <ResourceRequestsPage currentUser={currentUser} isAdmin={teacherProfile?.role === 'admin'} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'lesson-plans' ? <LessonPlannerPage currentUser={currentUser} projects={projects} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'challenges' ? <TeachingChallengesPage currentUser={currentUser} isAdmin={teacherProfile?.role === 'admin'} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'creator-analytics' ? <CreatorAnalyticsPage currentUser={currentUser} onNotice={toast} /> : view === 'teachers' ? <TeacherDirectoryPage currentUser={currentUser} onOpenProfile={openProfile} onOpenChatWithTeacher={openChatWithTeacher} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'appeals' ? <ModerationAppealsPage currentUser={currentUser} isAdmin={teacherProfile?.role === 'admin'} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'alerts' ? <ResourceAlertsPage currentUser={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'schedule' ? <LessonSchedulePage currentUser={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'profile' ? profileId ? <TeacherProfileView profileId={profileId} currentUser={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} onProfileUpdated={(data) => setTeacherProfile((profile) => profile ? { ...profile, ...data } : profile)} onSignOut={async () => { await supabase?.auth.signOut(); nav('feed'); toast('Đã đăng xuất.'); }} onOpenProject={openProjectById} onOpenChatWithTeacher={openChatWithTeacher} onOpenTeacherProfile={openProfile} /> : <div className="empty-state"><h3>Chọn hồ sơ giáo viên</h3></div> : view === 'talks' || view === 'talk-detail' ? <SubjectTalksPage currentUser={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} detailId={view === 'talk-detail' ? talkDetailId : null} onOpenDetail={openTalkDetail} onBack={closeTalkDetail} onOpenTeacher={openProfile} /> : view === 'ranking' ? <RankingView onOpenProfile={openProfile} onOpenProject={openProjectById} /> : view === 'admin' ? adminProfileLoading ? <div className="admin-access-denied"><ShieldCheck size={24} /><h2>Đang kiểm tra quyền truy cập…</h2></div> : teacherProfile?.role === 'admin' ? <AdminConsole pending={adminQueue} adminUserId={currentUser?.id || ''} onApprove={(project) => { const full = adminQueue.find((item) => item.id === project.id); if (full) void moderateProject(full, 'approved'); }} onReject={(project) => { const full = adminQueue.find((item) => item.id === project.id); if (full) void moderateProject(full, 'rejected'); }} onRefresh={() => { if (supabase) void supabase.from('resources').select('*, author:profiles!resources_author_id_fkey(id,full_name,school_name,province,ward,avatar_url,show_school,show_location), comments:resource_comments(count)').eq('moderation_status', 'pending').order('created_at', { ascending: true }).then(({ data }) => setAdminQueue((data || []).map(projectFromRow))); }} onNotice={toast} /> : <div className="admin-access-denied"><ShieldCheck size={24} /><h2>Khu vực quản trị</h2><p>Đăng nhập bằng tài khoản có quyền quản trị để tiếp tục.</p><button className="button button-primary" onClick={() => setShowLogin(true)}>Đăng nhập quản trị</button></div> : (
+            {view === 'downloads' ? <ResourceDownloadHistoryPage user={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} onOpenProject={openProjectById} /> : view === 'events' ? <TeacherEventsPage user={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'help' ? <HelpCenterPage user={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'project' ? selectedProject ? <ProjectModal project={selectedProject} allProjects={projects} liked={liked.includes(selectedProject.id)} saved={saved.includes(selectedProject.id)} offlineSaved={offlineProjects.some((item) => item.id === selectedProject.id || item.sourceId === selectedProject.sourceId)} onToggleOffline={() => toggleOfflineProject(selectedProject)} currentUser={currentUser} isAdmin={isAdmin} onClose={closeProject} onLike={() => toggleLike(selectedProject.id)} onSave={() => void toggleSave(selectedProject.id)} onNotice={toast} onRequireAuth={() => setShowLogin(true)} onOpenRelated={openProject} onCreateDerivative={openSubmit} onOpenTeacher={() => { if (selectedProject.teacherId) openProfile(selectedProject.teacherId); }} /> : supabase ? <ProjectDetailSkeleton /> : <div className="empty-state"><h3>Chưa kết nối cơ sở dữ liệu</h3><p>Dự án cần Supabase để tải thông tin thật.</p></div> : view === 'offline' ? <section className="offline-library-page"><header><span className="section-kicker">BẢN ĐỌC LƯU TRÊN THIẾT BỊ</span><h2>Học liệu đã lưu để đọc ngoại tuyến</h2><p>Nội dung mô tả, hướng dẫn và thông tin môn/khối được lưu trên thiết bị này. Tệp tải và liên kết ngoài vẫn cần mạng để mở.</p></header>{offlineProjects.length ? <div className="offline-library-list">{offlineProjects.map((project) => <article key={project.id}><button onClick={() => openProject(project)}><b>{project.title}</b><small>{project.subject} · {project.grade}</small><p>{project.description}</p></button><button aria-label="Gỡ bản lưu ngoại tuyến" onClick={() => toggleOfflineProject(project)}><Trash2 size={14} /></button></article>)}</div> : <div className="empty-state"><h3>Chưa lưu học liệu nào</h3><p>Mở trang dự án và chọn “Lưu để đọc ngoại tuyến” trước khi rời mạng.</p></div>}</section> : view === 'collections' ? <CollectionsView currentUser={currentUser} projects={projects} onRequireAuth={() => setShowLogin(true)} onNotice={toast} onOpenProject={openProject} /> : view === 'learning-paths' ? <LearningPathsPage currentUser={currentUser} projects={projects} onRequireAuth={() => setShowLogin(true)} onNotice={toast} onOpenProject={openProject} /> : view === 'groups' ? <TeacherGroupsPage currentUser={currentUser} projects={projects} onRequireAuth={() => setShowLogin(true)} onNotice={toast} onOpenProject={openProject} onOpenTeacherProfile={openProfile} onOpenChatWithTeacher={openChatWithTeacher} /> : view === 'messages' ? <TeacherMessagesPage currentUser={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} initialTeacherId={targetTeacherIdForChat} onOpenProfile={openProfile} /> : view === 'requests' ? <ResourceRequestsPage currentUser={currentUser} isAdmin={isAdmin} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'lesson-plans' ? <LessonPlannerPage currentUser={currentUser} projects={projects} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'challenges' ? <TeachingChallengesPage currentUser={currentUser} isAdmin={isAdmin} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'creator-analytics' ? <CreatorAnalyticsPage currentUser={currentUser} onNotice={toast} /> : view === 'teachers' ? <TeacherDirectoryPage currentUser={currentUser} onOpenProfile={openProfile} onOpenChatWithTeacher={openChatWithTeacher} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'appeals' ? <ModerationAppealsPage currentUser={currentUser} isAdmin={isAdmin} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'alerts' ? <ResourceAlertsPage currentUser={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'schedule' ? <LessonSchedulePage currentUser={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} /> : view === 'profile' ? profileId ? <TeacherProfileView profileId={profileId} currentUser={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} onProfileUpdated={(data) => setTeacherProfile((profile) => profile ? { ...profile, ...data } : profile)} onSignOut={async () => { await supabase?.auth.signOut(); nav('feed'); toast('Đã đăng xuất.'); }} onOpenProject={openProjectById} onOpenChatWithTeacher={openChatWithTeacher} onOpenTeacherProfile={openProfile} /> : <div className="empty-state"><h3>Chọn hồ sơ giáo viên</h3></div> : view === 'talks' || view === 'talk-detail' ? <SubjectTalksPage currentUser={currentUser} onRequireAuth={() => setShowLogin(true)} onNotice={toast} detailId={view === 'talk-detail' ? talkDetailId : null} onOpenDetail={openTalkDetail} onBack={closeTalkDetail} onOpenTeacher={openProfile} /> : view === 'ranking' ? <RankingView onOpenProfile={openProfile} onOpenProject={openProjectById} /> : view === 'admin' ? adminProfileLoading ? <div className="admin-access-denied"><ShieldCheck size={24} /><h2>Đang kiểm tra quyền truy cập…</h2></div> : (teacherProfile?.role === 'admin' || demoAdminMode) ? <AdminConsole pending={adminQueue} adminUserId={currentUser?.id || 'admin-current'} onApprove={(project, praise) => void moderateProject(project, 'approved', praise)} onReject={(project, feedback) => void moderateProject(project, 'rejected', feedback)} onRefresh={() => { if (supabase) void supabase.from('resources').select('*, author:profiles!resources_author_id_fkey(id,full_name,school_name,province,ward,avatar_url,show_school,show_location), comments:resource_comments(count)').eq('moderation_status', 'pending').order('created_at', { ascending: true }).then(({ data }) => setAdminQueue((data || []).map(projectFromRow))); }} onNotice={toast} /> : <div className="admin-access-denied"><ShieldCheck size={36} /><h2>Trung tâm Thẩm định &amp; Quản trị EduHub</h2><p>Đăng nhập bằng tài khoản có quyền quản trị để tiếp tục, hoặc kích hoạt nhanh chế độ Thẩm định viên để trải nghiệm quy trình Apple Review.</p><div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 14 }}><button className="button button-primary" onClick={() => setShowLogin(true)}>Đăng nhập quản trị</button><button className="button button-outline" onClick={() => { setDemoAdminMode(true); try { localStorage.setItem('eduhub-demo-admin', 'true'); } catch {} toast('Đã kích hoạt chế độ Thẩm định viên EduHub!'); }}><Sparkles size={14} /> Dùng thử quyền Thẩm định viên</button></div></div> : (
               <>
                 <section className="projects-section-main">
                   {view === 'feed' && recentProjectIds.some((id) => projects.some((project) => project.id === id)) && <section className="recent-projects"><div className="recent-projects-heading"><div><span className="section-kicker">QUAY LẠI HỌC LIỆU VỪA XEM</span><h3>Thầy cô đã xem gần đây</h3></div><button onClick={() => setRecentProjectIds([])}>Xóa lịch sử</button></div><div className="recent-projects-row">{recentProjectIds.map((id) => projects.find((project) => project.id === id)).filter((project): project is Project => Boolean(project)).slice(0, 6).map((project) => <button className="recent-project-chip" key={project.id} onClick={() => openProject(project)}><span className={`recent-project-mark ${project.color}`}><BookOpen size={14} /></span><span><b>{project.title}</b><small>{project.subject} · {project.teacher}</small></span><ArrowUpRight size={13} /></button>)}</div></section>}
@@ -1327,9 +1368,9 @@ export default function App() {
                   <span><Download size={15} /> Đọc khi mạng yếu</span>
                   <ChevronRight size={15} />
                 </button>
-                {teacherProfile?.role === 'admin' && (
+                {(teacherProfile?.role === 'admin' || demoAdminMode) && (
                   <button className={view === 'admin' ? 'active' : ''} onClick={() => nav('admin')}>
-                    <span><ShieldCheck size={15} /> Duyệt nội dung</span>
+                    <span><ShieldCheck size={15} /> Duyệt học liệu</span>
                     <ChevronRight size={15} />
                   </button>
                 )}
@@ -1854,7 +1895,14 @@ function ProjectModal({ project, allProjects, liked, saved, offlineSaved, onTogg
         </header>
         {project.parentResourceId && <div className="derivative-attribution"><Copy size={14} /><span><b>Bản điều chỉnh từ học liệu cộng đồng</b><small>{parentAttribution ? <>Dựa trên <button onClick={() => { const source = allProjects.find((item) => item.sourceId === parentAttribution.id); if (source) onOpenRelated(source); }}>{parentAttribution.title}</button> · bản gốc của {parentAttribution.teacher}</> : 'Đang tải thông tin và ghi công tác giả gốc…'}</small></span></div>}
         {project.videoUrl && <a className="video-demo-link project-video-demo" href={project.videoUrl} target="_blank" rel="noopener noreferrer"><span><Play size={18} fill="currentColor" /></span><span><b>Xem video giới thiệu</b><small>Video do tác giả chia sẻ{project.captionUrl ? ' · có phụ đề' : ''}</small></span><ArrowUpRight size={17} /></a>}
-        {project.descriptionImages && project.descriptionImages.length > 0 && <section className="project-description-gallery" aria-label="Ảnh minh họa dự án"><h3>Ảnh minh họa</h3><div>{project.descriptionImages.map((imageUrl, index) => <a href={imageUrl} target="_blank" rel="noopener noreferrer" key={`${imageUrl}-${index}`}><img src={imageUrl} alt={`${project.title} – ảnh minh họa ${index + 1}`} loading="lazy" /></a>)}</div></section>}
+        {project.teacherId === currentUser?.id && project.moderationStatus === 'rejected' && project.moderationNote && (
+          <div style={{ margin: '14px 0' }}>
+            <ResolutionNoticeCard
+              moderationNote={project.moderationNote}
+              projectTitle={project.title}
+            />
+          </div>
+        )}
         {project.websiteHtml && <section className="teacher-website-preview"><header><div><span className="section-kicker">WEBSITE GIÁO DỤC</span><b>Xem thử website</b><small>Các quyền thiết bị cần thiết sẽ được trình duyệt hỏi khi website sử dụng.</small></div><div className="teacher-website-preview-actions">{project.teacherId === currentUser?.id && project.moderationStatus === 'approved' && <button className="button button-outline" onClick={() => { const editor = document.getElementById('resource-revision-submit') as HTMLDetailsElement | null; if (editor) { editor.open = true; editor.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }}><Code2 size={14} /> Sửa mã & gửi cập nhật</button>}<button className="button button-outline" onClick={openWebsiteFullscreen}><Maximize2 size={14} /> Toàn màn hình</button>{project.websiteSlug && project.moderationStatus === 'approved' && <a className="button button-outline" href={`/web/${encodeURIComponent(project.websiteSlug)}`} target="_blank" rel="noopener noreferrer"><Globe2 size={14} /> Mở trang riêng</a>}</div></header>{project.teacherId === currentUser?.id && project.moderationStatus && project.moderationStatus !== 'approved' && <p className={`project-owner-status moderation-${project.moderationStatus}`}>{project.moderationStatus === 'pending' ? 'Dự án đang chờ admin duyệt nên chưa được công khai.' : 'Dự án cần chỉnh sửa trước khi có thể xuất bản.'}{project.moderationNote && <> Phản hồi admin: {project.moderationNote}</>}</p>}<TeacherWebsiteFrame ref={previewIframeRef} title={`Xem thử ${project.title}`} html={project.websiteHtml} /></section>}
         {project.learningOutcomes && project.learningOutcomes.length > 0 && <section className="learning-outcomes"><div><span className="section-kicker">MỤC TIÊU DO TÁC GIẢ TỰ KHAI</span><b>Yêu cầu cần đạt</b></div><ul>{project.learningOutcomes.map((outcome, index) => <li key={`${index}-${outcome}`}>{outcome}</li>)}</ul><small>Thông tin do người chia sẻ cung cấp, chưa phải kết quả kiểm định của EduHub.</small></section>}
         <section className="project-overview" aria-label="Chỉ số cộng đồng"><div className="modal-info-grid"><div><small>ĐÁNH GIÁ</small><b className="overview-rating"><Star size={14} fill="currentColor" /> {ratingStats.average.toFixed(1)} <span>({ratingStats.count})</span></b></div><div><small>HỮU ÍCH</small><b>{project.votes} lượt</b></div><div><small>LƯỢT TẢI</small><b>{project.downloads} lượt</b></div></div></section>

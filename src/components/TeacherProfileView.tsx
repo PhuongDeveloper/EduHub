@@ -13,6 +13,7 @@ import { uploadPublicImage } from '../lib/mediaUpload';
 import { TeacherVerificationRequest } from './TeacherVerificationRequest';
 import { InviteToGroupModal } from './InviteToGroupModal';
 import { FriendsListModal, type FriendTeacher } from './FriendsListModal';
+import { ResolutionNoticeCard } from './ResolutionNoticeCard';
 
 type Profile = {
   id: string; full_name: string; school_name: string | null; province: string | null; province_code: string | null;
@@ -1163,9 +1164,11 @@ export function TeacherProfileView({
                             <ChevronRight size={18} />
                           </button>
                           {isOwner && item.moderation_status === 'rejected' && item.moderation_note && (
-                            <p className="project-moderation-note">
-                              <b>Phản hồi của ban quản trị:</b> {item.moderation_note}
-                            </p>
+                            <ResolutionNoticeCard
+                              moderationNote={item.moderation_note}
+                              projectTitle={item.title}
+                              onEdit={() => onOpenProject(item.id)}
+                            />
                           )}
                         </div>
                       ))}

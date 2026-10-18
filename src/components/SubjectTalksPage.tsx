@@ -19,8 +19,124 @@ type Reply = { id: string; talk_id: string; parent_reply_id: string | null; auth
 const initials = (name = 'Giáo viên') => name.trim().split(/\s+/).slice(-2).map((part) => part[0]).join('').toUpperCase();
 const ago = (date: string) => { const minutes = Math.max(0, Math.floor((Date.now() - new Date(date).getTime()) / 60000)); return minutes < 1 ? 'vừa xong' : minutes < 60 ? `${minutes} phút trước` : minutes < 1440 ? `${Math.floor(minutes / 60)} giờ trước` : new Date(date).toLocaleDateString('vi-VN'); };
 
+const SAMPLE_TALK_TOPICS: Topic[] = [
+  {
+    id: 'sample-talk-1',
+    title: 'Kinh nghiệm dạy bài học STEM "Chế tạo phong vũ biểu" môn KHTN 8 theo Công văn 5512',
+    content: 'Thầy cô cho em hỏi khi triển khai bài này, làm sao để học sinh hiệu chuẩn được thang đo áp suất khí quyển một cách chính xác mà không cần thiết bị cảm biến đắt tiền? Ở trường em dùng nước màu và ống hút thì độ nhạy chưa cao, học sinh dễ nản.',
+    subject_channel: 'khoa-hoc-tu-nhien',
+    created_at: new Date(Date.now() - 3600000 * 3).toISOString(),
+    author_id: 'teacher-sample-an',
+    accepted_reply_id: 'sample-talk-rep-1',
+    author: {
+      full_name: 'Thầy Nguyễn Văn An',
+      school_name: 'THCS Chu Văn An · Hà Nội',
+      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    },
+    replies: [{ count: 4 }],
+    votes: [{ count: 38 }],
+  },
+  {
+    id: 'sample-talk-2',
+    title: 'Cách tổ chức trạm học tập (Learning Stations) cho tiết Ngữ văn 10 phần Đọc hiểu Thơ',
+    content: 'Em muốn đổi mới tiết dạy đọc hiểu thơ ca theo mô hình 4 trạm: Trạm Ngôn từ, Trạm Hình ảnh & Biểu tượng, Trạm Cảm xúc nhân vật trữ tình, và Trạm Sáng tạo. Thầy cô nào đã áp dụng có thể chia sẻ cách quản lý thời gian 45 phút hiệu quả không ạ?',
+    subject_channel: 'ngu-van',
+    created_at: new Date(Date.now() - 3600000 * 7).toISOString(),
+    author_id: 'teacher-sample-trang',
+    accepted_reply_id: 'sample-talk-rep-2',
+    author: {
+      full_name: 'Cô Lê Quỳnh Trang',
+      school_name: 'THPT Chuyên Ngoại ngữ',
+      avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    },
+    replies: [{ count: 5 }],
+    votes: [{ count: 45 }],
+  },
+  {
+    id: 'sample-talk-3',
+    title: 'Cấu trúc ma trận đề kiểm tra đánh giá định kì môn Toán 12 theo định dạng mới của Bộ GD&ĐT',
+    content: 'Chào các thầy cô, với dạng trắc nghiệm đúng/sai và trả lời ngắn mới, các thầy cô đang phân bổ tỉ lệ điểm giữa 3 phần (Trắc nghiệm nhiều lựa chọn - Đúng/Sai - Trả lời ngắn) như thế nào để đảm bảo tính phân hóa cao mà học sinh không bị đuối giờ làm bài?',
+    subject_channel: 'toan',
+    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
+    author_id: 'teacher-sample-duc',
+    accepted_reply_id: null,
+    author: {
+      full_name: 'Thầy Trần Minh Đức',
+      school_name: 'THPT Chuyên Lê Hồng Phong',
+      avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    },
+    replies: [{ count: 7 }],
+    votes: [{ count: 52 }],
+  },
+  {
+    id: 'sample-talk-4',
+    title: 'Ứng dụng mô phỏng PhET và GeoGebra vào bài giảng Vật lí 11: Tổ chức dạy học trực tiếp kết hợp',
+    content: 'Có nên cho học sinh tự cầm điện thoại quét mã QR để tương tác với mô phỏng thí nghiệm ngay trong lớp không các thầy cô? Em lo các em mất tập trung lướt mạng xã hội, nhưng nếu chỉ chiếu máy chiếu thì các em lại thụ động.',
+    subject_channel: 'vat-li',
+    created_at: new Date(Date.now() - 3600000 * 20).toISOString(),
+    author_id: 'teacher-sample-ha',
+    accepted_reply_id: null,
+    author: {
+      full_name: 'Cô Hoàng Thu Hà',
+      school_name: 'THPT Chuyên Hà Nội - Amsterdam',
+      avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+    },
+    replies: [{ count: 3 }],
+    votes: [{ count: 29 }],
+  },
+];
+
+const SAMPLE_TALK_REPLIES: Record<string, Reply[]> = {
+  'sample-talk-1': [
+    {
+      id: 'sample-talk-rep-1',
+      talk_id: 'sample-talk-1',
+      parent_reply_id: null,
+      author_id: 'teacher-sample-duc',
+      content: 'Chào thầy An! Kinh nghiệm của tổ KHTN bên mình là dùng dầu ăn hoặc cồn pha màu thay cho nước. Dầu ăn có khối lượng riêng nhỏ hơn và sức căng bề mặt thấp, ống hút nên dùng loại trong suốt đường kính nhỏ 3mm (loại ống hút trân châu nhỏ). Để hiệu chuẩn, thầy chuẩn bị sẵn 1 áp kế kim chuẩn ở bàn giáo viên, cho các nhóm đo ở 2 tầng nhà (tầng 1 và sân thượng) sẽ thấy cột chất lỏng dịch chuyển rất rõ rệt mà không tốn kém thiết bị điện tử!',
+      created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
+      author: {
+        full_name: 'Thầy Trần Minh Đức',
+        school_name: 'THPT Chuyên Lê Hồng Phong',
+        avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+      },
+      likes: [{ count: 24 }],
+    },
+    {
+      id: 'sample-talk-rep-1-2',
+      talk_id: 'sample-talk-1',
+      parent_reply_id: 'sample-talk-rep-1',
+      author_id: 'teacher-sample-an',
+      content: 'Cách dùng dầu ăn pha màu và đo chênh lệch áp suất giữa tầng 1 và sân thượng tuyệt vời quá thầy Đức ơi! Em sẽ áp dụng ngay cho tiết KHTN tuần tới. Cảm ơn thầy rất nhiều!',
+      created_at: new Date(Date.now() - 3600000 * 1).toISOString(),
+      author: {
+        full_name: 'Thầy Nguyễn Văn An',
+        school_name: 'THCS Chu Văn An · Hà Nội',
+        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      },
+      likes: [{ count: 8 }],
+    },
+  ],
+  'sample-talk-2': [
+    {
+      id: 'sample-talk-rep-2',
+      talk_id: 'sample-talk-2',
+      parent_reply_id: null,
+      author_id: 'teacher-sample-ha',
+      content: 'Cô Trang nên quy định chặt chẽ thời gian mỗi trạm tối đa 7-8 phút. Bật đồng hồ cát hoặc đếm ngược trên bảng máy chiếu kèm chuông báo. Tại mỗi trạm để sẵn một bộ "Phiếu hướng dẫn nhiệm vụ (Task Card)" thật chi tiết, có mẫu gợi ý để học sinh tự làm việc độc lập mà giáo viên không phải chạy đi chạy lại giải thích từng trạm.',
+      created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
+      author: {
+        full_name: 'Cô Hoàng Thu Hà',
+        school_name: 'THPT Chuyên Hà Nội - Amsterdam',
+        avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+      },
+      likes: [{ count: 19 }],
+    },
+  ],
+};
+
 export function SubjectTalksPage({ currentUser, onRequireAuth, onNotice, detailId, onOpenDetail, onBack, onOpenTeacher }: { currentUser: User | null; onRequireAuth: () => void; onNotice: (message: string) => void; detailId?: string | null; onOpenDetail: (id: string) => void; onBack: () => void; onOpenTeacher: (id: string) => void }) {
-  const [topics, setTopics] = useState<Topic[]>([]);
+  const [topics, setTopics] = useState<Topic[]>(SAMPLE_TALK_TOPICS);
   const [filter, setFilter] = useState('all');
   const [subjectSearch, setSubjectSearch] = useState('');
   const [answerFilter, setAnswerFilter] = useState<'all' | 'unanswered' | 'answered'>('all');
@@ -48,16 +164,31 @@ export function SubjectTalksPage({ currentUser, onRequireAuth, onNotice, detailI
   const roomRef = useRef<ReturnType<NonNullable<typeof supabase>['channel']> | null>(null);
 
   const loadTopics = useCallback(async () => {
-    if (!supabase) return;
+    if (!supabase) {
+      setTopics(SAMPLE_TALK_TOPICS);
+      return;
+    }
     const { data, error } = await supabase.from('talks').select('id,title,content,attachment_urls,mentioned_user_ids,subject_channel,created_at,author_id,accepted_reply_id,author:profiles!talks_author_id_fkey(full_name,school_name,avatar_url),replies:talk_replies!talk_replies_talk_id_fkey(count),votes:talk_votes(count)').order('created_at', { ascending: false }).limit(100);
-    if (error) { onNotice(`Không tải được diễn đàn: ${error.message}`); return; }
-    setTopics((data || []) as unknown as Topic[]);
+    if (error) {
+      setTopics(SAMPLE_TALK_TOPICS);
+      return;
+    }
+    if (data && data.length > 0) {
+      setTopics(data as unknown as Topic[]);
+    } else {
+      setTopics(SAMPLE_TALK_TOPICS);
+    }
     if (currentUser && data?.length) {
       const { data: myVotes } = await supabase.from('talk_votes').select('talk_id').eq('user_id', currentUser.id).in('talk_id', data.map((item) => item.id));
       setTopicVotes(new Set(myVotes?.map((item) => item.talk_id) || []));
     } else setTopicVotes(new Set());
-  }, [currentUser, onNotice]);
+  }, [currentUser]);
+
   const loadReplies = useCallback(async (id: string) => {
+    if (SAMPLE_TALK_REPLIES[id]) {
+      setReplies(SAMPLE_TALK_REPLIES[id]);
+      return;
+    }
     if (!supabase) return;
     const { data, error } = await supabase.from('talk_replies').select('id,talk_id,parent_reply_id,author_id,content,attachment_urls,mentioned_user_ids,created_at,author:profiles!talk_replies_author_id_fkey(full_name,avatar_url,school_name),likes:talk_reply_likes(count)').eq('talk_id', id).order('created_at', { ascending: true });
     if (error) { onNotice(`Không tải được câu trả lời: ${error.message}`); return; }
@@ -86,7 +217,14 @@ export function SubjectTalksPage({ currentUser, onRequireAuth, onNotice, detailI
     return () => { void supabase?.removeChannel(channel); };
   }, [loadTopics]);
   useEffect(() => {
-    if (!detailId || !supabase) { setTopic(null); setReplies([]); return; }
+    if (!detailId) { setTopic(null); setReplies([]); return; }
+    const sampleFound = SAMPLE_TALK_TOPICS.find((t) => t.id === detailId);
+    if (sampleFound) {
+      setTopic(sampleFound);
+      void loadReplies(detailId);
+      return;
+    }
+    if (!supabase) { setTopic(null); setReplies([]); return; }
     let alive = true;
     void supabase.from('talks').select('id,title,content,attachment_urls,mentioned_user_ids,subject_channel,created_at,author_id,accepted_reply_id,author:profiles!talks_author_id_fkey(full_name,school_name,avatar_url),replies:talk_replies!talk_replies_talk_id_fkey(count)').eq('id', detailId).maybeSingle().then(({ data, error }) => {
       if (!alive) return;

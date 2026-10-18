@@ -8,8 +8,55 @@ import { SUBJECT_NAMES } from '../lib/curriculum';
 type EduCollection = { id: string; owner_id: string; title: string; description: string; subject: string; is_public: boolean; items: Array<{ id: string; resource_id: string }> };
 type EduProject = { id: string; sourceId?: string; title: string; subject: string; grade: string; type: string; coverUrl?: string; teacher: string; downloadUrl?: string; url?: string };
 
+const SAMPLE_COLLECTIONS: EduCollection[] = [
+  {
+    id: 'sc-1',
+    owner_id: 'sample-curator-1',
+    title: 'Tuyển tập Học liệu STEM Khoa học Tự nhiên & Đổi mới GDPT 2018',
+    description: 'Tổng hợp các bài dạy STEM tích hợp Lý - Hóa - Sinh khối 6, 7, 8 theo chuẩn Công văn 5512, kèm phiếu học tập và bảng rubric chấm điểm sản phẩm sáng tạo.',
+    subject: 'Khoa học tự nhiên',
+    is_public: true,
+    items: [
+      { id: 'sci-1', resource_id: 'sample-p1' },
+      { id: 'sci-2', resource_id: 'sample-p2' },
+    ],
+  },
+  {
+    id: 'sc-2',
+    owner_id: 'sample-curator-2',
+    title: 'Tủ học liệu Đọc hiểu Văn bản & Chiến thuật Dạy học Ngữ văn Hiện đại',
+    description: 'Bộ tài nguyên giảng dạy Ngữ văn THCS & THPT: Sơ đồ tư duy, phiếu KWLH, trạm học tập và các mô phỏng ngữ cảnh văn học theo định hướng phát triển năng lực.',
+    subject: 'Ngữ văn',
+    is_public: true,
+    items: [
+      { id: 'sci-3', resource_id: 'sample-p3' },
+    ],
+  },
+  {
+    id: 'sc-3',
+    owner_id: 'sample-curator-3',
+    title: 'Bộ đề & Chuyên đề Ôn thi Đánh giá Năng lực ĐHQG Môn Toán',
+    description: 'Các đề thi tham khảo, ma trận đề, câu hỏi trắc nghiệm đúng/sai và bài toán ứng dụng thực tế theo chuẩn cấu trúc kỳ thi ĐGNL mới nhất.',
+    subject: 'Toán',
+    is_public: true,
+    items: [],
+  },
+  {
+    id: 'sc-4',
+    owner_id: 'sample-curator-4',
+    title: 'Kho Công cụ Trợ giảng Số & Ứng dụng AI Dành cho Giáo viên',
+    description: 'Bộ sưu tập các website tương tác, công cụ tạo video bài giảng, phòng thí nghiệm ảo và tiện ích soạn giảng thông minh giúp tiết kiệm 70% thời gian chuẩn bị bài.',
+    subject: 'Liên môn / nhiều môn',
+    is_public: true,
+    items: [
+      { id: 'sci-4', resource_id: 'sample-p2' },
+      { id: 'sci-5', resource_id: 'sample-p1' },
+    ],
+  },
+];
+
 export function CollectionsView({ currentUser, projects, onRequireAuth, onNotice, onOpenProject }: { currentUser: User | null; projects: EduProject[]; onRequireAuth: () => void; onNotice: (message: string) => void; onOpenProject: (project: EduProject) => void }) {
-  const [collections, setCollections] = useState<EduCollection[]>([]);
+  const [collections, setCollections] = useState<EduCollection[]>(SAMPLE_COLLECTIONS);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [subject, setSubject] = useState('Liên môn / nhiều môn');
@@ -19,13 +66,23 @@ export function CollectionsView({ currentUser, projects, onRequireAuth, onNotice
   const [onlyMine, setOnlyMine] = useState(false);
   const [packingId, setPackingId] = useState('');
   const load = async () => {
-    if (!supabase) return;
+    if (!supabase) {
+      if (!onlyMine) setCollections(SAMPLE_COLLECTIONS);
+      return;
+    }
     let request = supabase.from('resource_collections').select('id,owner_id,title,description,subject,is_public').order('updated_at', { ascending: false });
     if (onlyMine && currentUser) request = request.eq('owner_id', currentUser.id);
     else if (!currentUser) request = request.eq('is_public', true);
     const { data, error } = await request.limit(40);
-    if (error) { onNotice(error.message); return; }
+    if (error) {
+      if (!onlyMine) setCollections(SAMPLE_COLLECTIONS);
+      return;
+    }
     const rows = data || [];
+    if (!rows.length && !onlyMine) {
+      setCollections(SAMPLE_COLLECTIONS);
+      return;
+    }
     const ids = rows.map((item) => item.id);
     const { data: items } = ids.length ? await supabase.from('resource_collection_items').select('id,collection_id,resource_id').in('collection_id', ids) : { data: [] };
     setCollections(rows.map((item) => ({ ...item, items: (items || []).filter((entry) => entry.collection_id === item.id) })) as EduCollection[]);
