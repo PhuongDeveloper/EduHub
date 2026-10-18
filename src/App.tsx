@@ -1111,51 +1111,6 @@ export default function App() {
             </button>
           </div>
 
-          <div className="welcome-showcase" aria-hidden="true">
-            <div className="showcase-card">
-              <div className="showcase-card-header">
-                <span className="showcase-pill"><Sparkles size={12} /> Tiêu biểu hôm nay</span>
-                <span className="showcase-badge-gdpt">GDPT 2018</span>
-              </div>
-              <div className="showcase-card-body">
-                <div className="showcase-icon-box">
-                  <BookOpen size={22} />
-                </div>
-                <div className="showcase-copy">
-                  <h4>Phòng Thí Nghiệm Ảo & Mô Phỏng 3D</h4>
-                  <p>Học liệu trực quan tương tác giúp học sinh tiếp thu bài giảng sinh động, dễ hiểu.</p>
-                </div>
-              </div>
-              <div className="showcase-card-footer">
-                <div className="showcase-author">
-                  <span className="avatar avatar-mint showcase-avatar">
-                    <img src="/assets/openmoji-teacher-student.svg" alt="" />
-                  </span>
-                  <div>
-                    <b>Cộng đồng giáo viên Việt Nam</b>
-                    <small>Đồng nghiệp cùng xây dựng & chia sẻ</small>
-                  </div>
-                </div>
-                <div className="showcase-rating-pill">4.9 ★</div>
-              </div>
-            </div>
-
-            <div className="showcase-floating-stats">
-              <div className="showcase-stat-chip">
-                <Users size={14} className="stat-chip-icon" />
-                <span><b>12.000+</b> Thầy cô</span>
-              </div>
-              <div className="showcase-stat-chip">
-                <CheckCircle2 size={14} className="stat-chip-icon" />
-                <span><b>5.200+</b> Học liệu</span>
-              </div>
-              <div className="showcase-stat-chip">
-                <ShieldCheck size={14} className="stat-chip-icon" />
-                <span><b>100%</b> Đã kiểm duyệt</span>
-              </div>
-            </div>
-          </div>
-
           <div className="hero-bottom-note">TỪ LỚP HỌC, CHO LỚP HỌC</div>
         </section>
         )}
