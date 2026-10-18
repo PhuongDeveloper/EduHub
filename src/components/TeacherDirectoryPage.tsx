@@ -334,11 +334,9 @@ export function TeacherDirectoryPage({
                     <div className="directory-name-line">
                       <b>{teacher.full_name}</b>
                       {teacher.teacher_verified && (
-                        <ShieldCheck
-                          size={14}
-                          className="text-teal-600 fill-teal-100"
-                          title="Đã xác minh"
-                        />
+                        <span title="Đã xác minh" aria-label="Đã xác minh">
+                          <ShieldCheck size={14} className="text-teal-600 fill-teal-100" />
+                        </span>
                       )}
                     </div>
 

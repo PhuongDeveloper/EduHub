@@ -17,7 +17,7 @@ import {
   ChevronDown, ChevronRight, CircleHelp, Clock3, Copy, FileText, Filter, FolderHeart,
   GraduationCap, Heart, Image, Lightbulb, Menu, MessageCircle, GitCompareArrows, Globe2,
   Moon, Play, Plus, Printer, Search, Send, Share2, ShieldCheck, Star, Sun, ThumbsUp, Trophy, Upload, Users,
-  Trash2, X, BadgeCheck, Maximize2, Code2, UserCheck, UsersRound, Sparkles, type LucideIcon,
+  Trash2, X, BadgeCheck, Maximize2, Code2, UserCheck, UsersRound, Sparkles, Home, UserRound, type LucideIcon,
 } from 'lucide-react';
 
 const TeacherProfileView = lazy(() => import('./components/TeacherProfileView').then((module) => ({ default: module.TeacherProfileView })));
@@ -122,7 +122,6 @@ function projectFromRow(row: any): Project {
     freeVerified: Boolean(row.is_free_verified),
   };
 }
-
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     try { return localStorage.getItem('eduhub-theme') === 'dark' ? 'dark' : 'light'; }
@@ -789,23 +788,10 @@ export default function App() {
             <button className="mobile-menu icon-button" aria-label="Mở danh mục phụ" aria-expanded={mobileNavOpen} onClick={() => setMobileNavOpen((open) => !open)}><Menu size={20} /></button>
           </div>
         </div>
-        {mobileNavOpen && <nav className="mobile-nav" aria-label="Điều hướng">
-          <div className="mobile-nav-primary">{([['feed', 'Bảng tin'], ['projects', 'Học liệu'], ['talks', 'Thảo luận'], ['ranking', 'Xếp hạng']] as const).map(([key, label]) => <button className={view === key || (key === 'talks' && view === 'talk-detail') ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}</div>
-          <div className="mobile-nav-secondary">
-            <span className="mobile-nav-heading">Mạng lưới giáo viên</span>
-            {([['messages', 'Tin nhắn riêng'], ['groups', 'Nhóm chuyên môn'], ['teachers', 'Danh bạ giáo viên'], ['following', 'Đang theo dõi']] as const).map(([key, label]) => <button className={view === key ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}
-            <span className="mobile-nav-heading">Dành cho giáo viên</span>
-            <button onClick={openWebsiteBuilder}><Globe2 size={15} /> Tạo website bằng AI <ChevronRight size={15} /></button>
-            {([['requests', 'Nhu cầu học liệu'], ['collections', 'Bộ sưu tập'], ['saved', 'Học liệu đã lưu']] as const).map(([key, label]) => <button className={view === key ? 'active' : ''} key={key} onClick={() => nav(key)}>{label}<ChevronRight size={15} /></button>)}
-            <span className="mobile-nav-heading">Tiện ích</span>
-            <button className={view === 'offline' ? 'active' : ''} onClick={() => nav('offline')}>Đọc khi mạng yếu<ChevronRight size={15} /></button>
-            {teacherProfile?.role === 'admin' && <button className={view === 'admin' ? 'active' : ''} onClick={() => nav('admin')}>Duyệt nội dung<ChevronRight size={15} /></button>}
-          </div>
-        </nav>}
       </header>
 
       <main className="page-shell">
-        <section className={`welcome-band${['project','talks','talk-detail','profile','ranking','collections','learning-paths','groups','messages','offline','downloads','challenges','schedule','creator-analytics','teachers','appeals','alerts','admin'].includes(view) ? ' welcome-band-hidden' : ''}`}>
+        <section className={`welcome-band${view !== 'feed' ? ' welcome-band-hidden' : ''}`}>
           <div className="welcome-copy">
             <div className="eyebrow"><img className="vietnam-flag-badge" src="/vietnam-flag.svg" alt="Quốc kỳ Việt Nam" /> CỘNG ĐỒNG GIÁO VIÊN VIỆT NAM</div>
             <h1>Cùng thầy cô làm nên<br /><em>những giờ học tốt hơn.</em></h1>
@@ -822,6 +808,34 @@ export default function App() {
           </div>
           <div className="hero-bottom-note">TỪ LỚP HỌC, CHO LỚP HỌC</div>
         </section>
+
+        {['feed', 'projects', 'saved', 'following'].includes(view) && (
+          <div className="mobile-search-banner" role="search">
+            <div className="mobile-search-inner">
+              <Search size={17} className="mobile-search-icon" />
+              <input
+                value={query}
+                onChange={(event) => {
+                  const nextQuery = event.target.value;
+                  setQuery(nextQuery);
+                  if (nextQuery.trim() && view !== 'projects') nav('projects');
+                }}
+                placeholder="Tìm bài giảng, giáo án, công cụ..."
+                aria-label="Tìm kiếm học liệu"
+              />
+              {query && (
+                <button
+                  type="button"
+                  className="mobile-search-clear-btn"
+                  onClick={() => setQuery('')}
+                  aria-label="Xóa từ khóa tìm kiếm"
+                >
+                  <X size={15} />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className={`content-layout${view === 'project' ? ' content-layout-project-detail' : ''}`} id="explore">
           <aside className="left-rail">
@@ -927,7 +941,160 @@ export default function App() {
       {showWebsiteBuilder && <WebsiteBuilderModal onClose={() => setShowWebsiteBuilder(false)} onSubmit={async (draft) => { const error = await submitTeacherWebsite(draft); if (!error) setShowWebsiteBuilder(false); return error; }} />}
       {showSubmit && <SubmitModal currentUserId={currentUser?.id || ''} sourceProject={submitParentProject} onClose={() => { setShowSubmit(false); setSubmitParentProject(null); }} onSubmit={async (draft) => { const error = await submitProject(draft); if (!error) { setShowSubmit(false); setSubmitParentProject(null); } return error; }} />}
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} onNotice={toast} />}
-      {showTeacherOnboarding && currentUser && teacherProfile && <TeacherOnboardingModal userId={currentUser.id} initialName={teacherProfile.full_name} onComplete={() => { setShowTeacherOnboarding(false); setTeacherProfile((profile) => profile ? { ...profile, profile_completed_at: new Date().toISOString() } : profile); }} onNotice={toast} />}
+
+      {/* Mobile Drawer Overlay */}
+      {mobileNavOpen && (
+        <div className="mobile-nav-overlay" onClick={() => setMobileNavOpen(false)}>
+          <nav className="mobile-nav" aria-label="Điều hướng" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-nav-drawer-head">
+              <div className="mobile-nav-brand">
+                <img src="/eduhub-logo.png" alt="" className="mobile-nav-logo" />
+                <b>Danh mục & Tiện ích</b>
+              </div>
+              <button
+                type="button"
+                className="mobile-nav-close-btn"
+                onClick={() => setMobileNavOpen(false)}
+                aria-label="Đóng menu"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mobile-nav-scroll">
+              <div className="mobile-nav-primary">
+                {([['feed', 'Bảng tin'], ['projects', 'Học liệu'], ['talks', 'Thảo luận'], ['ranking', 'Xếp hạng']] as const).map(([key, label]) => (
+                  <button
+                    className={view === key || (key === 'talks' && view === 'talk-detail') ? 'active' : ''}
+                    key={key}
+                    onClick={() => nav(key)}
+                  >
+                    <span>{label}</span>
+                    <ChevronRight size={15} />
+                  </button>
+                ))}
+              </div>
+
+              <div className="mobile-nav-secondary">
+                <span className="mobile-nav-heading">Mạng lưới giáo viên</span>
+                <button className={view === 'messages' ? 'active' : ''} onClick={() => nav('messages')}>
+                  <span><Send size={15} /> Tin nhắn riêng</span>
+                  <ChevronRight size={15} />
+                </button>
+                <button className={view === 'groups' ? 'active' : ''} onClick={() => nav('groups')}>
+                  <span><Users size={15} /> Nhóm chuyên môn</span>
+                  <ChevronRight size={15} />
+                </button>
+                <button className={view === 'teachers' ? 'active' : ''} onClick={() => nav('teachers')}>
+                  <span><UserCheck size={15} /> Danh bạ giáo viên</span>
+                  <ChevronRight size={15} />
+                </button>
+                <button className={view === 'following' ? 'active' : ''} onClick={() => nav('following')}>
+                  <span><Heart size={15} /> Đang theo dõi</span>
+                  <ChevronRight size={15} />
+                </button>
+
+                <span className="mobile-nav-heading">Dành cho giáo viên</span>
+                <button onClick={() => { setMobileNavOpen(false); openWebsiteBuilder(); }}>
+                  <span><Globe2 size={15} /> Tạo website bằng AI</span>
+                  <ChevronRight size={15} />
+                </button>
+                <button className={view === 'requests' ? 'active' : ''} onClick={() => nav('requests')}>
+                  <span><FileQuestion size={15} /> Nhu cầu học liệu</span>
+                  <ChevronRight size={15} />
+                </button>
+                <button className={view === 'collections' ? 'active' : ''} onClick={() => nav('collections')}>
+                  <span><FolderHeart size={15} /> Bộ sưu tập tuyển chọn</span>
+                  <ChevronRight size={15} />
+                </button>
+                <button className={view === 'saved' ? 'active' : ''} onClick={() => nav('saved')}>
+                  <span><Bookmark size={15} /> Học liệu đã lưu ({saved.length})</span>
+                  <ChevronRight size={15} />
+                </button>
+
+                <span className="mobile-nav-heading">Tiện ích</span>
+                <button className={view === 'offline' ? 'active' : ''} onClick={() => nav('offline')}>
+                  <span><Download size={15} /> Đọc khi mạng yếu</span>
+                  <ChevronRight size={15} />
+                </button>
+                {teacherProfile?.role === 'admin' && (
+                  <button className={view === 'admin' ? 'active' : ''} onClick={() => nav('admin')}>
+                    <span><ShieldCheck size={15} /> Duyệt nội dung</span>
+                    <ChevronRight size={15} />
+                  </button>
+                )}
+              </div>
+            </div>
+          </nav>
+        </div>
+      )}
+
+      {/* Mobile Bottom Navigation Bar */}
+      <nav className="mobile-bottom-nav" aria-label="Điều hướng nhanh trên điện thoại">
+        <button
+          type="button"
+          className={`mob-tab-btn ${['feed', 'projects', 'saved', 'following'].includes(view) ? 'active' : ''}`}
+          onClick={() => nav('feed')}
+        >
+          <Home size={20} strokeWidth={['feed', 'projects', 'saved', 'following'].includes(view) ? 2.4 : 1.8} />
+          <span>Khám phá</span>
+        </button>
+
+        <button
+          type="button"
+          className={`mob-tab-btn ${['talks', 'talk-detail'].includes(view) ? 'active' : ''}`}
+          onClick={() => nav('talks')}
+        >
+          <MessageCircle size={20} strokeWidth={['talks', 'talk-detail'].includes(view) ? 2.4 : 1.8} />
+          <span>Thảo luận</span>
+        </button>
+
+        <button
+          type="button"
+          className="mob-tab-btn mob-tab-fab"
+          onClick={() => openSubmit()}
+          aria-label="Chia sẻ dự án hoặc học liệu"
+        >
+          <span className="mob-fab-circle">
+            <Plus size={22} strokeWidth={2.6} />
+          </span>
+          <span>Đăng bài</span>
+        </button>
+
+        <button
+          type="button"
+          className={`mob-tab-btn ${view === 'messages' ? 'active' : ''}`}
+          onClick={() => {
+            if (!currentUser) {
+              setShowLogin(true);
+              return;
+            }
+            nav('messages');
+          }}
+        >
+          <Send size={20} strokeWidth={view === 'messages' ? 2.4 : 1.8} />
+          <span>Tin nhắn</span>
+        </button>
+
+        <button
+          type="button"
+          className={`mob-tab-btn ${view === 'profile' ? 'active' : ''}`}
+          onClick={() => {
+            if (currentUser) {
+              openProfile(currentUser.id);
+            } else {
+              setShowLogin(true);
+            }
+          }}
+        >
+          {currentUser && teacherProfile?.avatar_url ? (
+            <img className="mob-tab-avatar" src={teacherProfile.avatar_url} alt="" />
+          ) : (
+            <UserRound size={20} strokeWidth={view === 'profile' ? 2.4 : 1.8} />
+          )}
+          <span>{currentUser ? 'Cá nhân' : 'Tài khoản'}</span>
+        </button>
+      </nav>
       </>}
     </div>
   );
@@ -1322,6 +1489,12 @@ function ProjectModal({ project, allProjects, liked, saved, offlineSaved, onTogg
   };
   const commentQuery = normalizeSearchText(commentSearch);
   const visibleCommentRoots = comments.filter((item) => !item.parent_comment_id).filter((item) => !commentQuery || normalizeSearchText(`${item.content} ${item.author?.full_name || ''} ${comments.filter((reply) => reply.parent_comment_id === item.id).map((reply) => reply.content).join(' ')}`).includes(commentQuery)).sort((a, b) => commentSort === 'newest' ? Date.parse(b.created_at) - Date.parse(a.created_at) : Date.parse(a.created_at) - Date.parse(b.created_at));
+  const detailSubjects = project.subjects.filter(Boolean);
+  const subjectItems = detailSubjects.length ? detailSubjects : project.subject.split(/[,·]/).map((subject) => subject.trim()).filter(Boolean);
+  const allSubjectResource = subjectItems.some((subject) => /mọi môn/i.test(subject)) || /mọi môn/i.test(project.subject);
+  const subjectSummary = allSubjectResource ? 'Dùng cho mọi môn' : subjectItems.length > 2 ? `${subjectItems.length} môn học` : subjectItems.join(' · ') || project.subject;
+  const detailGrades = project.grade.split(/[,·]/).map((grade) => grade.trim()).filter(Boolean);
+  const gradeSummary = detailGrades.length > 2 ? `Phù hợp nhiều khối` : detailGrades.join(' · ') || project.grade;
   return <section className="project-detail-page">
       <div className="project-detail-toolbar"><button className="button button-quiet" onClick={onClose}><ArrowRight className="back-arrow" size={15} /> Quay lại nơi vừa xem</button><span>EduHub / Dự án / {project.subject}</span><div className="project-detail-utilities"><button className="button button-outline" onClick={() => void shareProject()}><Share2 size={14} /> Chia sẻ</button><button className="button button-outline" onClick={() => void createProjectQr()}><QrCodeIcon size={14} /> Mã QR</button><button className="button button-outline" onClick={copyCitation}><Copy size={14} /> Sao chép trích dẫn</button><button className="button button-outline" onClick={printResourceSheet}><FileText size={14} /> Phiếu học liệu</button><button className="button button-outline" onClick={printGuide}><Printer size={14} /> In hướng dẫn</button></div></div>
       {qrOpen && <div className="project-qr-backdrop" role="dialog" aria-modal="true" aria-label="Mã QR dự án" onClick={() => setQrOpen(false)}><section className="project-qr-dialog" onClick={(event) => event.stopPropagation()}><button className="project-qr-close" onClick={() => setQrOpen(false)} aria-label="Đóng"><X size={17}/></button><span className="section-kicker">CHIA SẺ NHANH TRONG LỚP HỌC</span><h3>Mã QR dự án</h3><p>Quét mã để mở trang dự án này trên điện thoại. Mã QR dẫn đến trang công khai EduHub.</p>{qrDataUrl && <img src={qrDataUrl} alt={`Mã QR mở dự án ${project.title}`} />}<b>{project.title}</b><small>{project.teacher} · {project.subject}</small><div><button className="button button-outline" onClick={() => void copyText(`${window.location.origin}/projects/${encodeURIComponent(project.sourceId || project.id)}`, 'Đã sao chép liên kết dự án.')}>Sao chép liên kết</button><button className="button button-outline" onClick={printProjectQr}><Printer size={14}/> In phiếu QR</button><button className="button button-primary" onClick={downloadProjectQr}><Download size={14}/> Tải mã PNG</button></div></section></div>}
@@ -1329,19 +1502,26 @@ function ProjectModal({ project, allProjects, liked, saved, offlineSaved, onTogg
       <article className="project-modal project-detail-card">
       <div className={`modal-project-cover cover-${project.color}`}>
         {project.coverUrl && <img className="detail-cover-image" src={project.coverUrl} alt={`Ảnh bìa ${project.title}`} />}
-        <div className="cover-top"><span className="cover-type">{project.type}</span><span className="cover-subject">{project.subjects.length > 1 ? project.subjects.join(' · ') : project.subject}</span></div>
-        <div className="cover-bottom"><span>{project.grade}</span><span>EduHub · Học liệu chia sẻ</span></div>
+        <div className="detail-cover-badge"><span>{project.type}</span><span>EduHub</span></div>
       </div>
       <div className="modal-body">
-        <div className="section-kicker">{(project.subjects.length ? project.subjects.join(' · ') : project.subject).toUpperCase()} · {project.grade.toUpperCase()}</div><h2>{project.title}</h2>
+        <header className="resource-detail-heading">
+          <div className="resource-detail-eyebrow"><span className="section-kicker">HỌC LIỆU ĐƯỢC CHIA SẺ</span><span>Chia sẻ {project.time}</span></div>
+          <h2>{project.title}</h2>
+          <p className="modal-description">{project.description}</p>
+          <div className="resource-facts" aria-label="Tóm tắt học liệu"><span>{subjectSummary}</span><span>{gradeSummary}</span><span>{project.format || 'Chưa ghi định dạng'}</span></div>
+          <button className="project-author project-author-button modal-author" onClick={onOpenTeacher} disabled={!project.teacherId}><span className={`avatar avatar-${project.color}`}>{project.teacherAvatarUrl ? <img src={project.teacherAvatarUrl} alt="" /> : project.initials}</span><span className="modal-author-copy"><b>{project.teacher}</b><small>{project.school}</small></span></button>
+          <div className="detail-primary-actions">
+            {project.url && <a className="button button-outline" href={project.url} onClick={() => recordProjectAction('open')} target="_blank" rel="noopener noreferrer"><ArrowUpRight size={15} /> Mở học liệu</a>}
+            {project.downloadUrl ? <a className="button button-primary" href={project.downloadUrl} onClick={() => recordProjectAction('download')} target="_blank" rel="noopener noreferrer"><ArrowDownToLine size={15} /> Tải tài liệu</a> : !project.url && <button className="button button-primary" onClick={() => onNotice('Tác giả chưa thêm liên kết tải hoặc dùng thử.')}><ArrowDownToLine size={15} /> Tải tài liệu</button>}
+          </div>
+        </header>
         {project.parentResourceId && <div className="derivative-attribution"><Copy size={14} /><span><b>Bản điều chỉnh từ học liệu cộng đồng</b><small>{parentAttribution ? <>Dựa trên <button onClick={() => { const source = allProjects.find((item) => item.sourceId === parentAttribution.id); if (source) onOpenRelated(source); }}>{parentAttribution.title}</button> · bản gốc của {parentAttribution.teacher}</> : 'Đang tải thông tin và ghi công tác giả gốc…'}</small></span></div>}
-        <button className="project-author project-author-button modal-author" onClick={onOpenTeacher} disabled={!project.teacherId}><span className={`avatar avatar-${project.color}`}>{project.teacherAvatarUrl ? <img src={project.teacherAvatarUrl} alt="" /> : project.initials}</span><span className="modal-author-copy"><b>{project.teacher}</b><small>{project.school}</small></span><span className="author-date">Chia sẻ {project.time}</span></button>
-        <p className="modal-description">{project.description}</p>
         {project.videoUrl && <a className="video-demo-link project-video-demo" href={project.videoUrl} target="_blank" rel="noopener noreferrer"><span><Play size={18} fill="currentColor" /></span><span><b>Xem video giới thiệu</b><small>Video do tác giả chia sẻ{project.captionUrl ? ' · có phụ đề' : ''}</small></span><ArrowUpRight size={17} /></a>}
         {project.descriptionImages && project.descriptionImages.length > 0 && <section className="project-description-gallery" aria-label="Ảnh minh họa dự án"><h3>Ảnh minh họa</h3><div>{project.descriptionImages.map((imageUrl, index) => <a href={imageUrl} target="_blank" rel="noopener noreferrer" key={`${imageUrl}-${index}`}><img src={imageUrl} alt={`${project.title} – ảnh minh họa ${index + 1}`} loading="lazy" /></a>)}</div></section>}
         {project.websiteHtml && <section className="teacher-website-preview"><header><div><span className="section-kicker">WEBSITE GIÁO DỤC</span><b>Xem thử website</b><small>Các quyền thiết bị cần thiết sẽ được trình duyệt hỏi khi website sử dụng.</small></div><div className="teacher-website-preview-actions">{project.teacherId === currentUser?.id && project.moderationStatus === 'approved' && <button className="button button-outline" onClick={() => { const editor = document.getElementById('resource-revision-submit') as HTMLDetailsElement | null; if (editor) { editor.open = true; editor.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }}><Code2 size={14} /> Sửa mã & gửi cập nhật</button>}<button className="button button-outline" onClick={openWebsiteFullscreen}><Maximize2 size={14} /> Toàn màn hình</button>{project.websiteSlug && project.moderationStatus === 'approved' && <a className="button button-outline" href={`/web/${encodeURIComponent(project.websiteSlug)}`} target="_blank" rel="noopener noreferrer"><Globe2 size={14} /> Mở trang riêng</a>}</div></header>{project.teacherId === currentUser?.id && project.moderationStatus && project.moderationStatus !== 'approved' && <p className={`project-owner-status moderation-${project.moderationStatus}`}>{project.moderationStatus === 'pending' ? 'Dự án đang chờ admin duyệt nên chưa được công khai.' : 'Dự án cần chỉnh sửa trước khi có thể xuất bản.'}{project.moderationNote && <> Phản hồi admin: {project.moderationNote}</>}</p>}<TeacherWebsiteFrame ref={previewIframeRef} title={`Xem thử ${project.title}`} html={project.websiteHtml} /></section>}
         {project.learningOutcomes && project.learningOutcomes.length > 0 && <section className="learning-outcomes"><div><span className="section-kicker">MỤC TIÊU DO TÁC GIẢ TỰ KHAI</span><b>Yêu cầu cần đạt</b></div><ul>{project.learningOutcomes.map((outcome, index) => <li key={`${index}-${outcome}`}>{outcome}</li>)}</ul><small>Thông tin do người chia sẻ cung cấp, chưa phải kết quả kiểm định của EduHub.</small></section>}
-        <section className="project-overview" aria-label="Thông tin nhanh về dự án"><div className="modal-info-grid"><div><small>LOẠI HỌC LIỆU</small><b>{project.type}</b></div><div><small>MÔN HỌC</small><b>{project.subjects.join(' · ') || project.subject}</b></div><div><small>KHỐI LỚP</small><b>{project.grade}</b></div><div><small>ĐỊNH DẠNG</small><b>{project.format || 'Chưa ghi định dạng'}</b></div><div><small>ĐÁNH GIÁ</small><b className="overview-rating"><Star size={14} fill="currentColor" /> {ratingStats.average.toFixed(1)} <span>({ratingStats.count})</span></b></div><div><small>ĐÓNG GÓP CỘNG ĐỒNG</small><b>{project.votes} lượt hữu ích · {project.downloads} lượt tải</b></div></div></section>
+        <section className="project-overview" aria-label="Chỉ số cộng đồng"><div className="modal-info-grid"><div><small>ĐÁNH GIÁ</small><b className="overview-rating"><Star size={14} fill="currentColor" /> {ratingStats.average.toFixed(1)} <span>({ratingStats.count})</span></b></div><div><small>HỮU ÍCH</small><b>{project.votes} lượt</b></div><div><small>LƯỢT TẢI</small><b>{project.downloads} lượt</b></div></div></section>
         {safePreview && <section className="resource-preview"><div><span><FileText size={15} /></span><b>Xem trước tài liệu</b><button onClick={() => setPreviewOpen((open) => !open)}>{previewOpen ? 'Thu gọn' : 'Mở bản xem trước'}</button></div>{previewOpen && (safePreview.kind === 'image' ? <img src={safePreview.url} alt={`Xem trước học liệu ${project.title}`} loading="lazy" /> : <div className="resource-pdf-preview"><iframe src={safePreview.url} title={`Bản xem trước PDF: ${project.title}`} sandbox="" referrerPolicy="no-referrer" loading="lazy" /><a href={safePreview.url} target="_blank" rel="noopener noreferrer">Nếu trình duyệt không hiển thị PDF, mở tài liệu ở tab mới.</a></div>)}</section>}
         <ResourceFilesList resourceId={project.sourceId} onNotice={onNotice} />
         <section className="project-rating" id="project-ratings">
@@ -1362,7 +1542,7 @@ function ProjectModal({ project, allProjects, liked, saved, offlineSaved, onTogg
           {project.usageGuide && <small className="guide-print-note">Bản hướng dẫn có thể in để sử dụng khi chuẩn bị tiết dạy.</small>}
         </section>
         <div className="modal-tags">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
-        <div className="modal-actions"><button className={`button ${liked ? 'button-liked' : 'button-outline'}`} onClick={onLike}><ThumbsUp size={16} /> {liked ? 'Đã hữu ích' : 'Thấy hữu ích'} · {project.votes}</button><button className={`button button-outline${saved ? ' button-saved' : ''}`} onClick={onSave}><Bookmark size={16} /> {saved ? 'Đã lưu' : 'Lưu dự án'}</button><button className="button button-outline" onClick={onToggleOffline}><Download size={15} /> {offlineSaved ? 'Đã lưu ngoại tuyến' : 'Lưu để đọc ngoại tuyến'}</button><button className="button button-outline" onClick={() => onCreateDerivative(project)}><Copy size={15} /> Tạo bản điều chỉnh</button>{project.url && <a className="button button-outline" href={project.url} onClick={() => recordProjectAction('open')} target="_blank" rel="noopener noreferrer"><ArrowUpRight size={15} /> Mở dùng thử</a>}{project.downloadUrl && <a className="button button-primary" href={project.downloadUrl} onClick={() => recordProjectAction('download')} target="_blank" rel="noopener noreferrer"><ArrowDownToLine size={15} /> Tải tài liệu</a>}{!project.url && !project.downloadUrl && <button className="button button-primary" onClick={() => onNotice('Tác giả chưa thêm liên kết tải hoặc dùng thử.')}><ArrowDownToLine size={15} /> Tải tài liệu</button>}</div>
+        <div className="modal-actions"><button className={`button ${liked ? 'button-liked' : 'button-outline'}`} onClick={onLike}><ThumbsUp size={16} /> {liked ? 'Đã thấy hữu ích' : 'Thấy hữu ích'} · {project.votes}</button><button className={`button button-outline${saved ? ' button-saved' : ''}`} onClick={onSave}><Bookmark size={16} /> {saved ? 'Đã lưu' : 'Lưu học liệu'}</button><button className="button button-outline" onClick={onToggleOffline}><Download size={15} /> {offlineSaved ? 'Đã lưu ngoại tuyến' : 'Đọc khi mất mạng'}</button><button className="button button-outline" onClick={() => onCreateDerivative(project)}><Copy size={15} /> Tạo bản điều chỉnh</button></div>
         {relatedProjects.length > 0 && <section className="related-projects"><div className="related-projects-heading"><div><span className="section-kicker">CÙNG MÔN · CÙNG KHỐI</span><h3>Học liệu có thể hữu ích tiếp theo</h3></div><span>{relatedProjects.length} gợi ý</span></div><div className="related-projects-grid">{relatedProjects.map((related) => <button key={related.id} className="related-project-card" onClick={() => onOpenRelated(related)}><span className={`related-project-icon ${related.color}`}><BookOpen size={15} /></span><span className="related-project-copy"><b>{related.title}</b><small>{related.subject} · {related.grade}</small><small>Chia sẻ bởi {related.teacher}</small></span><ArrowUpRight size={14} /></button>)}</div></section>}
         <div id="project-community"><ProjectCommunityPanel resourceId={project.sourceId} authorId={project.teacherId} currentUser={currentUser} isAdmin={isAdmin} onRequireAuth={onRequireAuth} onNotice={onNotice} /></div>
         <section className="comments-section" id="project-comments"><div className="comments-heading"><div><h3>Trao đổi cùng tác giả</h3><small>{comments.length} bình luận gần nhất{project.sourceId ? '' : ' · chưa có kết nối dữ liệu'}</small></div><span className={`comments-live-status${commentRealtimeReady ? ' connected' : ''}`}><i />{commentRealtimeReady ? 'Cập nhật trực tiếp' : supabase ? 'Đang kết nối lại' : 'Chưa kết nối'}</span></div>
@@ -1506,7 +1686,22 @@ function LoginModal({ onClose, onNotice }: { onClose: () => void; onNotice: (mes
         ? await supabase.auth.signUp({ email, password, options: { data: { full_name: name.trim() } } })
         : await supabase.auth.signInWithPassword({ email, password });
       setWorking(false);
-      if (result.error) { setError(result.error.message); return; }
+      if (result.error) {
+        let msg = result.error.message;
+        if (msg === 'Invalid login credentials') {
+          msg = 'Email hoặc mật khẩu không chính xác. Nếu chưa có tài khoản trên hệ thống, thầy cô vui lòng bấm "Đăng ký miễn phí" bên dưới. Đối với tài khoản admin@gmail.com, cần tạo người dùng trong Supabase Dashboard (Auth -> Add user).';
+        } else if (msg.toLowerCase().includes('email not confirmed')) {
+          msg = 'Email này chưa được xác nhận. Thầy cô vui lòng kiểm tra hộp thư hoặc xác nhận trong Supabase Dashboard (Authentication -> Users).';
+        } else if (msg.toLowerCase().includes('user already registered')) {
+          msg = 'Email này đã được đăng ký. Thầy cô vui lòng chuyển sang mục "Đăng nhập" bên dưới.';
+        } else if (msg.toLowerCase().includes('password should be at least')) {
+          msg = 'Mật khẩu cần tối thiểu 8 ký tự.';
+        } else if (msg.toLowerCase().includes('rate limit')) {
+          msg = 'Thao tác quá nhanh hoặc vượt giới hạn gửi email. Vui lòng đợi ít phút rồi thử lại.';
+        }
+        setError(msg);
+        return;
+      }
       if (mode === 'signup' && !result.data.session) { onNotice('Tài khoản đã được tạo. Hãy xác nhận email để hoàn tất đăng ký.'); onClose(); return; }
       onNotice(mode === 'signup' ? 'Tài khoản giáo viên đã sẵn sàng.' : 'Đăng nhập thành công.');
       onClose();
@@ -1515,5 +1710,5 @@ function LoginModal({ onClose, onNotice }: { onClose: () => void; onNotice: (mes
       setError(err instanceof Error ? err.message : 'Không thể kết nối. Vui lòng thử lại.');
     }
   };
-  return <div className="modal-backdrop auth-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !working) onClose(); }}><section className="modal-panel login-modal signup-modal"><button className="modal-close" onClick={onClose} aria-label="Đóng"><X size={19} /></button><div className="login-mark"><GraduationCap size={23} /></div><div className="section-kicker">CÙNG THAM GIA CỘNG ĐỒNG</div><h2>{mode === 'signup' ? 'Tạo tài khoản giáo viên' : 'Chào mừng thầy cô trở lại'}</h2><p className="modal-intro">{mode === 'signup' ? 'Chỉ cần tên, email và mật khẩu. Thông tin chuyên môn sẽ được bổ sung sau khi đăng ký.' : 'Đăng nhập để tiếp tục chia sẻ và trao đổi chuyên môn.'}</p><form onSubmit={submit}>{mode === 'signup' && <label className="form-label">Họ và tên<input autoFocus value={name} onChange={(event) => setName(event.target.value)} placeholder="Nguyễn Thị An" autoComplete="name" required /></label>}<label className="form-label">Email<input autoFocus={mode === 'login'} value={email} onChange={(event) => setEmail(event.target.value)} placeholder="thayco@truong.edu.vn" type="email" autoComplete="email" required /></label><label className="form-label">Mật khẩu<input value={password} onChange={(event) => setPassword(event.target.value)} type="password" minLength={8} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} placeholder="Ít nhất 8 ký tự" required /></label>{error && <div className="submit-error">{error}</div>}<button className="button button-primary login-submit" type="submit" disabled={working}><Users size={16} /> {working ? 'Đang xử lý…' : mode === 'signup' ? 'Tạo tài khoản giáo viên' : 'Đăng nhập'}</button>{mode === 'signup' && <p className="form-terms">Sau khi tạo tài khoản, thầy cô sẽ bổ sung thông tin trường và chuyên môn trong một bước riêng.</p>}</form><div className="oauth-divider"><span>hoặc</span></div><button className="google-auth-button" onClick={() => void signInWithGoogle()} disabled={working}><span>G</span> Tiếp tục với Google</button><div className="login-foot"><span>{mode === 'signup' ? 'Đã có tài khoản?' : 'Chưa có tài khoản?'}</span> <button onClick={() => { setError(''); setMode(mode === 'signup' ? 'login' : 'signup'); }}>{mode === 'signup' ? 'Đăng nhập' : 'Đăng ký miễn phí'}</button></div></section></div>;
+  return <div className="modal-backdrop auth-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !working) onClose(); }}><section className="modal-panel login-modal signup-modal"><button className="modal-close" onClick={onClose} aria-label="Đóng"><X size={19} /></button><div className="login-mark"><GraduationCap size={23} /></div><div className="section-kicker">CÙNG THAM GIA CỘNG ĐỒNG</div><h2>{mode === 'signup' ? 'Tạo tài khoản giáo viên' : 'Chào mừng thầy cô trở lại'}</h2><p className="modal-intro">{mode === 'signup' ? 'Chỉ cần tên, email và mật khẩu. Thông tin chuyên môn sẽ được bổ sung sau khi đăng ký.' : 'Đăng nhập để tiếp tục chia sẻ và trao đổi chuyên môn cùng đồng nghiệp.'}</p><form onSubmit={submit}>{mode === 'signup' && <label className="form-label">Họ và tên<input autoFocus value={name} onChange={(event) => setName(event.target.value)} placeholder="Nguyễn Thị An" autoComplete="name" required /></label>}<label className="form-label">Email<input autoFocus={mode === 'login'} value={email} onChange={(event) => setEmail(event.target.value)} placeholder="thayco@truong.edu.vn" type="email" autoComplete="email" required /></label><label className="form-label">Mật khẩu<input value={password} onChange={(event) => setPassword(event.target.value)} type="password" minLength={8} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} placeholder="Ít nhất 8 ký tự" required /></label>{error && <div className="submit-error" role="alert">{error}</div>}<button className="button button-primary login-submit" type="submit" disabled={working}><Users size={16} /> {working ? 'Đang xử lý…' : mode === 'signup' ? 'Tạo tài khoản giáo viên' : 'Đăng nhập'}</button>{mode === 'signup' && <p className="form-terms">Sau khi tạo tài khoản, thầy cô sẽ bổ sung thông tin trường và chuyên môn trong một bước riêng.</p>}</form><div className="oauth-divider"><span>hoặc</span></div><button className="google-auth-button" onClick={() => void signInWithGoogle()} disabled={working}><span>G</span> Tiếp tục với Google</button><div className="login-foot"><span>{mode === 'signup' ? 'Đã có tài khoản?' : 'Chưa có tài khoản?'}</span> <button onClick={() => { setError(''); setMode(mode === 'signup' ? 'login' : 'signup'); }}>{mode === 'signup' ? 'Đăng nhập' : 'Đăng ký miễn phí'}</button></div></section></div>;
 }
